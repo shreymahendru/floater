@@ -1,7 +1,9 @@
 library floater;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/defensive.dart';
+export 'src/extensions.dart';
+export 'src/navigation.dart';
+export 'src/service_locator.dart';
+export 'src/storage.dart';
+export 'src/validation.dart';
+export 'src/widgets.dart';
