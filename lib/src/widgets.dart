@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:floater/floater.dart';
+import 'package:floater/src/service_locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import "defensive.dart";

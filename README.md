@@ -1,13 +1,17 @@
 # floater
 
-Flutter framework with helpers that floats on top of flutter to make flutter development simple and elegant as a floater 🏀.
+A framework that floats over flutter as a higher level construct to provide architecture and structure for complex flutter apps.
+This will make flutter app development simple and elegant as Steph Curry's floater 🏀.
 
 ## Features: 
 1. Scoped Navigation.
 2. Service Location.
-3. Validation framework.
-4. Defensive Framework. 
+3. Validation Framework.
+4. Defensive Programming. 
 5. Storage Service.
+6. Helpful Extensions.
+7. Widget base classes.
+
 
 Check out the example Todo application to see these features in action, [here.](./example/lib/main.dart) 
 
