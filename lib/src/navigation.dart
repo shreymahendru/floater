@@ -110,7 +110,7 @@ class _NavigationManager {
     }
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath) {
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator scope]) {
     given(basePath, "basePath")
         .ensureHasValue()
         .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
@@ -120,8 +120,8 @@ class _NavigationManager {
     }
 
     final queue = this._navigatorKeys[basePath];
-    final navTracker = new _NavTracker(
-        new GlobalKey<NavigatorState>(debugLabel: basePath), ServiceManager.instance.createScope());
+    final navTracker = new _NavTracker(new GlobalKey<NavigatorState>(debugLabel: basePath),
+        scope ?? ServiceManager.instance.createScope());
     queue.add(navTracker);
 
     return navTracker.globalKey;
@@ -400,11 +400,11 @@ class NavigationManager {
     return result;
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath) {
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator scope]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     basePath = this._getJustPath(basePath);
 
-    return _manager.generateNavigatorKey(basePath);
+    return _manager.generateNavigatorKey(basePath, scope);
   }
 
   void disposeNavigatorKey(String basePath, GlobalKey<NavigatorState> key) {
