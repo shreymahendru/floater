@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'manage_todo_description_page.dart';
 
 class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage> {
-  final _todoCreationService =
+  final _todoManagementService =
       NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
@@ -14,14 +14,14 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
   String get description => this._description;
   set description(String value) => (this.._description = value).triggerStateChange();
 
-  bool get isNewTodo => this._todoCreationService.isNewTodo;
+  bool get isNewTodo => this._todoManagementService.isNewTodo;
 
   Validator<ManageTodoDescriptionPageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
   ManageTodoDescriptionPageState() : super() {
-    this._description = this._todoCreationService.description;
+    this._description = this._todoManagementService.description;
     this._createValidator();
     this.onStateChange(() {
       this._validate();
@@ -40,14 +40,15 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
       return;
     }
 
-    if (this._description != null && this._description.isNotEmpty)
-      this._todoCreationService.setDescription(this._description);
-    else
-      this._todoCreationService.setDescription(null);
+    final description = this._description == null || this._description.trim().isEmpty
+        ? null
+        : this._description.trim();
+
+    this._todoManagementService.setDescription(description);
 
     this.showLoading();
     try {
-      await this._todoCreationService.complete();
+      await this._todoManagementService.complete();
     } catch (e) {
       debugPrint(e.toString());
       return;

@@ -1,10 +1,9 @@
-import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
 import 'manage_todo_title_page_state.dart';
 
 class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
-  ManageTodoTitlePage(Todo todo) : super(() => ManageTodoTitlePageState(todo));
+  ManageTodoTitlePage() : super(() => ManageTodoTitlePageState());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

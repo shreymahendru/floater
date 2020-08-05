@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:floater/floater.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import "defensive.dart";
@@ -184,14 +185,16 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
   final Map<String, dynamic> _initialRouteArgs;
   final TransitionDelegate<dynamic> _transitionDelegate;
 
-  ScopedNavigator(String basePath,
-      {@required String initialRoute,
-      Map<String, dynamic> initialRouteArgs,
-      TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>()})
-      : this._initialRoute = initialRoute,
+  ScopedNavigator(
+    String basePath, {
+    @required String initialRoute,
+    Map<String, dynamic> initialRouteArgs,
+    TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
+    ServiceLocator scope,
+  })  : this._initialRoute = initialRoute,
         this._initialRouteArgs = initialRouteArgs,
         this._transitionDelegate = transitionDelegate,
-        super(() => new _ScopedNavigatorState(basePath));
+        super(() => new _ScopedNavigatorState(basePath, scope));
 
   @override
   Widget build(BuildContext context) {
@@ -227,9 +230,9 @@ class _ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
   String get basePath => this._basePath;
   GlobalKey<NavigatorState> get key => this._key;
 
-  _ScopedNavigatorState(String basePath)
+  _ScopedNavigatorState(String basePath, ServiceLocator scope)
       : this._basePath = basePath,
-        this._key = NavigationManager.instance.generateNavigatorKey(basePath) {
+        this._key = NavigationManager.instance.generateNavigatorKey(basePath, scope) {
     this.onDispose(() => NavigationManager.instance.disposeNavigatorKey(this._basePath, this._key));
   }
 }

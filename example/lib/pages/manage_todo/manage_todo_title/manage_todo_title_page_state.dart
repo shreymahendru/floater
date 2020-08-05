@@ -1,11 +1,10 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
-import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:floater/floater.dart';
 import '../../routes.dart';
 import 'manage_todo_title_page.dart';
 
 class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
-  final _todoCreationService =
+  final _todoManagementService =
       NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
@@ -14,21 +13,18 @@ class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
   String get title => this._title;
   set title(String value) => (this.._title = value).triggerStateChange();
 
-  bool get isNewTodo => this._todoCreationService.isNewTodo;
+  bool get isNewTodo => this._todoManagementService.isNewTodo;
 
   Validator<ManageTodoTitlePageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
-  ManageTodoTitlePageState(Todo todo) : super() {
-    // init-ing the scoped service since this is the first page of this scoped navigator.
-    this._todoCreationService.init(todo);
-
-    this._title = this._todoCreationService.title;
+  ManageTodoTitlePageState() : super() {
+    this._title = this._todoManagementService.title;
 
     this._createValidator();
     this.onStateChange(() {
-      // this function is called every time state is changed, hence best place to run our validation
+      // this function is called every time state is about to change, hence best place to run our validation
       this._validate();
     });
   }
@@ -45,7 +41,7 @@ class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
       return;
     }
 
-    this._todoCreationService.setTitle(this._title);
+    this._todoManagementService.setTitle(this._title);
     this._scopedNavigator.pushNamed(Routes.manageTodoDescription);
   }
 

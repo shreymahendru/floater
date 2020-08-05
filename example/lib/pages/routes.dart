@@ -9,7 +9,7 @@ abstract class Routes {
   static const splash = "/splash";
   static const todos = "/todos";
   static const manageTodo = "/manageTodo?{todo?: object}";
-  static const manageTodoTitle = "/manageTodo/title?{todo?: object}";
+  static const manageTodoTitle = "/manageTodo/title";
   static const manageTodoDescription = "/manageTodo/description";
 
   static const viewTodo = "/viewTodo";
@@ -18,14 +18,15 @@ abstract class Routes {
   // and bootstrap the navigation
   static void initializeNavigation() {
     // registering app pages here.
+    // root nav pages
     NavigationManager.instance
       ..registerPage(Routes.splash, (routeArgs) => SplashPage())
       ..registerPage(Routes.todos, (routeArgs) => TodosPage());
 
-    // create todo flow
+    // manage todo flow pages
     NavigationManager.instance
       ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["todo"]))
-      ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage(routeArgs["todo"]))
+      ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
       ..registerPage(Routes.manageTodoDescription, (routeArgs) => ManageTodoDescriptionPage());
 
     // bootstrapping Navigation
