@@ -1,14 +1,14 @@
 # floater
 
-A new Flutter package project.
+Flutter framework with helpers that floats on top of flutter to make flutter development simple and elegant as a floater 🏀.
 
-## Getting Started
+## Features: 
+1. Scoped Navigation.
+2. Service Location.
+3. Validation framework.
+4. Defensive Framework. 
+5. Storage Service.
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+Check out the example Todo application to see these features in action, [here.](./example/lib/main.dart) 
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+[Dart Package](https://pub.dev/packages/floater)
