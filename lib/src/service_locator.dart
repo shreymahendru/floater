@@ -76,7 +76,7 @@ class _Container implements ServiceRegistry {
   void registerInstance<T>(T value) {
     given(value, "value").ensureHasValue();
     given(this, "this")
-        .ensure((t) => !t._types.contains(T), "Type ${T} is already registered")
+        .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
     this.instanceRegistrations.add(new _InstanceRegistration<T>(value));
     this._types.add(T);
@@ -86,7 +86,7 @@ class _Container implements ServiceRegistry {
   void registerSingleton<T>(T Function() factoryFunc) {
     given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
-        .ensure((t) => !t._types.contains(T), "Type ${T} is already registered")
+        .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
     this.singletonRegistrations.add(new _SingletonRegistration<T>(factoryFunc));
     this._types.add(T);
@@ -96,7 +96,7 @@ class _Container implements ServiceRegistry {
   void registerTransient<T>(T Function() factoryFunc) {
     given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
-        .ensure((t) => !t._types.contains(T), "Type ${T} is already registered")
+        .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
     this.transientRegistrations.add(new _TransientRegistration<T>(factoryFunc));
     this._types.add(T);
@@ -106,7 +106,7 @@ class _Container implements ServiceRegistry {
   void registerScoped<T>(T Function() factoryFunc) {
     given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
-        .ensure((t) => !t._types.contains(T), "Type ${T} is already registered")
+        .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
     this.scopedRegistrations.add(new _ScopedRegistration<T>(factoryFunc));
     this._types.add(T);
@@ -118,7 +118,7 @@ class _Container implements ServiceRegistry {
     this.instanceRegistrations.forEach((element) => element.register(this._getIt));
     this.singletonRegistrations.forEach((element) => element.register(this._getIt));
     this.transientRegistrations.forEach((element) => element.register(this._getIt));
-    // Deliberately not doing scoped registerations
+    // Deliberately not doing scoped registrations
 
     this._isBootstrapped = true;
   }

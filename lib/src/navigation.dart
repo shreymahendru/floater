@@ -153,7 +153,7 @@ class _NavigationManager {
   Map<String, _PageRegistration> generateMappedRoutes(String basePath) {
     given(basePath, "basePath").ensureHasValue().ensure(
         (t) => this._pageRegistrations.any((element) => element.path == basePath),
-        "Unknown path ${basePath}");
+        "Unknown path $basePath");
 
     final base = this._pageRegistrations.firstWhere((element) => element.path == basePath);
     final result = <String, _PageRegistration>{};
@@ -242,7 +242,7 @@ class _PageRegistration {
         if (isOptional) key = key.substring(0, key.length - 1);
         if (!args.containsKey(key) || args[key] == null) {
           if (isOptional) return;
-          throw new ArgumentError("Argument for param '${key}' was not provided.");
+          throw new ArgumentError("Argument for param '$key' was not provided.");
         }
 
         var argValue = args[key];
@@ -291,7 +291,7 @@ class _PageRegistration {
     final result = <String, dynamic>{};
     if (query == null || query.trim().isEmpty) return result;
 
-    if (query.contains(new RegExp(r'[{:}]'))) throw new Exception("Invalid query: ${query}");
+    if (query.contains(new RegExp(r'[{:}]'))) throw new Exception("Invalid query: $query");
 
     query.split("&").forEach((element) {
       final split = element.split("=");
@@ -433,7 +433,7 @@ class NavigationManager {
 
     final path = this._getJustPath(routeTemplate);
     final pageRegistration = _manager._pageRegistrations.find((element) => element.path == path);
-    if (pageRegistration == null) throw new Exception("Unknown route: ${routeTemplate}");
+    if (pageRegistration == null) throw new Exception("Unknown route: $routeTemplate");
     if (routeArgs == null) return path;
     final query = this._getJustQuery(routeTemplate);
     if (query == null) return routeTemplate;
@@ -462,16 +462,16 @@ class NavigationManager {
           break;
       }
       if (result.isNotEmpty) result += "&";
-      result += "${key}=${argValue}";
+      result += "$key=$argValue";
     });
 
-    return "${path}?${result}";
+    return "$path?$result";
   }
 
   String _getJustPath(String route) {
     given(route, "route")
         .ensureHasValue()
-        .ensure((t) => t.trim().startsWith("/"), "Invalid route '${route}'");
+        .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
 
     route = route.trim();
     if (route.contains("?")) {
@@ -485,7 +485,7 @@ class NavigationManager {
   String _getJustQuery(String route) {
     given(route, "route")
         .ensureHasValue()
-        .ensure((t) => t.trim().startsWith("/"), "Invalid route '${route}'");
+        .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
     route = route.trim();
     if (!route.contains("?")) return null;
 
