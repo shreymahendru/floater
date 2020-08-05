@@ -1,5 +1,5 @@
 name: floater
-description: A new Flutter package project.
+description: Flutter framework with helpers that floats on top of flutter to make flutter development simple.
 version: 0.0.1
 homepage: https://github.com/shreymahendru/floater
 
