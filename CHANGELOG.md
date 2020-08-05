@@ -1,3 +1,8 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - July 31, 2020
 
-* TODO: Describe initial release.
+* Initial Package Release.
+
+## [0.0.2] - August 5, 2020
+* Updated README
+* Added example TODO Application
+* Ability to pass a pre-crated scope to ScopedNavigator.
