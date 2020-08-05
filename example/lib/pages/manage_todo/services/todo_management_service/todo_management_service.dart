@@ -2,7 +2,8 @@ import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
 import 'package:floater/floater.dart';
 
-class TodoCreationService {
+// this service is used to facilitate the flow of creation or editing of a todo
+class TodoManagementService {
   final _todosService = ServiceLocator.instance.resolve<TodosService>();
 
   Todo _todo;
@@ -17,6 +18,7 @@ class TodoCreationService {
 
   void init(Todo todo) {
     this._todo = todo;
+    // if a todo is passed copy the title and description or else leave it null.
     this._title = todo?.title;
     this._description = todo?.description;
   }
@@ -28,7 +30,8 @@ class TodoCreationService {
   }
 
   void setDescription(String description) {
-    given(description, "description").ensure((t) => t.trim().isNotEmpty && t.length < 500);
+    given(description, "description")
+        .ensure((t) => t == null || (t.trim().isNotEmpty && t.length < 500));
 
     this._description = description;
   }
@@ -36,6 +39,7 @@ class TodoCreationService {
   Future<void> complete() async {
     given(this, "this").ensure((t) => t._title != null);
 
+    // if a todo was not passed that means you are creating a new one, else you are updating the todo passed.
     if (this.isNewTodo) {
       await this._todosService.createTodo(this._title, this._description);
       return;

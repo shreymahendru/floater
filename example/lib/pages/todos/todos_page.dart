@@ -10,7 +10,7 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
   @override
   Widget build(BuildContext context) {
     return OverlayLoadingSpinner(
-      isEnabled: false,
+      isEnabled: this.state.isTogglingTodoCompletion,
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -53,9 +53,12 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
       subtitle: todo.description != null ? Text(todo.description) : null,
       dense: true,
       onTap: () => this.state.onTodoPressed(todo),
-      leading: Icon(
-        todo.isComplete ? Icons.done : Icons.close,
-        color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+      leading: IconButton(
+        icon: Icon(
+          todo.isComplete ? Icons.done : Icons.close,
+          color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+        ),
+        onPressed: () => this.state.toggleCompletionForTodo(todo),
       ),
       trailing: IconButton(
         icon: Icon(

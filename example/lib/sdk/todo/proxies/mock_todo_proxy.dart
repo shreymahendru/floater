@@ -18,19 +18,17 @@ class MockTodoProxy implements Todo {
   @override
   bool get isComplete => this._dto.isComplete;
 
- 
-
   @override
   Future<void> update(String title, String description) async {
     await Future.delayed(Duration(seconds: 2));
 
-    final newDto = TodoDto(this.id, title, description ?? this.description, this.isComplete);
+    final newDto = TodoDto(this.id, title, description, this.isComplete);
     this._dto = newDto;
   }
 
   @override
   Future<void> toggleComplete() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     final newDto = TodoDto(this.id, this.title, this.description, !this.isComplete);
     this._dto = newDto;

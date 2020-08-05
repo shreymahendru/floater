@@ -1,16 +1,16 @@
-import 'package:example/pages/create_todo/create_todo_page.dart';
-import 'package:example/pages/create_todo/create_todo_title/create_todo_title_page.dart';
+import 'package:example/pages/manage_todo/manage_todo_description/manage_todo_description_page.dart';
+import 'package:example/pages/manage_todo/manage_todo_page.dart';
+import 'package:example/pages/manage_todo/manage_todo_title/manage_todo_title_page.dart';
 import 'package:example/pages/todos/todos_page.dart';
 import 'package:floater/floater.dart';
 import 'package:example/pages/splash/splash_page.dart';
-import 'create_todo/create_todo_description/create_todo_description_page.dart';
 
 abstract class Routes {
   static const splash = "/splash";
   static const todos = "/todos";
-  static const createTodo = "/createTodo?{todo?: object}";
-  static const createTodoTitle = "/createTodo/title?{todo?: object}";
-  static const createTodoDescription = "/createTodo/description";
+  static const manageTodo = "/manageTodo?{todo?: object}";
+  static const manageTodoTitle = "/manageTodo/title?{todo?: object}";
+  static const manageTodoDescription = "/manageTodo/description";
 
   static const viewTodo = "/viewTodo";
 
@@ -24,9 +24,9 @@ abstract class Routes {
 
     // create todo flow
     NavigationManager.instance
-      ..registerPage(Routes.createTodo, (routeArgs) => CreateTodoPage(routeArgs["todo"]))
-      ..registerPage(Routes.createTodoTitle, (routeArgs) => CreateTodoTitlePage(routeArgs["todo"]))
-      ..registerPage(Routes.createTodoDescription, (routeArgs) => CreateTodoDescriptionPage());
+      ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["todo"]))
+      ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage(routeArgs["todo"]))
+      ..registerPage(Routes.manageTodoDescription, (routeArgs) => ManageTodoDescriptionPage());
 
     // bootstrapping Navigation
     NavigationManager.instance.bootstrap();

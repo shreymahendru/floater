@@ -1,15 +1,15 @@
-import 'package:example/pages/create_todo/create_todo_title/create_todo_title_page_state.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
+import 'manage_todo_title_page_state.dart';
 
-class CreateTodoTitlePage extends StatefulWidgetBase<CreateTodoTitlePageState> {
-  CreateTodoTitlePage(Todo todo) : super(() => CreateTodoTitlePageState(todo));
+class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
+  ManageTodoTitlePage(Todo todo) : super(() => ManageTodoTitlePageState(todo));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("New Todo Title"),
+        title: Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Title"),
         leading: IconButton(
           icon: Icon(Icons.chevron_left),
           onPressed: this.state.back,

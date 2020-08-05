@@ -1,24 +1,26 @@
-import 'package:example/pages/create_todo/create_todo_description/create_todo_description_page.dart';
-import 'package:example/pages/create_todo/services/todo_creation_service/todo_creation_service.dart';
+import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
 import 'package:example/pages/routes.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
+import 'manage_todo_description_page.dart';
 
-class CreateTodoDescriptionPageState extends WidgetStateBase<CreateTodoDescriptionPage> {
+class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage> {
   final _todoCreationService =
-      NavigationService.instance.retrieveScope(Routes.createTodo).resolve<TodoCreationService>();
+      NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
-  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.createTodo);
+  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   String _description;
   String get description => this._description;
   set description(String value) => (this.._description = value).triggerStateChange();
 
-  Validator<CreateTodoDescriptionPageState> _validator;
+  bool get isNewTodo => this._todoCreationService.isNewTodo;
+
+  Validator<ManageTodoDescriptionPageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
-  CreateTodoDescriptionPageState() : super() {
+  ManageTodoDescriptionPageState() : super() {
     this._description = this._todoCreationService.description;
     this._createValidator();
     this.onStateChange(() {
@@ -40,6 +42,8 @@ class CreateTodoDescriptionPageState extends WidgetStateBase<CreateTodoDescripti
 
     if (this._description != null && this._description.isNotEmpty)
       this._todoCreationService.setDescription(this._description);
+    else
+      this._todoCreationService.setDescription(null);
 
     this.showLoading();
     try {

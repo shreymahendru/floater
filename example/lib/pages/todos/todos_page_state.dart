@@ -13,6 +13,11 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   List<Todo> _todos;
   List<Todo> get todos => this._todos ?? [];
 
+  bool _isTogglingTodoCompletion = false;
+  bool get isTogglingTodoCompletion => this._isTogglingTodoCompletion;
+  set isTogglingTodoCompletion(bool value) =>
+      (this.._isTogglingTodoCompletion = value).triggerStateChange();
+
   TodosPageState() : super() {
     this.onInitState(() {
       this._loadTodos();
@@ -26,7 +31,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   Future<void> onEditTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
     this._navigator.pushNamed(
-      NavigationService.instance.generateRoute(Routes.createTodo),
+      NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "todo": todo,
       },
@@ -35,11 +40,25 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   void onAddTodoPressed() {
     this._navigator.pushNamed(
-      NavigationService.instance.generateRoute(Routes.createTodo),
+      NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "todo": null,
       },
     );
+  }
+
+  void toggleCompletionForTodo(Todo todo) async {
+    given(todo, "todo").ensureHasValue();
+
+    this.isTogglingTodoCompletion = true;
+    try {
+      await todo.toggleComplete();
+    } catch (e) {
+      debugPrint(e.toString());
+      return;
+    } finally {
+      this.isTogglingTodoCompletion = false;
+    }
   }
 
   Future<void> _loadTodos() async {

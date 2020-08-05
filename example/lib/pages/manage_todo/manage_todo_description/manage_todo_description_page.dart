@@ -1,17 +1,17 @@
-import 'package:example/pages/create_todo/create_todo_description/create_todo_description_page_state.dart';
 import 'package:example/widgets/overlay_loading_spinner/overlay_loading_spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
+import 'manage_todo_description_page_state.dart';
 
-class CreateTodoDescriptionPage extends StatefulWidgetBase<CreateTodoDescriptionPageState> {
-  CreateTodoDescriptionPage() : super(() => CreateTodoDescriptionPageState());
+class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescriptionPageState> {
+  ManageTodoDescriptionPage() : super(() => ManageTodoDescriptionPageState());
   @override
   Widget build(BuildContext context) {
     return OverlayLoadingSpinner(
       isEnabled: this.state.isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("New Todo Description"),
+          title: Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Description"),
           leading: IconButton(
             icon: Icon(Icons.chevron_left),
             onPressed: this.state.back,
@@ -40,7 +40,7 @@ class CreateTodoDescriptionPage extends StatefulWidgetBase<CreateTodoDescription
                 SizedBox(height: 30),
                 RaisedButton(
                   onPressed: this.state.hasErrors ? null : this.state.submit,
-                  child: Text("Create"),
+                  child: Text(this.state.isNewTodo ? "Create" : "Update"),
                   color: Colors.blueAccent,
                   textColor: Colors.white,
                 ),

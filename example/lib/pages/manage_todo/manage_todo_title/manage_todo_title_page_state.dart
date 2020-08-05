@@ -1,31 +1,34 @@
-import 'package:example/pages/create_todo/services/todo_creation_service/todo_creation_service.dart';
+import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:floater/floater.dart';
 import '../../routes.dart';
-import 'create_todo_title_page.dart';
+import 'manage_todo_title_page.dart';
 
-class CreateTodoTitlePageState extends WidgetStateBase<CreateTodoTitlePage> {
+class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
   final _todoCreationService =
-      NavigationService.instance.retrieveScope(Routes.createTodo).resolve<TodoCreationService>();
+      NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
-  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.createTodo);
+  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   String _title;
   String get title => this._title;
   set title(String value) => (this.._title = value).triggerStateChange();
 
-  Validator<CreateTodoTitlePageState> _validator;
+  bool get isNewTodo => this._todoCreationService.isNewTodo;
+
+  Validator<ManageTodoTitlePageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
-  CreateTodoTitlePageState(Todo todo) : super() {
-    // init-ing the scoped service
+  ManageTodoTitlePageState(Todo todo) : super() {
+    // init-ing the scoped service since this is the first page of this scoped navigator.
     this._todoCreationService.init(todo);
 
     this._title = this._todoCreationService.title;
 
     this._createValidator();
     this.onStateChange(() {
+      // this function is called every time state is changed, hence best place to run our validation
       this._validate();
     });
   }
@@ -43,7 +46,7 @@ class CreateTodoTitlePageState extends WidgetStateBase<CreateTodoTitlePage> {
     }
 
     this._todoCreationService.setTitle(this._title);
-    this._scopedNavigator.pushNamed(Routes.createTodoDescription);
+    this._scopedNavigator.pushNamed(Routes.manageTodoDescription);
   }
 
   bool _validate() {
