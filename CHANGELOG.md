@@ -6,3 +6,6 @@
 * Updated README
 * Added example TODO Application
 * Ability to pass a pre-crated scope to ScopedNavigator.
+
+## [0.0.2+1] - August 6, 2020
+* Documentation
