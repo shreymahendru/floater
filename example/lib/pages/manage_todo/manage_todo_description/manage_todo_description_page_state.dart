@@ -50,19 +50,7 @@ class ManageTodoDescriptionPageState
 
     this._todoManagementService.setDescription(description);
 
-    // this.showLoading();
-    // try {
-    //   await this._todoManagementService.complete();
-    // } catch (e) {
-    //   debugPrint(e.toString());
-    //   return;
-    // } finally {
-    //   this.hideLoading();
-    // }
-
-    // remove everything from the stack and push the home page
     this._scopedNavigator.pushNamed(Routes.manageTodoPriority);
-    //this._rootNavigator.pushNamedAndRemoveUntil(Routes.todos, (_) => false);
   }
 
   bool _validate() {
