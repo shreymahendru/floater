@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 class TodosPageState extends WidgetStateBase<TodosPage> {
   final _navigator = NavigationService.instance.retrieveNavigator("/");
-  final _todosService =
-      ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
+  final _todosService = ServiceLocator.instance
+      .resolve<TodosService>(); // getting the todoService installed
 
   List<Todo> _todos;
   List<Todo> get todos => this._todos ?? [];
@@ -26,6 +26,13 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   Future<void> onTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
+    await this._navigator.pushNamed(
+      NavigationService.instance.generateRoute(Routes.viewTodo),
+      arguments: {
+        "todo": todo,
+      },
+    );
+    this.triggerStateChange();
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
@@ -71,5 +78,10 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     } finally {
       this.hideLoading();
     }
+  }
+
+  void onSwipeDelete(Todo todo) {
+    this._todosService.removeTodo(todo);
+    this._loadTodos();
   }
 }

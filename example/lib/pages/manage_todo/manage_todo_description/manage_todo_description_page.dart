@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
 import 'manage_todo_description_page_state.dart';
 
-class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescriptionPageState> {
+class ManageTodoDescriptionPage
+    extends StatefulWidgetBase<ManageTodoDescriptionPageState> {
   ManageTodoDescriptionPage() : super(() => ManageTodoDescriptionPageState());
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,8 @@ class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescription
       isEnabled: this.state.isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Description"),
+          title:
+              Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Description"),
           leading: IconButton(
             icon: Icon(Icons.chevron_left),
             onPressed: this.state.back,
@@ -40,7 +42,7 @@ class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescription
                 SizedBox(height: 30),
                 RaisedButton(
                   onPressed: this.state.hasErrors ? null : this.state.submit,
-                  child: Text(this.state.isNewTodo ? "Create" : "Update"),
+                  child: Text("Next"),
                   color: Colors.blueAccent,
                   textColor: Colors.white,
                 ),

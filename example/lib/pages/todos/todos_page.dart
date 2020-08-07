@@ -34,7 +34,7 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
       );
 
     if (this.state.todos.isEmpty)
-      return Container(
+      return Center(
         child: Text(
           "No todos added yet :(",
           style: Theme.of(context).textTheme.bodyText1,
@@ -43,29 +43,36 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
 
     return ListView.builder(
       itemCount: this.state.todos.length,
-      itemBuilder: (context, index) => this._buildListTile(this.state.todos[index]),
+      itemBuilder: (context, index) =>
+          this._buildListTile(this.state.todos[index]),
     );
   }
 
   Widget _buildListTile(Todo todo) {
-    return ListTile(
-      title: Text(todo.title),
-      subtitle: todo.description != null ? Text(todo.description) : null,
-      dense: true,
-      onTap: () => this.state.onTodoPressed(todo),
-      leading: IconButton(
-        icon: Icon(
-          todo.isComplete ? Icons.done : Icons.close,
-          color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+    return GestureDetector(
+      onHorizontalDragEnd: (DragEndDetails details) {
+        this.state.onSwipeDelete(todo);
+      },
+      child: ListTile(
+        title: Text(todo.title),
+        //subtitle: Text(todo.priority),
+        subtitle: todo.description != null ? Text(todo.description) : null,
+        dense: true,
+        onTap: () => this.state.onTodoPressed(todo),
+        leading: IconButton(
+          icon: Icon(
+            todo.isComplete ? Icons.done : Icons.close,
+            color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+          ),
+          onPressed: () => this.state.toggleCompletionForTodo(todo),
         ),
-        onPressed: () => this.state.toggleCompletionForTodo(todo),
-      ),
-      trailing: IconButton(
-        icon: Icon(
-          Icons.edit,
-          color: Colors.black,
+        trailing: IconButton(
+          icon: Icon(
+            Icons.edit,
+            color: Colors.black,
+          ),
+          onPressed: () => this.state.onEditTodoPressed(todo),
         ),
-        onPressed: () => this.state.onEditTodoPressed(todo),
       ),
     );
   }

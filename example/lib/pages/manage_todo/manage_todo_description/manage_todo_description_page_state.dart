@@ -1,18 +1,21 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
 import 'package:example/pages/routes.dart';
 import 'package:floater/floater.dart';
-import 'package:flutter/material.dart';
+
 import 'manage_todo_description_page.dart';
 
-class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage> {
-  final _todoManagementService =
-      NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
-  final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
-  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
+class ManageTodoDescriptionPageState
+    extends WidgetStateBase<ManageTodoDescriptionPage> {
+  final _todoManagementService = NavigationService.instance
+      .retrieveScope(Routes.manageTodo)
+      .resolve<TodoManagementService>();
+  final _scopedNavigator =
+      NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   String _description;
   String get description => this._description;
-  set description(String value) => (this.._description = value).triggerStateChange();
+  set description(String value) =>
+      (this.._description = value).triggerStateChange();
 
   bool get isNewTodo => this._todoManagementService.isNewTodo;
 
@@ -40,24 +43,26 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
       return;
     }
 
-    final description = this._description == null || this._description.trim().isEmpty
-        ? null
-        : this._description.trim();
+    final description =
+        this._description == null || this._description.trim().isEmpty
+            ? null
+            : this._description.trim();
 
     this._todoManagementService.setDescription(description);
 
-    this.showLoading();
-    try {
-      await this._todoManagementService.complete();
-    } catch (e) {
-      debugPrint(e.toString());
-      return;
-    } finally {
-      this.hideLoading();
-    }
+    // this.showLoading();
+    // try {
+    //   await this._todoManagementService.complete();
+    // } catch (e) {
+    //   debugPrint(e.toString());
+    //   return;
+    // } finally {
+    //   this.hideLoading();
+    // }
 
     // remove everything from the stack and push the home page
-    this._rootNavigator.pushNamedAndRemoveUntil(Routes.todos, (_) => false);
+    this._scopedNavigator.pushNamed(Routes.manageTodoPriority);
+    //this._rootNavigator.pushNamedAndRemoveUntil(Routes.todos, (_) => false);
   }
 
   bool _validate() {
@@ -73,6 +78,7 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
         .prop("description", (t) => t.description)
         .isOptional()
         .hasMaxLength(500)
-        .withMessage(message: "Description should be less than 500 characters.");
+        .withMessage(
+            message: "Description should be less than 500 characters.");
   }
 }

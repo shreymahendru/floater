@@ -16,15 +16,21 @@ class TodoManagementService {
   String _description;
   String get description => this._description;
 
+  String _priority;
+  String get priority => this._priority;
+
   void init(Todo todo) {
     this._todo = todo;
     // if a todo is passed copy the title and description or else leave it null.
     this._title = todo?.title;
     this._description = todo?.description;
+    this._priority = todo?.priority;
   }
 
   void setTitle(String title) {
-    given(title, "title").ensureHasValue().ensure((t) => t.trim().isNotEmpty && t.length < 50);
+    given(title, "title")
+        .ensureHasValue()
+        .ensure((t) => t.trim().isNotEmpty && t.length < 50);
 
     this._title = title;
   }
@@ -36,15 +42,28 @@ class TodoManagementService {
     this._description = description;
   }
 
+  void setPriority(String priority) {
+    given(priority, "priority")
+        .ensure((t) => t.trim().isNotEmpty && t.length < 10);
+
+    this._priority = priority;
+  }
+
   Future<void> complete() async {
     given(this, "this").ensure((t) => t._title != null);
 
     // if a todo was not passed that means you are creating a new one, else you are updating the todo passed.
     if (this.isNewTodo) {
-      await this._todosService.createTodo(this._title, this._description);
+      await this
+          ._todosService
+          .createTodo(this._title, this._description, this._priority);
       return;
     }
 
-    await this._todo.update(this._title, this._description);
+    await this._todo.update(this._title, this._description, this._priority);
+  }
+
+  void removeTodo() {
+    this._todosService.removeTodo(_todo);
   }
 }
