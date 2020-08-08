@@ -14,6 +14,10 @@ class ViewTodoState extends WidgetStateBase<ViewTodo> {
     this.onInitState(() {});
   }
 
+  void back() {
+    this._navigator.pop();
+  }
+
   Future<void> onEditTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
     this._navigator.pushNamed(

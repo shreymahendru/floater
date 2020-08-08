@@ -49,29 +49,63 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
   }
 
   Widget _buildListTile(Todo todo) {
-    return GestureDetector(
-      onHorizontalDragEnd: (DragEndDetails details) {
-        this.state.onSwipeDelete(todo);
-      },
-      child: ListTile(
-        title: Text(todo.title),
-        //subtitle: Text(todo.priority),
-        subtitle: todo.description != null ? Text(todo.description) : null,
-        dense: true,
-        onTap: () => this.state.onTodoPressed(todo),
-        leading: IconButton(
-          icon: Icon(
-            todo.isComplete ? Icons.done : Icons.close,
-            color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+    return Dismissible(
+      onDismissed: (direction) => this.state.onSwipeDelete(todo),
+      key: Key(todo.id),
+      background: onSlideLeft(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100.0),
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          child: ListTile(
+            title: Text(todo.title),
+            subtitle:
+                todo.description != null ? Text(todo.description) : Text(" "),
+            dense: true,
+            onTap: () => this.state.onTodoPressed(todo),
+            leading: IconButton(
+              icon: Icon(
+                todo.isComplete ? Icons.done : Icons.close,
+                color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+              ),
+              onPressed: () => this.state.toggleCompletionForTodo(todo),
+            ),
+            trailing: IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: Colors.black,
+              ),
+              onPressed: () => this.state.onEditTodoPressed(todo),
+            ),
           ),
-          onPressed: () => this.state.toggleCompletionForTodo(todo),
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.edit,
-            color: Colors.black,
+      ),
+    );
+  }
+
+  Widget onSlideLeft() {
+    return Expanded(
+      child: Container(
+        child: Align(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Icon(Icons.delete, color: Colors.red),
+              Text(
+                " Delete",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.right,
+              ),
+              SizedBox(
+                width: 20,
+              ),
+            ],
           ),
-          onPressed: () => this.state.onEditTodoPressed(todo),
+          alignment: Alignment.centerLeft,
         ),
       ),
     );
