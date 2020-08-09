@@ -49,64 +49,75 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
   }
 
   Widget _buildListTile(Todo todo) {
-    return Dismissible(
-      onDismissed: (direction) => this.state.onSwipeDelete(todo),
-      key: Key(todo.id),
-      background: onSlideLeft(),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(100.0),
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          child: ListTile(
-            title: Text(todo.title),
-            subtitle:
-                todo.description != null ? Text(todo.description) : Text(" "),
-            dense: true,
-            onTap: () => this.state.onTodoPressed(todo),
-            leading: IconButton(
-              icon: Icon(
-                todo.isComplete ? Icons.done : Icons.close,
-                color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+    return Stack(
+      children: <Widget>[
+        Positioned.fill(child: this._buildBackground()),
+        Dismissible(
+          key: UniqueKey(),
+          //confirmDismiss: (_) => this.state.confirmDelete(),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_) => this.state.onSwipeDelete(todo),
+          dismissThresholds: const {
+            DismissDirection.endToStart: 0.6,
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+            child: ListTile(
+              title: Text(todo.title),
+              subtitle:
+                  todo.description != null ? Text(todo.description) : null,
+              dense: true,
+              onTap: () => this.state.onTodoPressed(todo),
+              leading: IconButton(
+                icon: Icon(
+                  todo.isComplete ? Icons.done : Icons.close,
+                  color:
+                      todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+                ),
+                onPressed: () => this.state.toggleCompletionForTodo(todo),
               ),
-              onPressed: () => this.state.toggleCompletionForTodo(todo),
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: Colors.black,
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                ),
+                onPressed: () => this.state.onEditTodoPressed(todo),
               ),
-              onPressed: () => this.state.onEditTodoPressed(todo),
             ),
           ),
-        ),
-      ),
+        )
+      ],
     );
   }
 
-  Widget onSlideLeft() {
-    return Expanded(
-      child: Container(
-        child: Align(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Icon(Icons.delete, color: Colors.red),
-              Text(
-                " Delete",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.right,
+  Widget _buildBackground() {
+    return Container(
+      margin: EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+          color: Colors.red, borderRadius: BorderRadius.circular(30)),
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            Text(
+              " Delete",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
               ),
-              SizedBox(
-                width: 20,
-              ),
-            ],
-          ),
-          alignment: Alignment.centerLeft,
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          ],
         ),
+        alignment: Alignment.centerRight,
       ),
     );
   }
