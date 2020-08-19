@@ -1,8 +1,10 @@
+import 'package:example/sdk/todo/model/priority.dart';
+
 class TodoDto {
   final String id;
   final String title;
   final String description;
-  final String priority;
+  final Priority priority;
   final bool isComplete;
 
   TodoDto(

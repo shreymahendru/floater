@@ -36,7 +36,7 @@ class ManageTodoDescriptionPageState
     this._scopedNavigator.pop();
   }
 
-  void submit() async {
+  void submit() {
     this._validator.enable();
     if (!this._validate()) {
       this.triggerStateChange();

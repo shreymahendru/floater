@@ -1,3 +1,4 @@
+import 'package:example/sdk/todo/model/priority.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
 import 'package:floater/floater.dart';
@@ -16,8 +17,8 @@ class TodoManagementService {
   String _description;
   String get description => this._description;
 
-  String _priority;
-  String get priority => this._priority;
+  Priority _priority;
+  Priority get priority => this._priority;
 
   void init(Todo todo) {
     this._todo = todo;
@@ -42,9 +43,8 @@ class TodoManagementService {
     this._description = description;
   }
 
-  void setPriority(String priority) {
-    given(priority, "priority")
-        .ensure((t) => t.trim().isNotEmpty && t.length < 10);
+  void setPriority(Priority priority) {
+    given(priority, "priority").ensureHasValue();
 
     this._priority = priority;
   }

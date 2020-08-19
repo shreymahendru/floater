@@ -10,11 +10,13 @@ import 'package:example/pages/manage_todo/manage_todo_priority/manage_todo_prior
 abstract class Routes {
   static const splash = "/splash";
   static const todos = "/todos";
+
   static const manageTodo = "/manageTodo?{todo?: object}";
   static const manageTodoTitle = "/manageTodo/title";
   static const manageTodoDescription = "/manageTodo/description";
-  static const viewTodo = "/viewTodo?{todo?: object}";
   static const manageTodoPriority = "/manageTodo/priority";
+
+  static const viewTodo = "/viewTodo?{todo?: object}";
 
   // Call this function in main.dart to register all the app pages
   // and bootstrap the navigation

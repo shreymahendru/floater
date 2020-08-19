@@ -11,7 +11,7 @@ class ViewTodo extends StatefulWidgetBase<ViewTodoState> {
   @override
   Widget build(BuildContext context) {
     return OverlayLoadingSpinner(
-      isEnabled: this.state.isTogglingTodoCompletion,
+      isEnabled: this.state.isLoading,
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -22,7 +22,7 @@ class ViewTodo extends StatefulWidgetBase<ViewTodoState> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => this.state.onEditTodoPressed(todo),
+          onPressed: this.state.onEditTodoPressed,
           child: Icon(Icons.edit),
         ),
         body: this._buildBody(context),
@@ -41,7 +41,7 @@ class ViewTodo extends StatefulWidgetBase<ViewTodoState> {
               color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
               size: 40.0,
             ),
-            onPressed: () => this.state.toggleCompletionForTodo(todo),
+            onPressed: this.state.toggleCompletionForTodo,
           ),
           title: Text(
             todo.title,
@@ -56,7 +56,7 @@ class ViewTodo extends StatefulWidgetBase<ViewTodoState> {
           leading: Icon(Icons.priority_high),
           title: Text(todo.priority == null
               ? "Medium priority"
-              : todo.priority + ' priority'),
+              : todo.priority.toString().split('.').last + ' priority'),
         ),
         ListTile(
           leading: Icon(Icons.donut_large),

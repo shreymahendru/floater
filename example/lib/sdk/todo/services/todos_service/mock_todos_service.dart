@@ -1,3 +1,4 @@
+import 'package:example/sdk/todo/model/priority.dart';
 import 'package:example/sdk/todo/proxies/mock_todo_proxy.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/proxies/todo_dto.dart';
@@ -15,13 +16,13 @@ class MockTodosService implements TodosService {
             Uuid().v1().toString(),
             "Todo number ${index + 1}",
             "This is the description for Todo number ${index + 1}",
-            "Medium",
+            Priority.Medium,
             false)));
   }
 
   @override
   Future<void> createTodo(
-      String title, String description, String priority) async {
+      String title, String description, Priority priority) async {
     given(title, "title").ensureHasValue().ensure((t) => t.trim().isNotEmpty);
 
     // fake network delay
@@ -53,7 +54,10 @@ class MockTodosService implements TodosService {
   }
 
   @override
-  void removeTodo(Todo todo) {
+  Future<void> removeTodo(Todo todo) async {
+    // fake network delay
+    await Future.delayed(Duration(seconds: 1));
+
     this._allTodos.remove(todo);
   }
 }

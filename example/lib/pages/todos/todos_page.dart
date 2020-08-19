@@ -54,7 +54,6 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
         Positioned.fill(child: this._buildBackground()),
         Dismissible(
           key: UniqueKey(),
-          //confirmDismiss: (_) => this.state.confirmDelete(),
           direction: DismissDirection.endToStart,
           onDismissed: (_) => this.state.onSwipeDelete(todo),
           dismissThresholds: const {
@@ -95,8 +94,11 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
     return Container(
       margin: EdgeInsets.all(4.0),
       decoration: BoxDecoration(
-          color: Colors.red, borderRadius: BorderRadius.circular(30)),
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(30),
+      ),
       child: Align(
+        alignment: Alignment.centerRight,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -117,7 +119,6 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
             ),
           ],
         ),
-        alignment: Alignment.centerRight,
       ),
     );
   }

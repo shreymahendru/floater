@@ -1,3 +1,4 @@
+import 'package:example/sdk/todo/model/priority.dart';
 import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
 import 'manage_todo_priority_page_state.dart';
@@ -21,29 +22,22 @@ class ManageTodoPriorityPage
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                DropdownButton<String>(
-                  value:
-                      this.state.priority == null || this.state.priority.isEmpty
-                          ? "Medium"
-                          : this.state.priority,
-                  style: TextStyle(color: Colors.black, fontSize: 20),
-                  onChanged: (v) => this.state.priority = v,
-                  items: <String>['High', 'Medium', 'Low']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
+                DropdownButton<Priority>(
+                    value: this.state.priority,
+                    onChanged: (v) => this.state.priority = v,
+                    items: Priority.values.map((Priority priority) {
+                      return DropdownMenuItem<Priority>(
+                        value: priority,
+                        child: Text(priority.toString().split('.').last),
+                      );
+                    }).toList()),
                 SizedBox(height: 30),
                 RaisedButton(
                   onPressed: this.state.submit,
-                  child: Text(this.state.isNewTodo ? "Create" : "Update"),
                   color: Colors.blueAccent,
                   textColor: Colors.white,
+                  child: Text(this.state.isNewTodo ? "Create" : "Update"),
                 ),
               ],
             ),

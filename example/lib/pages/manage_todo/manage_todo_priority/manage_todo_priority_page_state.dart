@@ -1,4 +1,5 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
+import 'package:example/sdk/todo/model/priority.dart';
 import 'package:floater/floater.dart';
 import '../../routes.dart';
 import 'manage_todo_priority_page.dart';
@@ -12,9 +13,10 @@ class ManageTodoPriorityPageState
   final _scopedNavigator =
       NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
-  String _priority = "Medium";
-  String get priority => this._priority;
-  set priority(String value) => (this.._priority = value).triggerStateChange();
+  Priority _priority = Priority.Medium;
+  Priority get priority => this._priority;
+  set priority(Priority value) =>
+      (this.._priority = value).triggerStateChange();
 
   bool get isNewTodo => this._todoManagementService.isNewTodo;
 

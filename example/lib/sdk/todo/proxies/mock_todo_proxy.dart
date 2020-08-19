@@ -1,3 +1,4 @@
+import 'package:example/sdk/todo/model/priority.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/proxies/todo_dto.dart';
 
@@ -16,13 +17,14 @@ class MockTodoProxy implements Todo {
   String get description => this._dto.description;
 
   @override
-  String get priority => this._dto.priority;
+  Priority get priority => this._dto.priority;
 
   @override
   bool get isComplete => this._dto.isComplete;
 
   @override
-  Future<void> update(String title, String description, String priority) async {
+  Future<void> update(
+      String title, String description, Priority priority) async {
     await Future.delayed(Duration(seconds: 2));
 
     final newDto =

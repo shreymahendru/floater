@@ -26,13 +26,20 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   Future<void> onTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
-    await this._navigator.pushNamed(
-      NavigationService.instance.generateRoute(Routes.viewTodo),
-      arguments: {
-        "todo": todo,
-      },
-    );
-    this.triggerStateChange();
+    this.showLoading();
+    try {
+      await this._navigator.pushNamed(
+        NavigationService.instance.generateRoute(Routes.viewTodo),
+        arguments: {
+          "todo": todo,
+        },
+      );
+    } catch (e) {
+      debugPrint(e);
+      return;
+    } finally {
+      this.hideLoading();
+    }
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
@@ -80,8 +87,14 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     }
   }
 
-  void onSwipeDelete(Todo todo) {
-    this._todosService.removeTodo(todo);
-    this._loadTodos();
+  Future<void> onSwipeDelete(Todo todo) async {
+    try {
+      await this._todosService.removeTodo(todo);
+    } catch (e) {
+      debugPrint(e);
+      return;
+    } finally {
+      this._loadTodos();
+    }
   }
 }

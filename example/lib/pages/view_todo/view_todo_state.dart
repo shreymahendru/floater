@@ -2,24 +2,23 @@ import 'package:example/pages/view_todo/view_todo.dart';
 import 'package:floater/floater.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/pages/routes.dart';
+import 'package:flutter/foundation.dart';
 
 class ViewTodoState extends WidgetStateBase<ViewTodo> {
-  bool _isTogglingTodoCompletion = false;
-  bool get isTogglingTodoCompletion => this._isTogglingTodoCompletion;
-  set isTogglingTodoCompletion(bool value) =>
-      (this.._isTogglingTodoCompletion = value).triggerStateChange();
   final _navigator = NavigationService.instance.retrieveNavigator("/");
 
+  Todo _todo;
+  Todo get todo => this._todo;
+
   ViewTodoState(Todo todo) : super() {
-    this.onInitState(() {});
+    this._todo = todo;
   }
 
   void back() {
     this._navigator.pop();
   }
 
-  Future<void> onEditTodoPressed(Todo todo) async {
-    given(todo, "todo").ensureHasValue();
+  Future<void> onEditTodoPressed() async {
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
@@ -28,17 +27,15 @@ class ViewTodoState extends WidgetStateBase<ViewTodo> {
     );
   }
 
-  void toggleCompletionForTodo(Todo todo) async {
-    given(todo, "todo").ensureHasValue();
-
-    this.isTogglingTodoCompletion = true;
+  void toggleCompletionForTodo() async {
+    this.showLoading();
     try {
       await todo.toggleComplete();
     } catch (e) {
-      //debugPrint(e.toString());
+      debugPrint(e.toString());
       return;
     } finally {
-      this.isTogglingTodoCompletion = false;
+      this.hideLoading();
     }
   }
 }
