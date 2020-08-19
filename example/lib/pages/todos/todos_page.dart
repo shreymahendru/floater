@@ -34,7 +34,7 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
       );
 
     if (this.state.todos.isEmpty)
-      return Container(
+      return Center(
         child: Text(
           "No todos added yet :(",
           style: Theme.of(context).textTheme.bodyText1,
@@ -43,29 +43,82 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
 
     return ListView.builder(
       itemCount: this.state.todos.length,
-      itemBuilder: (context, index) => this._buildListTile(this.state.todos[index]),
+      itemBuilder: (context, index) =>
+          this._buildListTile(this.state.todos[index]),
     );
   }
 
   Widget _buildListTile(Todo todo) {
-    return ListTile(
-      title: Text(todo.title),
-      subtitle: todo.description != null ? Text(todo.description) : null,
-      dense: true,
-      onTap: () => this.state.onTodoPressed(todo),
-      leading: IconButton(
-        icon: Icon(
-          todo.isComplete ? Icons.done : Icons.close,
-          color: todo.isComplete ? Colors.greenAccent : Colors.redAccent,
-        ),
-        onPressed: () => this.state.toggleCompletionForTodo(todo),
+    return Stack(
+      children: <Widget>[
+        Positioned.fill(child: this._buildBackground()),
+        Dismissible(
+          key: UniqueKey(),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_) => this.state.onSwipeDelete(todo),
+          dismissThresholds: const {
+            DismissDirection.endToStart: 0.6,
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+            child: ListTile(
+              title: Text(todo.title),
+              subtitle:
+                  todo.description != null ? Text(todo.description) : null,
+              dense: true,
+              onTap: () => this.state.onTodoPressed(todo),
+              leading: IconButton(
+                icon: Icon(
+                  todo.isComplete ? Icons.done : Icons.close,
+                  color:
+                      todo.isComplete ? Colors.greenAccent : Colors.redAccent,
+                ),
+                onPressed: () => this.state.toggleCompletionForTodo(todo),
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                ),
+                onPressed: () => this.state.onEditTodoPressed(todo),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildBackground() {
+    return Container(
+      margin: EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(30),
       ),
-      trailing: IconButton(
-        icon: Icon(
-          Icons.edit,
-          color: Colors.black,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            Text(
+              " Delete",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          ],
         ),
-        onPressed: () => this.state.onEditTodoPressed(todo),
       ),
     );
   }
