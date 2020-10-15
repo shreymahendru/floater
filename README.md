@@ -11,6 +11,7 @@ This will make flutter app development simple and elegant as Steph Curry's float
 5. Storage Service.
 6. Helpful Extensions.
 7. Widget base classes.
+8. Mutex Lock.
 
 
 Check out the example Todo application to see these features in action, [here.](./example/lib/main.dart) 
