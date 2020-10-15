@@ -37,8 +37,8 @@ class Mutex {
   final List<Completer<void>> _waitingAcquirers = [];
   Completer<void> _currentAcquirer;
 
-  Future<int> lock() {
-    final completer = new Completer<int>();
+  Future<void> lock() {
+    final completer = new Completer<void>();
 
     this._waitingAcquirers.add(completer);
     // let the first one pass
