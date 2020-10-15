@@ -11,7 +11,7 @@ abstract class StorageService {
   Future<void> store(String key, String value);
   Future<String> retrieve(String key);
   Future<void> delete(String key);
-  Future<bool> containsKey(String key);
+  Future<bool> contains(String key);
 }
 
 class _SecureStorageService implements StorageService {
@@ -39,7 +39,7 @@ class _SecureStorageService implements StorageService {
     await this._secureStorage.delete(key: key.trim());
   }
 
-  Future<bool> containsKey(String key) async {
+  Future<bool> contains(String key) async {
     given(key, "key").ensureHasValue();
 
     return this._secureStorage.containsKey(key: key);
