@@ -7,3 +7,4 @@ export 'src/service_locator.dart';
 export 'src/storage.dart';
 export 'src/validation.dart';
 export 'src/widgets.dart';
+export 'src/mutex.dart';

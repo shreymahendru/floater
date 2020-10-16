@@ -9,3 +9,8 @@
 
 ## [0.0.2+1] - August 6, 2020
 * Documentation
+
+## [0.0.3] - October 15, 2020
+* Mutex lock
+* Safe state disposal. Ignore `triggerStateChange()` when the state is disposed
+* Update StorageService and added the ability to check if key exists `contains` 

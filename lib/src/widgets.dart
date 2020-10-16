@@ -40,13 +40,19 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
 abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   final _watches = <Stream, StreamSubscription>{};
   bool _isInitialized = false;
-  bool _isLoading = false;
+
   void Function() _onInitState;
   void Function() _onDeactivate;
   void Function() _onDispose;
   void Function() _onStateChange;
 
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  bool _isDisposed = false;
+  @protected
+  @nonVirtual
+  bool get isDisposed => this._isDisposed;
 
   @override
   @protected
@@ -75,6 +81,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     if (fn != null) fn();
     if (this._onStateChange != null) this._onStateChange();
     if (!this._isInitialized) return;
+    if (this._isDisposed) return;
     super.setState(() {});
   }
 
@@ -101,6 +108,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @nonVirtual
   @mustCallSuper
   void dispose() {
+    this._isDisposed = true;
     this._watches.values.forEach((watcher) => watcher.cancel());
     this._watches.clear();
 
