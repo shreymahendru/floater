@@ -187,7 +187,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   }
 }
 
-abstract class AutomaticKeepAliveClientWidgetStateBase<T extends StatefulWidget>
+/// For clients of AutomaticKeepAlive (example: ListView). 
+/// This keeps the state of a widget alive, given the wantAlive is set to true.
+abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
     extends WidgetStateBase<T> with AutomaticKeepAliveClientMixin {
   bool _keepAlive = true;
 

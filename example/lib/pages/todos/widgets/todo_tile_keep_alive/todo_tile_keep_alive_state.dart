@@ -2,7 +2,7 @@ import 'package:example/pages/todos/widgets/todo_tile_keep_alive/todo_tile_keep_
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:floater/floater.dart';
 
-class TodoTileKeepAliveState extends AutomaticKeepAliveClientWidgetStateBase<TodoTileKeepAlive> {
+class TodoTileKeepAliveState extends KeepAliveClientWidgetStateBase<TodoTileKeepAlive> {
   final Todo todo;
 
   bool _isClicked = false;
