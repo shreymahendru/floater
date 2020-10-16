@@ -14,3 +14,4 @@
 * Mutex lock
 * Safe state disposal. Ignore `triggerStateChange()` when the state is disposed
 * Update StorageService and added the ability to check if key exists `contains` 
+* `KeepAliveClientWidgetStateBase` for clients of AutomaticKeepAlive (example: ListView). This keeps the state of a widget alive, given the wantAlive is set to true.

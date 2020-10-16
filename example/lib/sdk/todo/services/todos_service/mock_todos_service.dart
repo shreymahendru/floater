@@ -10,7 +10,7 @@ class MockTodosService implements TodosService {
 
   MockTodosService() {
     this._allTodos = List.generate(
-        4,
+        100,
         (index) => MockTodoProxy(TodoDto(Uuid().v1().toString(), "Todo number ${index + 1}",
             "This is the description for Todo number ${index + 1}", false)));
   }

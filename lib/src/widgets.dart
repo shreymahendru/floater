@@ -187,6 +187,36 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   }
 }
 
+/// For clients of AutomaticKeepAlive (example: ListView). 
+/// This keeps the state of a widget alive, given the wantAlive is set to true.
+abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
+    extends WidgetStateBase<T> with AutomaticKeepAliveClientMixin {
+  bool _keepAlive = true;
+
+  @override
+  @protected
+  @nonVirtual
+  bool get wantKeepAlive => this._keepAlive;
+
+  @protected
+  @nonVirtual
+  set wantKeepAlive(bool value) {
+    this._keepAlive = value;
+    super.updateKeepAlive();
+  }
+
+  @override
+  @protected
+  @nonVirtual
+  @mustCallSuper
+  Widget build(BuildContext context) {
+    super.build(context);
+    final widget = this.widget as StatefulWidgetBase;
+    widget._setState(this);
+    return widget.build(context);
+  }
+}
+
 @sealed
 class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
   final String _initialRoute;
