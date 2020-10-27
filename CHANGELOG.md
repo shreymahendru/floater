@@ -18,3 +18,4 @@
 
 ## [0.0.4] - October 27, 2020
 * Event Aggregator
+* BREAKING CHANGE: The StorageService renamed to SecureStorageService, and is registered automatically if not registered by user.
