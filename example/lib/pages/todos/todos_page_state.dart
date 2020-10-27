@@ -1,3 +1,4 @@
+import 'package:example/events/todo_added_event.dart';
 import 'package:example/pages/routes.dart';
 import 'package:example/pages/todos/todos_page.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
@@ -9,6 +10,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   final _navigator = NavigationService.instance.retrieveNavigator("/");
   final _todosService =
       ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
+  final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
 
   List<Todo> _todos;
   List<Todo> get todos => this._todos ?? [];
@@ -21,6 +23,10 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   TodosPageState() : super() {
     this.onInitState(() {
       this._loadTodos();
+    });
+
+    this.watch<TodoAddedEvent>(this._eventAggregator.subscribe<TodoAddedEvent>(), (event) {
+      this._todos.add(event.todo);
     });
   }
 

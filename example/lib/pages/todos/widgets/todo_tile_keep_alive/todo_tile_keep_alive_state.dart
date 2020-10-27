@@ -1,8 +1,11 @@
+import 'package:example/events/todo_updated_event.dart';
 import 'package:example/pages/todos/widgets/todo_tile_keep_alive/todo_tile_keep_alive.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:floater/floater.dart';
 
 class TodoTileKeepAliveState extends KeepAliveClientWidgetStateBase<TodoTileKeepAlive> {
+  final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
+
   final Todo todo;
 
   bool _isClicked = false;
@@ -11,12 +14,13 @@ class TodoTileKeepAliveState extends KeepAliveClientWidgetStateBase<TodoTileKeep
 
   TodoTileKeepAliveState(this.todo) : super() {
     this.onInitState(() {
-      print("init-ing ${todo.title}");
       this.wantKeepAlive = false;
     });
 
-    this.onDispose(() {
-      print("disposing ${todo.title}");
+    this.watch<TodoUpdatedEvent>(this._eventAggregator.subscribe<TodoUpdatedEvent>(), (event) {
+      if (event.todo.id == this.todo.id) {
+        this.triggerStateChange();
+      }
     });
   }
 

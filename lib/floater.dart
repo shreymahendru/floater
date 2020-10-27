@@ -8,3 +8,4 @@ export 'src/storage.dart';
 export 'src/validation.dart';
 export 'src/widgets.dart';
 export 'src/mutex.dart';
+export 'src/event_aggregator.dart';

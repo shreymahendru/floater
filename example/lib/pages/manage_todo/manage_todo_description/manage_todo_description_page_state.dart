@@ -56,8 +56,7 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
       this.hideLoading();
     }
 
-    // remove everything from the stack and push the home page
-    this._rootNavigator.pushNamedAndRemoveUntil(Routes.todos, (_) => false);
+    this._rootNavigator.pop();
   }
 
   bool _validate() {
