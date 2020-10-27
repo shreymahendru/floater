@@ -27,12 +27,18 @@ import 'package:rxdart/rxdart.dart';
 ///
 /// The above code prints `1` cause of the first event, and the listener doesn't receive `ArbitraryEvent()`
 
-class EventAggregator implements Disposable {
+abstract class EventAggregator implements Disposable {
+  Stream<T> subscribe<T extends Event>();
+  void publish(Event event);
+}
+
+class FloaterEventAggregator implements EventAggregator {
   final PublishSubject<Event> _eventPublishSubject = PublishSubject();
   final Map<Type, Stream<Event>> _streamCache = {};
 
   /// Subscribe to an event of a specific type.
   /// If no type is provided, the subscriber receives all the event published
+  @override
   Stream<T> subscribe<T extends Event>() {
     if (T == Event) return this._eventPublishSubject.stream;
 
@@ -42,6 +48,7 @@ class EventAggregator implements Disposable {
   }
 
   /// Publish an new event.
+  @override
   void publish(Event event) {
     given(event, "event").ensureHasValue();
     this._eventPublishSubject.add(event);

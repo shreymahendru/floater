@@ -13,13 +13,11 @@ class IntEvent extends Event {
 }
 
 void main() {
-  group("Event Aggregator Tests", () {
-    test(
-        '''Given Event Aggregator and a subscriber that is subscribed with no type, 
+  group("FloaterEventAggregator Tests", () {
+    test('''Given Event Aggregator and a subscriber that is subscribed with no type, 
           when a some events are publish, 
-          then the subscriber should receive all events.''',
-        () async {
-      final ea = EventAggregator();
+          then the subscriber should receive all events.''', () async {
+      final ea = FloaterEventAggregator();
       final eventStream = ea.subscribe();
       final events = [EventA(), EventB(), EventA(), EventC()];
 
@@ -34,12 +32,10 @@ void main() {
       expect(await streamEvents, events);
     });
 
-    test(
-        '''Given Event Aggregator and a subscriber that is subscribed to EventA Type, 
+    test('''Given Event Aggregator and a subscriber that is subscribed to EventA Type, 
           when events of different types are published, 
-          then the subscriber should only receive events of Type EventA.''',
-        () async {
-      final ea = EventAggregator();
+          then the subscriber should only receive events of Type EventA.''', () async {
+      final ea = FloaterEventAggregator();
       final eventsA = [EventA(), EventA()];
       final events = [eventsA[0], EventB(), eventsA[1], EventC()];
       final eventStream = ea.subscribe<EventA>();
@@ -55,12 +51,10 @@ void main() {
       expect(await streamEvents, eventsA);
     });
 
-    test(
-        '''Given Event Aggregator and a subscriber that is subscribed to type EventA, 
+    test('''Given Event Aggregator and a subscriber that is subscribed to type EventA, 
           when events of different types are published with no EventA, 
-          then the subscriber should not receive any events.''',
-        () async {
-      final ea = EventAggregator();
+          then the subscriber should not receive any events.''', () async {
+      final ea = FloaterEventAggregator();
       final events = [EventB(), EventC()];
       final eventStream = ea.subscribe<EventA>();
 
@@ -75,12 +69,10 @@ void main() {
       expect(await streamEvents, []);
     });
 
-    test(
-        '''Given Event Aggregator and 2 subscribers that are subscribed to type EventA, 
+    test('''Given Event Aggregator and 2 subscribers that are subscribed to type EventA, 
           when events of different types are published, 
-          then both subscribers should receive events of Type EventA.''',
-        () async {
-      final ea = EventAggregator();
+          then both subscribers should receive events of Type EventA.''', () async {
+      final ea = FloaterEventAggregator();
       final eventsA = [EventA(), EventA()];
       final events = [eventsA[0], EventB(), eventsA[1], EventC()];
       final eventStream1 = ea.subscribe<EventA>();
@@ -99,12 +91,11 @@ void main() {
       expect(await stream2Events, eventsA);
     });
 
-    test(
-        '''Given Event Aggregator and 2 subscribers that are subscribed to IntEvent, 
+    test('''Given Event Aggregator and 2 subscribers that are subscribed to IntEvent, 
           when 4 IntEvent are published, 2 after first is subscribed and 2 when second is subscribed and first is unsubscribed, 
           then subscriber 1 is should receive first 2 events and second should receive the next 2.''',
         () async {
-      final ea = EventAggregator();
+      final ea = FloaterEventAggregator();
 
       int i = 1;
       final sub1 = ea.subscribe<IntEvent>().listen(expectAsync1((event) {
