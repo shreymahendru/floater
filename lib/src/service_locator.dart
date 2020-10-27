@@ -1,7 +1,8 @@
-import 'package:floater/floater.dart';
 import 'package:get_it/get_it.dart';
 import 'defensive.dart';
 import 'package:meta/meta.dart';
+import 'event_aggregator.dart';
+import 'secure_storage.dart';
 
 abstract class ServiceRegistry {
   void registerInstance<T>(T value);
@@ -118,8 +119,8 @@ class _Container implements ServiceRegistry {
 
     if (!this._types.contains(EventAggregator))
       this.registerSingleton<EventAggregator>(() => FloaterEventAggregator());
-    
-    if (!this._types.contains(SecureStorageService) )
+
+    if (!this._types.contains(SecureStorageService))
       this.registerSingleton<SecureStorageService>(() => FloaterSecureStorageService());
 
     this.instanceRegistrations.forEach((element) => element.register(this._getIt));

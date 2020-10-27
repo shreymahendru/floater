@@ -17,5 +17,5 @@
 * `KeepAliveClientWidgetStateBase` for clients of AutomaticKeepAlive (example: ListView). This keeps the state of a widget alive, given the wantAlive is set to true.
 
 ## [0.0.4] - October 27, 2020
-* Event Aggregator
-* BREAKING CHANGE: The StorageService renamed to SecureStorageService, and is registered automatically if not registered by user.
+* Event Aggregator (automatically registered as a singleton)
+* BREAKING CHANGE: The StorageService renamed to SecureStorageService, and is registered as a singleton automatically if not registered by user.

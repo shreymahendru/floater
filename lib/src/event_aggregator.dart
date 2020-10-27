@@ -61,7 +61,7 @@ class FloaterEventAggregator implements EventAggregator {
   }
 }
 
-/// Extends this Event in you newly created App event
+/// Extends this Event for newly created App event
 ///  Example:
 /// ```dart
 /// class IntEvent extends Event {
