@@ -123,5 +123,19 @@ void main() {
       await sub2.cancel();
       await ea.dispose();
     });
+
+    test('''Given Event Aggregator that is disposed, 
+          when a trying to subscribe, publish or dispose
+          should throw object disposed exception.''', () async {
+      final ea = FloaterEventAggregator();
+      await ea.dispose();
+
+      expect(() => ea.publish(EventA()), throwsException);
+      expect(() => ea.subscribe(), throwsException);
+
+      expect(() async {
+        await ea.dispose();
+      }, throwsException);
+    });
   });
 }

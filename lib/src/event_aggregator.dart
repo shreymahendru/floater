@@ -36,12 +36,15 @@ class FloaterEventAggregator implements EventAggregator {
   final PublishSubject _eventPublishSubject = PublishSubject();
   final Map<Type, Stream> _streamCache = {};
 
+  bool _isDisposed = false;
+
   /// Subscribe to an event of a specific type.
   /// If no type is provided, the subscriber receives all the event published
   @override
   Stream<T> subscribe<T>() {
-    this._streamCache[T] ??= this._eventPublishSubject.stream.whereType<T>();
+    if (this._isDisposed) throw new Exception("Object disposed");
 
+    this._streamCache[T] ??= this._eventPublishSubject.stream.whereType<T>();
     return this._streamCache[T];
   }
 
@@ -49,12 +52,18 @@ class FloaterEventAggregator implements EventAggregator {
   @override
   void publish<T>(T event) {
     given(event, "event").ensureHasValue();
+
+    if (this._isDisposed) throw new Exception("Object disposed");
+
     this._eventPublishSubject.add(event);
   }
 
   @override
   Future<void> dispose() async {
+    if (this._isDisposed) throw new Exception("Object disposed");
+
     await this._eventPublishSubject.close();
     this._streamCache.clear();
+    this._isDisposed = true;
   }
 }
