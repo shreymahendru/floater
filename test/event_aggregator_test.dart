@@ -27,7 +27,7 @@ void main() {
         ea.publish(event);
       }
 
-      await ea.dispose();
+      ea.dispose();
 
       expect(await streamEvents, events);
     });
@@ -46,7 +46,7 @@ void main() {
         ea.publish(event);
       }
 
-      await ea.dispose();
+      ea.dispose();
 
       expect(await streamEvents, eventsA);
     });
@@ -64,7 +64,7 @@ void main() {
         ea.publish(event);
       }
 
-      await ea.dispose();
+      ea.dispose();
 
       expect(await streamEvents, []);
     });
@@ -85,7 +85,7 @@ void main() {
         ea.publish(event);
       }
 
-      await ea.dispose();
+      ea.dispose();
 
       expect(await stream1Events, eventsA);
       expect(await stream2Events, eventsA);
@@ -121,21 +121,17 @@ void main() {
       // wait for the events to propagate
       await Future.delayed(Duration(milliseconds: 0));
       await sub2.cancel();
-      await ea.dispose();
+      ea.dispose();
     });
 
     test('''Given Event Aggregator that is disposed, 
-          when a trying to subscribe, publish or dispose
+          when a trying to subscribe and publish
           should throw object disposed exception.''', () async {
       final ea = FloaterEventAggregator();
-      await ea.dispose();
+      ea.dispose();
 
       expect(() => ea.publish(EventA()), throwsException);
       expect(() => ea.subscribe(), throwsException);
-
-      expect(() async {
-        await ea.dispose();
-      }, throwsException);
     });
   });
 }

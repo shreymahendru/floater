@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:floater/floater.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:pedantic/pedantic.dart';
 
 /// Event Aggregator
 /// Used to propagate app specific events through out the App. Widgets, State and/or Services can consume the events published.
@@ -59,11 +60,11 @@ class FloaterEventAggregator implements EventAggregator {
   }
 
   @override
-  Future<void> dispose() async {
-    if (this._isDisposed) throw new Exception("Object disposed");
+  void dispose() {
+    if (this._isDisposed) return;
 
-    await this._eventPublishSubject.close();
-    this._streamCache.clear();
     this._isDisposed = true;
+    unawaited(this._eventPublishSubject.close());
+    this._streamCache.clear();
   }
 }
