@@ -1,7 +1,11 @@
+import 'package:example/events/todo_updated_event.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/proxies/todo_dto.dart';
+import 'package:floater/floater.dart';
 
 class MockTodoProxy implements Todo {
+  final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
+
   TodoDto _dto;
 
   MockTodoProxy(this._dto);
@@ -24,6 +28,7 @@ class MockTodoProxy implements Todo {
 
     final newDto = TodoDto(this.id, title, description, this.isComplete);
     this._dto = newDto;
+    this._eventAggregator.publish(TodoUpdatedEvent(this));
   }
 
   @override

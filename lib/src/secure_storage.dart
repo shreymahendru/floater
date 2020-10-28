@@ -1,20 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:meta/meta.dart';
 import 'defensive.dart';
 
-@sealed
-abstract class StorageService {
-  static final _instance = new _SecureStorageService();
-
-  static StorageService get instance => _instance;
-
+abstract class SecureStorageService {
   Future<void> store(String key, String value);
   Future<String> retrieve(String key);
   Future<void> delete(String key);
   Future<bool> contains(String key);
 }
 
-class _SecureStorageService implements StorageService {
+class FloaterSecureStorageService implements SecureStorageService {
   final _secureStorage = const FlutterSecureStorage();
 
   @override
