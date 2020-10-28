@@ -1,13 +1,13 @@
 import 'package:floater/src/event_aggregator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class EventA extends Event {}
+class EventA {}
 
-class EventB extends Event {}
+class EventB {}
 
-class EventC extends Event {}
+class EventC {}
 
-class IntEvent extends Event {
+class IntEvent {
   final int value;
   IntEvent(this.value);
 }

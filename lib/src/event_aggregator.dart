@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 ///
 /// Example:
 /// ```dart
-/// class IntEvent extends Event {
+/// class IntEvent {
 ///   final int value;
 ///   IntEvent(this.value);
 /// }
@@ -28,20 +28,18 @@ import 'package:rxdart/rxdart.dart';
 /// The above code prints `1` cause of the first event, and the listener doesn't receive `ArbitraryEvent()`
 
 abstract class EventAggregator implements Disposable {
-  Stream<T> subscribe<T extends Event>();
-  void publish(Event event);
+  Stream<T> subscribe<T>();
+  void publish<T>(T event);
 }
 
 class FloaterEventAggregator implements EventAggregator {
-  final PublishSubject<Event> _eventPublishSubject = PublishSubject();
-  final Map<Type, Stream<Event>> _streamCache = {};
+  final PublishSubject _eventPublishSubject = PublishSubject();
+  final Map<Type, Stream> _streamCache = {};
 
   /// Subscribe to an event of a specific type.
   /// If no type is provided, the subscriber receives all the event published
   @override
-  Stream<T> subscribe<T extends Event>() {
-    if (T == Event) return this._eventPublishSubject.stream;
-
+  Stream<T> subscribe<T>() {
     this._streamCache[T] ??= this._eventPublishSubject.stream.whereType<T>();
 
     return this._streamCache[T];
@@ -49,7 +47,7 @@ class FloaterEventAggregator implements EventAggregator {
 
   /// Publish an new event.
   @override
-  void publish(Event event) {
+  void publish<T>(T event) {
     given(event, "event").ensureHasValue();
     this._eventPublishSubject.add(event);
   }
@@ -60,13 +58,3 @@ class FloaterEventAggregator implements EventAggregator {
     this._streamCache.clear();
   }
 }
-
-/// Extends this Event for newly created App event
-///  Example:
-/// ```dart
-/// class IntEvent extends Event {
-///   final int value;
-///   IntEvent(this.value);
-/// }
-/// ```
-abstract class Event {}

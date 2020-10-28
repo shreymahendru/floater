@@ -1,7 +1,6 @@
 import 'package:example/sdk/todo/proxies/todo.dart';
-import 'package:floater/floater.dart';
 
-class TodoAddedEvent extends Event {
+class TodoAddedEvent {
   final Todo todo;
   TodoAddedEvent(this.todo);
 }
