@@ -1,8 +1,10 @@
 import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
+import 'package:pedantic/pedantic.dart';
 import "defensive.dart";
 import "extensions.dart";
+import "secure_storage.dart";
 import 'package:meta/meta.dart';
 import 'service_locator.dart';
 
@@ -341,6 +343,8 @@ class _PageRegistration {
 class NavigationManager {
   static final _manager = new _NavigationManager();
   static final _instance = new NavigationManager._private();
+  static final _storageService = new FloaterSecureStorageService();
+  static final _persistKey = "floater-navigation-persisted-path";
   static var _isBootstrapped = false;
 
   static NavigationManager get instance => _instance;
@@ -486,17 +490,18 @@ class NavigationManager {
   void _persistRoute(String path) {
     given(path, "path").ensureHasValue();
 
-    print("RUNTIME PATH");
-    print(path);
-    // TODO: Use storage service to
+    // print("RUNTIME PATH");
+    // print(path);
+
+    unawaited(_storageService.store(_persistKey, path));
   }
 
-  String retrievePersistedRoute() {
-    return "TODO: retreve me from storage";
+  Future<String> retrievePersistedRoute() {
+    return _storageService.retrieve(_persistKey);
   }
 
   void clearPersistedRoute() {
-    // TODO: clear the persisted route
+    unawaited(_storageService.delete(_persistKey));
   }
 }
 
