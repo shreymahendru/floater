@@ -4,9 +4,10 @@ import "package:flutter/material.dart";
 import 'package:pedantic/pedantic.dart';
 import "defensive.dart";
 import "extensions.dart";
-import "secure_storage.dart";
+// import "secure_storage.dart";
 import 'package:meta/meta.dart';
 import 'service_locator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum PageType { material, cupertino }
 
@@ -32,7 +33,7 @@ class _NavigationManager {
   final _navigatorKeys = <String, Queue<_NavTracker>>{};
 
   void registerPage<T extends Widget>(String route, T Function(dynamic args) factoryFunc,
-      [PageType pageType = PageType.material, fullscreenDialog = false, persist = false]) {
+      [PageType pageType = PageType.material, bool fullscreenDialog = false, bool persist = false]) {
     given(route, "route")
         .ensureHasValue()
         .ensure((t) => t.trim() != "/", "cannot be root")
@@ -226,11 +227,6 @@ class _PageRegistration {
   Route generateRoute(RouteSettings settings, String query) {
     final queryArgs = this._parseQuery(query);
 
-    if (this.persist) {
-      final runtimePath = "${this.path}${queryArgs.isEmpty ? "" : "?" + query}";
-      NavigationManager.instance._persistRoute(runtimePath);
-    }
-
     final widgetBuilder = (BuildContext context) {
       settings ??= ModalRoute.of(context).settings;
       final args = queryArgs;
@@ -268,6 +264,23 @@ class _PageRegistration {
 
         consolidatedArgs[key] = argValue;
       });
+
+      // print("CONSOLIDATED ARGS");
+      // print(consolidatedArgs);
+
+      // print("GENERATE ROUTE ${this.persist}");
+      if (this.persist &&
+          consolidatedArgs.entries.every((t) => t.value is String || t.value is num || t.value is bool)) {
+        var runtimePath = this.path;
+        final runtimeArgs = consolidatedArgs.entries.map((t) => "${t.key}=${t.value}").join("&").trim();
+        if (runtimeArgs != null && runtimeArgs.isNotEmpty) runtimePath += "?" + runtimeArgs;
+
+        // print("RUNTIME PATH $runtimePath");
+        NavigationManager.instance._persistRoute(runtimePath);
+      } else {
+        // if (this.pathSegments.length == 1) // top level
+        //   NavigationManager.instance.clearPersistedRoute();
+      }
 
       final widget = this.factoryFunc(consolidatedArgs) as Widget;
       // final navigator = Navigator.of(context);
@@ -343,7 +356,7 @@ class _PageRegistration {
 class NavigationManager {
   static final _manager = new _NavigationManager();
   static final _instance = new NavigationManager._private();
-  static final _storageService = new FloaterSecureStorageService();
+  // static final _storageService = new FloaterSecureStorageService();
   static final _persistKey = "floater-navigation-persisted-path";
   static var _isBootstrapped = false;
 
@@ -490,18 +503,24 @@ class NavigationManager {
   void _persistRoute(String path) {
     given(path, "path").ensureHasValue();
 
-    // print("RUNTIME PATH");
-    // print(path);
-
-    unawaited(_storageService.store(_persistKey, path));
+    unawaited(SharedPreferences.getInstance()
+        .then((t) => t.setString(_persistKey, path))
+        // .then((t) => print("Saved=$t"))
+        .catchError((e) => print(e)));
   }
 
-  Future<String> retrievePersistedRoute() {
-    return _storageService.retrieve(_persistKey);
+  Future<String> retrievePersistedRoute() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_persistKey);
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 
   void clearPersistedRoute() {
-    unawaited(_storageService.delete(_persistKey));
+    unawaited(SharedPreferences.getInstance().then((t) => t.remove(_persistKey)).catchError((e) => print(e)));
   }
 }
 
