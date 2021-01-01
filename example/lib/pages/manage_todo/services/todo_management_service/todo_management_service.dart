@@ -16,11 +16,11 @@ class TodoManagementService {
   String _description;
   String get description => this._description;
 
-  void init(Todo todo) {
-    this._todo = todo;
+  Future<void> init(String id) async {
+    if (id != null) this._todo = await this._todosService.getTodo(id);
     // if a todo is passed copy the title and description or else leave it null.
-    this._title = todo?.title;
-    this._description = todo?.description;
+    this._title = this._todo?.title;
+    this._description = this._todo?.description;
   }
 
   void setTitle(String title) {

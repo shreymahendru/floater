@@ -44,7 +44,7 @@ class MockTodosService implements TodosService {
     given(id, "id").ensureHasValue().ensure((t) => t.trim().isNotEmpty);
 
     // fake network delay
-    await Future.delayed(Duration(seconds: 4));
+    await Future.delayed(Duration(seconds: 2));
 
     return this._allTodos.find((e) => e.id == id);
   }

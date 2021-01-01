@@ -32,6 +32,13 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   Future<void> onTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
+
+    this._navigator.pushNamed(
+      NavigationService.instance.generateRoute(Routes.viewTodo),
+      arguments: {
+        "id": todo.id,
+      },
+    );
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
@@ -39,7 +46,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
-        "todo": todo,
+        "id": todo.id,
       },
     );
   }
@@ -48,7 +55,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
-        "todo": null,
+        "od": null,
       },
     );
   }

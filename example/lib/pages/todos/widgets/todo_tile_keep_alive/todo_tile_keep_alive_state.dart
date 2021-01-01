@@ -17,7 +17,7 @@ class TodoTileKeepAliveState extends KeepAliveClientWidgetStateBase<TodoTileKeep
       this.wantKeepAlive = false;
     });
 
-    this.watch<TodoUpdatedEvent>(this._eventAggregator.subscribe<TodoUpdatedEvent>(), (event) {
+    this.watch(this._eventAggregator.subscribe<TodoUpdatedEvent>(), (event) {
       if (event.todo.id == this.todo.id) {
         this.triggerStateChange();
       }
