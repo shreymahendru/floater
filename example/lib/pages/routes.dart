@@ -26,12 +26,12 @@ abstract class Routes {
 
     // manage todo flow pages
     NavigationManager.instance
-      ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]), persist: true)
+      ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]))
       ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
       ..registerPage(Routes.manageTodoDescription, (routeArgs) => ManageTodoDescriptionPage());
 
     NavigationManager.instance
-      ..registerPage(Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]));
+      ..registerPage(Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]), persist: true);
     // bootstrapping Navigation
     NavigationManager.instance.bootstrap();
   }

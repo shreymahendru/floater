@@ -6,6 +6,7 @@ import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
 import 'package:floater/floater.dart';
 import 'package:uuid/uuid.dart';
 
+
 class MockTodosService implements TodosService {
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
   List<Todo> _allTodos = [];
@@ -13,7 +14,7 @@ class MockTodosService implements TodosService {
   MockTodosService() {
     this._allTodos = List.generate(
         5,
-        (index) => MockTodoProxy(TodoDto(Uuid().v1().toString(), "Todo number ${index + 1}",
+        (index) => MockTodoProxy(TodoDto("tdo_${index + 1}", "Todo number ${index + 1}",
             "This is the description for Todo number ${index + 1}", false)));
   }
 
@@ -24,7 +25,11 @@ class MockTodosService implements TodosService {
     // fake network delay
     await Future.delayed(Duration(seconds: 1));
 
-    final mockTodoDto = TodoDto(Uuid().v1().toString(), title, description, false);
+    final index = this._allTodos.isEmpty
+        ? 1
+        : this._allTodos.map((t) => int.parse(t.id.split("_")[1])).toList().orderByDesc()[0];
+
+    final mockTodoDto = TodoDto("tdo_${index + 1}", title, description, false);
 
     final mockTodo = MockTodoProxy(mockTodoDto);
     this._eventAggregator.publish(TodoAddedEvent(mockTodo));
