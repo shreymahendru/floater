@@ -22,3 +22,6 @@
 
 ## [0.0.5] - January 2, 2021
 * Route persistance 
+
+## [0.0.5+1] - January 2, 2021
+* Route gen Bug fix

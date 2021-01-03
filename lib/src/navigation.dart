@@ -476,8 +476,14 @@ class NavigationManager {
     var result = "";
 
     routeArgs.forEach((key, value) {
-      if (!pageRegistration.queryParams.containsKey(key)) return;
-      final type = pageRegistration.queryParams[key];
+      final requiredKey = key;
+      final optionalKey = key + "?";
+      final hasRequiredKey = pageRegistration.queryParams.containsKey(requiredKey);
+      final hasOptionalKey = pageRegistration.queryParams.containsKey(optionalKey);
+
+      if (!hasRequiredKey && !hasOptionalKey) return;
+
+      final type = pageRegistration.queryParams[hasRequiredKey ? requiredKey : optionalKey];
       var argValue = value;
       switch (type) {
         case _ValidTypes.string:
