@@ -1,10 +1,13 @@
 import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
+import 'package:pedantic/pedantic.dart';
 import "defensive.dart";
 import "extensions.dart";
+// import "secure_storage.dart";
 import 'package:meta/meta.dart';
 import 'service_locator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum PageType { material, cupertino }
 
@@ -30,7 +33,9 @@ class _NavigationManager {
   final _navigatorKeys = <String, Queue<_NavTracker>>{};
 
   void registerPage<T extends Widget>(String route, T Function(dynamic args) factoryFunc,
-      [PageType pageType = PageType.material, fullscreenDialog = false]) {
+      [PageType pageType = PageType.material,
+      bool fullscreenDialog = false,
+      bool persist = false]) {
     given(route, "route")
         .ensureHasValue()
         .ensure((t) => t.trim() != "/", "cannot be root")
@@ -38,8 +43,12 @@ class _NavigationManager {
         .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("//"),
             "route contains empty path segments")
         .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("&&"),
-            "route contains empty query params");
+            "route contains empty query params")
+        .ensure((t) => persist ? t.trim().substring(1).split("/").length == 1 : true,
+            "only top level routes can persist");
     // .ensure((t) => t.contains("?") ? t.split("?").length == 2 : true, "must have only one '?'");
+
+    given(factoryFunc, "factoryFunc").ensureHasValue();
 
     var path = route.trim().replaceAll(new RegExp(r"\s"), "").trim();
     String query;
@@ -79,16 +88,12 @@ class _NavigationManager {
       });
     }
 
-    given(factoryFunc, "factoryFunc").ensureHasValue();
-    given(pageType, "pageType").ensureHasValue();
-    given(fullscreenDialog, "fullScreenDialog").ensureHasValue();
-
     given(route, "route").ensure(
         (_) => this._pageRegistrations.every((t) => t.path.toLowerCase() != path.toLowerCase()),
         "duplicate path");
 
-    this._pageRegistrations.add(new _PageRegistration(
-        route, path, pathSegments, query, queryParams, factoryFunc, pageType, fullscreenDialog));
+    this._pageRegistrations.add(new _PageRegistration(route, path, pathSegments, query, queryParams,
+        factoryFunc, pageType, fullscreenDialog, persist));
   }
 
   void buildTree() {
@@ -96,7 +101,7 @@ class _NavigationManager {
         (t) => t._pageRegistrations.every((element) => !element.isRoot), "tree already built");
 
     final root = new _PageRegistration("/", "/", <String>[], null, {},
-        ([args]) => this._createRootWidget(), PageType.material, false);
+        ([args]) => this._createRootWidget(), PageType.material, false, false);
     this._pageRegistrations.add(root);
 
     for (final pr in this._pageRegistrations) {
@@ -221,12 +226,13 @@ class _PageRegistration {
   final dynamic Function(dynamic args) factoryFunc;
   final PageType pageType;
   final bool fullscreenDialog;
+  final bool persist;
   final children = <_PageRegistration>[];
 
   bool get isRoot => this.route == "/";
 
   _PageRegistration(this.route, this.path, this.pathSegments, this.query, this.queryParams,
-      this.factoryFunc, this.pageType, this.fullscreenDialog);
+      this.factoryFunc, this.pageType, this.fullscreenDialog, this.persist);
 
   Route generateRoute(RouteSettings settings, String query) {
     final queryArgs = this._parseQuery(query);
@@ -269,6 +275,25 @@ class _PageRegistration {
         consolidatedArgs[key] = argValue;
       });
 
+      // print("CONSOLIDATED ARGS");
+      // print(consolidatedArgs);
+
+      // print("GENERATE ROUTE ${this.persist}");
+      if (this.persist &&
+          consolidatedArgs.entries
+              .every((t) => t.value is String || t.value is num || t.value is bool)) {
+        var runtimePath = this.path;
+        final runtimeArgs =
+            consolidatedArgs.entries.map((t) => "${t.key}=${t.value}").join("&").trim();
+        if (runtimeArgs != null && runtimeArgs.isNotEmpty) runtimePath += "?" + runtimeArgs;
+
+        // print("RUNTIME PATH $runtimePath");
+        NavigationManager.instance.persistRoute(runtimePath);
+      } else {
+        // if (this.pathSegments.length == 1) // top level
+        //   NavigationManager.instance.clearPersistedRoute();
+      }
+
       final widget = this.factoryFunc(consolidatedArgs) as Widget;
       // final navigator = Navigator.of(context);
       // TODO: use the context to set the navigator of the widget as an ambient context
@@ -298,8 +323,14 @@ class _PageRegistration {
       final key = split[0];
       final value = split[1];
 
-      if (!this.queryParams.containsKey(key)) return;
-      final type = this.queryParams[key];
+      final requiredKey = key;
+      final optionalKey = key + "?";
+      final hasRequiredKey = this.queryParams.containsKey(requiredKey);
+      final hasOptionalKey = this.queryParams.containsKey(optionalKey);
+
+      if (!hasRequiredKey && !hasOptionalKey) return;
+
+      final type = this.queryParams[hasRequiredKey ? requiredKey : optionalKey];
       var typedValue;
       if (value == "null")
         typedValue = null;
@@ -343,6 +374,8 @@ class _PageRegistration {
 class NavigationManager {
   static final _manager = new _NavigationManager();
   static final _instance = new NavigationManager._private();
+  // static final _storageService = new FloaterSecureStorageService();
+  static final _persistKey = "floater-navigation-persisted-path";
   static var _isBootstrapped = false;
 
   static NavigationManager get instance => _instance;
@@ -350,10 +383,12 @@ class NavigationManager {
   NavigationManager._private();
 
   void registerPage<T extends Widget>(String route, T Function(dynamic routeArgs) factoryFunc,
-      {PageType pageType = PageType.material, fullscreenDialog = false}) {
+      {PageType pageType = PageType.material,
+      bool fullscreenDialog = false,
+      bool persist = false}) {
     if (_isBootstrapped) throw new StateError("Already bootstrapped");
 
-    _manager.registerPage(route, factoryFunc, pageType, fullscreenDialog);
+    _manager.registerPage(route, factoryFunc, pageType, fullscreenDialog, persist);
   }
 
   void bootstrap() {
@@ -490,6 +525,33 @@ class NavigationManager {
     if (!route.contains("?")) return null;
 
     return route.split("?").skip(1).join("?");
+  }
+
+  void persistRoute(String path) {
+    given(path, "path")
+        .ensureHasValue()
+        .ensure((t) => t.trim().substring(1).split("/").length == 1);
+
+    unawaited(SharedPreferences.getInstance()
+        .then((t) => t.setString(_persistKey, path))
+        // .then((t) => print("Saved=$t"))
+        .catchError((e) => print(e)));
+  }
+
+  Future<String> retrievePersistedRoute() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_persistKey);
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  void clearPersistedRoute() {
+    unawaited(SharedPreferences.getInstance()
+        .then((t) => t.remove(_persistKey))
+        .catchError((e) => print(e)));
   }
 }
 

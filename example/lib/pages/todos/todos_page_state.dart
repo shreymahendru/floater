@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 
 class TodosPageState extends WidgetStateBase<TodosPage> {
   final _navigator = NavigationService.instance.retrieveNavigator("/");
-  final _todosService =
-      ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
+  final _todosService = ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
 
   List<Todo> _todos;
@@ -17,12 +16,17 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   bool _isTogglingTodoCompletion = false;
   bool get isTogglingTodoCompletion => this._isTogglingTodoCompletion;
-  set isTogglingTodoCompletion(bool value) =>
-      (this.._isTogglingTodoCompletion = value).triggerStateChange();
+  set isTogglingTodoCompletion(bool value) => (this.._isTogglingTodoCompletion = value).triggerStateChange();
 
   TodosPageState() : super() {
-    this.onInitState(() {
+    this.onInitState(() async {
       this._loadTodos();
+
+      final persistedRoute = await NavigationManager.instance.retrievePersistedRoute();
+      print(persistedRoute);
+      if (persistedRoute != null) {
+        this._navigator.pushNamed(persistedRoute);
+      }
     });
 
     this.watch<TodoAddedEvent>(this._eventAggregator.subscribe<TodoAddedEvent>(), (event) {
@@ -32,6 +36,13 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
 
   Future<void> onTodoPressed(Todo todo) async {
     given(todo, "todo").ensureHasValue();
+
+    this._navigator.pushNamed(
+      NavigationService.instance.generateRoute(Routes.viewTodo),
+      arguments: {
+        "id": todo.id,
+      },
+    );
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
@@ -39,7 +50,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
-        "todo": todo,
+        "id": todo.id,
       },
     );
   }
@@ -48,7 +59,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
-        "todo": null,
+        "id": null,
       },
     );
   }
