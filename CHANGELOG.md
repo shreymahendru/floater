@@ -19,3 +19,6 @@
 ## [0.0.4] - October 27, 2020
 * Event Aggregator (automatically registered as a singleton)
 * BREAKING CHANGE: The StorageService renamed to SecureStorageService, and is registered as a singleton automatically if not registered by user.
+
+## [0.0.5] - January 2, 2021
+* Route persistance 
