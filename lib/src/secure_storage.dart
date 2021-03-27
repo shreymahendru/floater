@@ -3,7 +3,7 @@ import 'defensive.dart';
 
 abstract class SecureStorageService {
   Future<void> store(String key, String value);
-  Future<String> retrieve(String key);
+  Future<String?> retrieve(String key);
   Future<void> delete(String key);
   Future<bool> contains(String key);
 }
@@ -20,7 +20,7 @@ class FloaterSecureStorageService implements SecureStorageService {
   }
 
   @override
-  Future<String> retrieve(String key) async {
+  Future<String?> retrieve(String key) async {
     given(key, "key").ensureHasValue();
 
     return await this._secureStorage.read(key: key.trim());

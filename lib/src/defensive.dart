@@ -1,10 +1,10 @@
 abstract class Ensurer<T> {
   Ensurer<T> ensureHasValue();
-  Ensurer<T> ensure(bool Function(T t) func, [String reason]);
+  Ensurer<T> ensure(bool Function(T t) func, [String? reason]);
 }
 
 Ensurer<T> given<T>(T arg, String argName) {
-  if (argName == null || argName.trim().isEmpty) throw new ArgumentError("argName");
+  if (argName.trim().isEmpty) throw new ArgumentError("argName can't be empty");
 
   return new _EnsurerInternal(arg, argName.trim());
 }
@@ -13,10 +13,7 @@ class _EnsurerInternal<T> extends Ensurer<T> {
   T _arg;
   String _argName;
 
-  _EnsurerInternal(T arg, String argName) {
-    this._arg = arg;
-    this._argName = argName;
-  }
+  _EnsurerInternal(this._arg, this._argName);
 
   @override
   Ensurer<T> ensureHasValue() {
@@ -29,11 +26,7 @@ class _EnsurerInternal<T> extends Ensurer<T> {
   }
 
   @override
-  Ensurer<T> ensure(bool Function(T) func, [String reason]) {
-    if (func == null) throw new ArgumentError("func");
-
-    if (this._arg == null) return this;
-
+  Ensurer<T> ensure(bool Function(T) func, [String? reason]) {
     if (!func(this._arg)) {
       if (this._argName.toLowerCase() == "this")
         throw new StateError(reason != null && reason.trim().isNotEmpty

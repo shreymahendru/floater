@@ -6,15 +6,15 @@ class _ItemValuePair {
   String item;
   int value;
 
-  _ItemValuePair({this.item, this.value});
+  _ItemValuePair({required this.item, required this.value});
 }
 
 void main() {
   group("MapStringDynamicExt", () {
     group("getValue", () {
-      Map<String, dynamic> targetCountry;
-      Map<String, dynamic> targetAddress;
-      Map<String, dynamic> target;
+      Map<String, dynamic>? targetCountry;
+      Map<String, dynamic>? targetAddress;
+      Map<String, dynamic>? target;
 
       setUp(() {
         targetCountry = {"name": "Canada", "code": "CA"};
@@ -30,45 +30,45 @@ void main() {
         target = null;
       });
 
-      test("should return null if the key is null", () {
-        String key;
-        final value = target.getValue(key);
-        expect(value, null);
-      });
+      // test("should return null if the key is null", () {
+      //   late String key;
+      //   final value = target!.getValue(key);
+      //   expect(value, null);
+      // });
 
       test("should return null if the key is an empty string", () {
         final key = "";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
 
       test("should return null if the key is a string with just whitespace", () {
         final key = "  ";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
 
       test("should return null if the key does not exist on the target object", () {
         final key = "something";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
 
       test("should return value if the key exists on the target object", () {
         final key = "firstName";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, "John");
       });
 
       test("should return value if the multi level key exists on the target object", () {
         final key = "address.country";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, targetCountry);
       });
 
       test("should return value if the multi level (3 levels) key exists on the target object", () {
         final key = "address.country.code";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, "CA");
       });
 
@@ -76,7 +76,7 @@ void main() {
           "should return null if the top level of a multi level key does not exist on the target object",
           () {
         final key = "something.country";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
 
@@ -84,7 +84,7 @@ void main() {
           "should return null if the middle level of a multi level key does not exist on the target object",
           () {
         final key = "address.something.code";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
 
@@ -92,16 +92,16 @@ void main() {
           "should return null if the bottom level of a multi level key does not exist on the target object",
           () {
         final key = "address.country.something";
-        final value = target.getValue(key);
+        final value = target!.getValue(key);
         expect(value, null);
       });
     });
 
     group("setValue", () {
-      Map<String, dynamic> targetCountry;
-      Map<String, dynamic> targetAddress;
-      Map<String, dynamic> target;
-      String targetString;
+      Map<String, dynamic>? targetCountry;
+      Map<String, dynamic>? targetAddress;
+      Map<String, dynamic>? target;
+      String? targetString;
 
       final getCurrentTargetString = () => jsonEncode(target);
 
@@ -122,36 +122,36 @@ void main() {
         targetString = null;
       });
 
-      test("should not do anything if the key is null", () {
-        String key;
-        target.setValue(key, "some val");
-        expect(getCurrentTargetString(), targetString);
-      });
+      // test("should not do anything if the key is null", () {
+      //   late String key;
+      //   target!.setValue(key, "some val");
+      //   expect(getCurrentTargetString(), targetString);
+      // });
 
       test("should not do anything if the key is an empty string", () {
         final key = "";
-        target.setValue(key, "some val");
+        target!.setValue(key, "some val");
         expect(getCurrentTargetString(), targetString);
       });
 
       test("should not do anything if the key is a string with just whitespace", () {
         final key = "  ";
-        target.setValue(key, "some val");
+        target!.setValue(key, "some val");
         expect(getCurrentTargetString(), targetString);
       });
 
       test("should set value given a key that is a single level key", () {
         final key = "firstName";
         final value = "Kevin";
-        target.setValue(key, value);
-        expect(target[key], value);
+        target!.setValue(key, value);
+        expect(target![key], value);
       });
 
       test("should set value given a multi level key", () {
         final key = "address.country.code";
         final value = "us";
-        target.setValue(key, value);
-        expect(target["address"]["country"]["code"], value);
+        target!.setValue(key, value);
+        expect(target!["address"]["country"]["code"], value);
       });
 
       test(
@@ -159,8 +159,8 @@ void main() {
           () {
         final key = "nickName";
         final value = "Johnny";
-        target.setValue(key, value);
-        expect(target["nickName"], value);
+        target!.setValue(key, value);
+        expect(target!["nickName"], value);
       });
 
       test(
@@ -168,8 +168,8 @@ void main() {
           () {
         final key = "address.country.language";
         final value = "en-ca";
-        target.setValue(key, value);
-        expect(target["address"]["country"]["language"], value);
+        target!.setValue(key, value);
+        expect(target!["address"]["country"]["language"], value);
       });
 
       test(
@@ -177,8 +177,8 @@ void main() {
           () {
         final key = "address.province.name";
         final value = "Ontario";
-        target.setValue(key, value);
-        expect(target["address"]["province"]["name"], value);
+        target!.setValue(key, value);
+        expect(target!["address"]["province"]["name"], value);
       });
 
       test(
@@ -186,19 +186,19 @@ void main() {
           () {
         final key = "shippingAddress.province.name";
         final value = "Quebec";
-        target.setValue(key, value);
-        expect(target["shippingAddress"]["province"]["name"], value);
+        target!.setValue(key, value);
+        expect(target!["shippingAddress"]["province"]["name"], value);
       });
     });
   });
 
   group("ListExt", () {
-    List<int> numbers;
-    List<String> strings;
-    List<String> empty;
-    List<int> single;
+    late List<int> numbers;
+    late List<String> strings;
+    late List<String> empty;
+    late List<int> single;
 
-    List<_ItemValuePair> objects;
+    late List<_ItemValuePair> objects;
     final first = new _ItemValuePair(item: "item1", value: 1);
     final second = new _ItemValuePair(item: "item2", value: 2);
     final third = new _ItemValuePair(item: "item3", value: 3);
@@ -216,7 +216,7 @@ void main() {
     final arrayEqual = (List<dynamic> actual, List<dynamic> expected) {
       if (actual == expected) return true;
 
-      if (actual == null || expected == null) return false;
+      // if (actual == null || expected == null) return false;
 
       if (!(actual is List) || !(expected is List)) return false;
 
@@ -230,6 +230,42 @@ void main() {
 
       return true;
     };
+
+    group("find", () {
+      test("should return a int value when the int is present in a list of int", () {
+        final value = numbers.find((element) => element == 2);
+        expect(value, 2);
+      });
+
+      test("should return null when the value is not present in a list of int", () {
+        final value = numbers.find((element) => element == 122);
+        expect(value, null);
+      });
+
+      test("should return the string value when the int is present in a list of strings", () {
+        final value = strings.find((element) => element == "india");
+        expect(value, "india");
+      });
+
+      test("should return null value when the string is not present in a list of strings", () {
+        final value = strings.find((element) => element == "india a");
+        expect(value, null);
+      });
+
+      test(
+          "should return the object when the object with the property is present in a list of object",
+          () {
+        final value = objects.find((element) => element.value == 4);
+        expect(value, fourth);
+      });
+
+      test(
+          "should return the null when the object with the property is not present in a list of object",
+          () {
+        final value = objects.find((element) => element.value == 4123);
+        expect(value, null);
+      });
+    });
 
     group("orderBy", () {
       test("should return a new empty array object when target is an empty array", () {

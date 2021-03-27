@@ -1,12 +1,12 @@
 import 'defensive.dart';
 
 extension MapStringDynamicExt on Map<String, dynamic> {
-  T getValue<T>(String key) {
-    if (key == null || key.trim().isEmpty) return null;
+  T? getValue<T>(String key) {
     key = key.trim();
+    if (key.isEmpty) return null;
 
     if (!key.contains(".")) {
-      if (this.containsKey(key)) return this[key] as T;
+      if (this.containsKey(key)) return this[key] as T?;
       return null;
     }
 
@@ -16,7 +16,7 @@ extension MapStringDynamicExt on Map<String, dynamic> {
     for (var i = 0; i < split.length; i++) {
       if (current == null) return null;
       if (current is Map<String, dynamic>) {
-        if (!(current as Map<String, dynamic>).containsKey(split[i])) return null;
+        if (!current.containsKey(split[i])) return null;
         current = current[split[i]];
         continue;
       }
@@ -25,12 +25,12 @@ extension MapStringDynamicExt on Map<String, dynamic> {
           "In Map $this the value for key = ${split.getRange(0, i).join(".")} expected Map<String, dynamic> got ${current.runtimeType} [$current]");
     }
 
-    return current as T;
+    return current as T?;
   }
 
   void setValue(String key, dynamic value) {
-    if (key == null || key.trim().isEmpty) return;
     key = key.trim();
+    if (key.trim().isEmpty) return;
 
     if (!key.contains(".")) {
       this[key] = value;
@@ -39,6 +39,7 @@ extension MapStringDynamicExt on Map<String, dynamic> {
 
     final split = key.split(".");
     dynamic current = this;
+
     for (var i = 0; i < split.length - 1; i++) {
       dynamic next = current[split[i]];
       next ??= <String, dynamic>{};
@@ -55,14 +56,20 @@ extension MapStringDynamicExt on Map<String, dynamic> {
 }
 
 extension ListExt<T> on List<T> {
-  T find(bool Function(T element) predicate) {
+  T? find(bool Function(T element) predicate) {
     given(predicate, "predicate").ensureHasValue();
-    return this.firstWhere(predicate, orElse: () => null);
+
+    for (var element in this) {
+      if (predicate(element)) return element;
+    }
+
+    return null;
   }
 
   List<T> orderBy<TKey extends Comparable>(TKey Function(T t) valueFunc) {
     given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
+
     internal.sort((a, b) {
       final valA = valueFunc(a);
       final valB = valueFunc(b);
@@ -74,6 +81,7 @@ extension ListExt<T> on List<T> {
   List<T> orderByDesc<TKey extends Comparable>(TKey Function(T t) valueFunc) {
     given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
+
     internal.sort((a, b) {
       final valA = valueFunc(a);
       final valB = valueFunc(b);

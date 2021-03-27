@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 
 /// Mutual Exclusion Lock
@@ -35,7 +37,7 @@ import 'dart:async';
 
 class Mutex {
   final List<Completer<void>> _waitingAcquirers = [];
-  Completer<void> _currentAcquirer;
+  Completer<void>? _currentAcquirer;
 
   Future<void> lock() {
     final completer = new Completer<void>();
@@ -44,7 +46,7 @@ class Mutex {
     // let the first one pass
     if (this._waitingAcquirers.length == 1) {
       this._currentAcquirer = completer;
-      this._currentAcquirer.complete();
+      this._currentAcquirer!.complete();
     }
 
     return completer.future;
@@ -58,7 +60,7 @@ class Mutex {
     // when released by the current acquirer, let the next one pass if any.
     if (this._waitingAcquirers.isNotEmpty) {
       this._currentAcquirer = this._waitingAcquirers.first;
-      this._currentAcquirer.complete();
+      this._currentAcquirer!.complete();
     } else {
       this._currentAcquirer = null;
     }

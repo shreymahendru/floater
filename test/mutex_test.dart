@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _Synchronized {
   final _mutex = new Mutex();
 
-  final _values = new List<int>();
+  final _values = <int>[];
   List<int> get values => this._values;
 
   Future<void> execute(int milliseconds) async {
