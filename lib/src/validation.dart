@@ -3,11 +3,11 @@ import 'defensive.dart';
 import 'extensions.dart';
 
 class ValidationErrors {
-  final _errors = <String, Object>{};
+  final _errors = <String, Object?>{};
 
-  Object getError(String propertyName) {
-    if (propertyName == null || propertyName.trim().isEmpty) return null;
+  Object? getError(String propertyName) {
     propertyName = propertyName.trim();
+    if (propertyName.isEmpty) return null;
 
     if (!propertyName.contains(".")) {
       if (this._errors.containsKey(propertyName)) return this._errors[propertyName];
@@ -20,23 +20,23 @@ class ValidationErrors {
     for (var i = 0; i < split.length; i++) {
       if (current == null) return null;
       if (current is Map<String, dynamic>) {
-        if (!(current as Map<String, dynamic>).containsKey(split[i])) return null;
+        if (!current.containsKey(split[i])) return null;
         current = current[split[i]];
         continue;
       }
       if (current is ValidationErrors) return current.getError(split.sublist(i).join("."));
 
       // if the top level validation fails then error blow is thrown.
-      // validate the top level first before validating a second level error. 
+      // validate the top level first before validating a second level error.
 
       throw Exception(
           "In Map $this the value for key = ${split.getRange(0, i).join(".")} expected Map<String, dynamic> or ValidationErrors got ${current.runtimeType} [$current]");
     }
 
-    return current as Object;
+    return current as Object?;
   }
 
-  void _setError(String propertyName, Object value) {
+  void _setError(String propertyName, Object? value) {
     this._errors.setValue(propertyName, value);
   }
 
@@ -46,8 +46,8 @@ class ValidationErrors {
   }
 }
 
-class Validator<T extends Object> {
-  final _propertyValidators = <_InternalPropertyValidator<T, Object>>[];
+class Validator<T extends Object?> {
+  final List<_InternalPropertyValidator<T, Object?>> _propertyValidators = [];
   final _errors = ValidationErrors();
   var _hasErrors = false;
   var _isEnabled = true;
@@ -62,27 +62,25 @@ class Validator<T extends Object> {
     this._isEnabled = !disabled;
   }
 
-  PropertyValidator<T, TProperty> prop<TProperty>(
+  PropertyValidator<T, TProperty> prop<TProperty extends Object?>(
       String propertyName, TProperty Function(T value) propertyFunc) {
     given(propertyName, "propertyName").ensureHasValue();
     given(propertyFunc, "propertyFunc").ensureHasValue();
     final propertyValidator =
         new _InternalPropertyValidator<T, TProperty>(propertyName, propertyFunc);
     this._propertyValidators.add(propertyValidator);
-    this._errors._setError(propertyName, null); //[propertyName] = null;
+    this._errors._setError(propertyName, null);
     return propertyValidator;
   }
 
   void clearProp(String propertyName) {
     given(propertyName, "propertyName").ensureHasValue();
-    final propertyValidator = this
-        ._propertyValidators
-        .firstWhere((t) => t.propertyName == propertyName, orElse: () => null);
+    final _InternalPropertyValidator<T, Object?>? propertyValidator =
+        this._propertyValidators.find((t) => t.propertyName == propertyName);
     if (propertyValidator == null) return;
 
     this._propertyValidators.remove(propertyValidator);
     this._errors._setError(propertyName, null);
-    // this._errors[propertyName] = null;
   }
 
   void validate(T value) {
@@ -94,15 +92,12 @@ class Validator<T extends Object> {
         if (t.hasError) {
           this._hasErrors = true;
           this._errors._setError(t.propertyName, t.error);
-          // this._errors[t.propertyName] = t.error;
           return;
         }
 
-        // this._errors[t.propertyName] = null;
         this._errors._setError(t.propertyName, null);
       });
     } else {
-      // this._propertyValidators.forEach((t) => this._errors[t.propertyName] = null);
       this._propertyValidators.forEach((t) => this._errors._setError(t.propertyName, null));
     }
   }
@@ -120,11 +115,6 @@ class Validator<T extends Object> {
 abstract class PropertyValidator<T, TProperty> {
   PropertyValidator<T, TProperty> isRequired();
   PropertyValidator<T, TProperty> isOptional();
-  // ensureIsBoolean(): PropertyValidator<T, TProperty>;
-  // ensureIsString(): PropertyValidator<T, TProperty>;
-  // ensureIsNumber(): PropertyValidator<T, TProperty>;
-  // ensureIsObject(): PropertyValidator<T, TProperty>;
-  // ensureIsArray(): PropertyValidator<T, TProperty>;
 
   PropertyValidator<T, TProperty> ensure(bool Function(TProperty t) validationPredicate);
   PropertyValidator<T, TProperty> useValidationRule(ValidationRule<TProperty> validationRule);
@@ -132,12 +122,12 @@ abstract class PropertyValidator<T, TProperty> {
 
   PropertyValidator<T, TProperty> ensureT(bool Function(T value) validationPredicate);
   PropertyValidator<T, TProperty> when(bool Function(T value) conditionPredicate);
-  PropertyValidator<T, TProperty> withMessage({String message, String Function() messageFunc});
+  PropertyValidator<T, TProperty> withMessage({String? message, String Function()? messageFunc});
 }
 
 // public
 abstract class ValidationRule<T> {
-  Object get error;
+  Object? get error;
   bool validate(T value);
 
   factory ValidationRule(bool Function(T val) validationFunc, String error) {
@@ -165,16 +155,31 @@ class _ConcreteValidationRule<T> implements ValidationRule<T> {
 }
 
 class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, TProperty> {
+  // name has to be there
   final String _propertyName;
+
+  // property func to retrieve property has to be there
   final TProperty Function(T) _propertyFunc;
+
   var _hasError = false;
-  Object _error;
-  final _validationRules = <_InternalPropertyValidationRule<T, TProperty>>[];
-  _InternalPropertyValidationRule<T, TProperty> _lastValidationRule;
-  bool Function(T) _conditionPredicate;
+
+  // why obj? for nested validators?
+  Object? _error;
+
+  // rules applied to this property
+  final _validationRules = <_InternalPropertyValidationRule<T, TProperty>?>[];
+
+  // ?
+  _InternalPropertyValidationRule<T, TProperty>? _lastValidationRule;
+
+  // for when?
+  bool Function(T)? _conditionPredicate;
+
   var _overrideError = false;
-  String _errorMessage;
-  String Function() _errorMessageFunc;
+
+  String? _errorMessage;
+
+  String? Function()? _errorMessageFunc;
 
   String get propertyName => this._propertyName;
   bool get hasError => this._hasError;
@@ -188,12 +193,13 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
     this._hasError = false;
     this._error = null;
 
-    if (this._conditionPredicate != null && !this._conditionPredicate(value)) return;
+    if (this._conditionPredicate != null && !this._conditionPredicate!(value)) return;
 
-    final propertyVal = this._propertyFunc(value);
+    final TProperty propertyVal = this._propertyFunc(value);
 
     for (var i = 0; i < this._validationRules.length; i++) {
-      final validationRule = this._validationRules[i];
+      final _InternalPropertyValidationRule<T, TProperty> validationRule =
+          this._validationRules[i]!;
       var validationResult = true;
 
       try {
@@ -209,7 +215,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
         // this._error = this._overrideError ? this._errorMessage : validationRule.error;
         var error = validationRule.error;
         if (this._overrideError && !validationRule.overrideError)
-          error = this._errorMessageFunc != null ? this._errorMessageFunc() : this._errorMessage;
+          error = this._errorMessageFunc != null ? this._errorMessageFunc!() : this._errorMessage;
         this._error = error;
         break;
       }
@@ -219,7 +225,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   @override
   PropertyValidator<T, TProperty> isRequired() {
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.ensure((propertyValue) {
+    this._lastValidationRule!.ensure((propertyValue) {
       if (propertyValue != null) {
         if (propertyValue is String) {
           return propertyValue.trim().isNotEmpty;
@@ -229,7 +235,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
       return false;
     });
 
-    this._lastValidationRule.withMessage(message: "Required");
+    this._lastValidationRule!.withMessage(message: "Required");
     this._validationRules.add(this._lastValidationRule);
     return this;
   }
@@ -237,7 +243,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   @override
   PropertyValidator<T, TProperty> isOptional() {
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.ensure((propertyValue) {
+    this._lastValidationRule!.ensure((propertyValue) {
       if (propertyValue == null) throw "OPTIONAL";
 
       if (propertyValue is String && propertyValue.trim().isEmpty) throw "OPTIONAL";
@@ -253,7 +259,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   PropertyValidator<T, TProperty> ensure(bool Function(TProperty) propertyValidationPredicate) {
     given(propertyValidationPredicate, "propertyValidationPredicate").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.ensure(propertyValidationPredicate);
+    this._lastValidationRule!.ensure(propertyValidationPredicate);
     this._validationRules.add(this._lastValidationRule);
     return this;
   }
@@ -262,7 +268,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   PropertyValidator<T, TProperty> ensureT(bool Function(T) valueValidationPredicate) {
     given(valueValidationPredicate, "valueValidationPredicate").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.ensureT(valueValidationPredicate);
+    this._lastValidationRule!.ensureT(valueValidationPredicate);
     this._validationRules.add(this._lastValidationRule);
     return this;
   }
@@ -271,7 +277,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   PropertyValidator<T, TProperty> useValidationRule(ValidationRule<TProperty> validationRule) {
     given(validationRule, "validationRule").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.useValidationRule(validationRule);
+    this._lastValidationRule!.useValidationRule(validationRule);
     this._validationRules.add(this._lastValidationRule);
     return this;
   }
@@ -280,7 +286,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   PropertyValidator<T, TProperty> useValidator(Validator<TProperty> validator) {
     given(validator, "validator").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
-    this._lastValidationRule.useValidator(validator);
+    this._lastValidationRule!.useValidator(validator);
     this._validationRules.add(this._lastValidationRule);
     return this;
   }
@@ -291,13 +297,13 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
     if (this._lastValidationRule == null)
       this._conditionPredicate = conditionPredicate;
     else
-      this._lastValidationRule.when(conditionPredicate);
+      this._lastValidationRule!.when(conditionPredicate);
 
     return this;
   }
 
   @override
-  PropertyValidator<T, TProperty> withMessage({String message, String Function() messageFunc}) {
+  PropertyValidator<T, TProperty> withMessage({String? message, String Function()? messageFunc}) {
     if (message == null && messageFunc == null)
       throw new ArgumentError("Either message or messagefunc has to be provided");
     if (this._lastValidationRule == null) {
@@ -306,7 +312,7 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
       this._errorMessageFunc = messageFunc;
     } else
       this
-          ._lastValidationRule
+          ._lastValidationRule!
           .withMessage(message: message, messageFunc: messageFunc, overrideError: true);
 
     return this;
@@ -314,28 +320,28 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 }
 
 class _InternalPropertyValidationRule<T, TProperty> {
-  bool Function(TProperty) _tpropertyValidationPredicate;
-  bool Function(T) _tValidationPredicate;
-  ValidationRule<TProperty> _validationRule;
-  Validator<TProperty> _validator;
-  bool Function(T) _conditionPredicate;
-  String _errorMessage;
-  String Function() _errorFunc;
+  bool Function(TProperty)? _tPropertyValidationPredicate;
+  bool Function(T)? _tValidationPredicate;
+  ValidationRule<TProperty>? _validationRule;
+  Validator<TProperty>? _validator;
+  bool Function(T)? _conditionPredicate;
+  String? _errorMessage;
+  String Function()? _errorFunc;
   var _overrideError = false;
 
-  Object get error {
+  Object? get error {
     if (this._validationRule != null && !this._overrideError)
-      return this._validationRule.error;
+      return this._validationRule!.error;
     else if (this._validator != null && !this._overrideError)
-      return this._validator.errors;
+      return this._validator!.errors;
     else
-      return this._errorFunc != null ? this._errorFunc() : this._errorMessage;
+      return this._errorFunc != null ? this._errorFunc!() : this._errorMessage;
   }
 
   bool get overrideError => this._overrideError;
 
-  void ensure(bool Function(TProperty) tpropertyValidationPredicate) {
-    this._tpropertyValidationPredicate = tpropertyValidationPredicate;
+  void ensure(bool Function(TProperty) tPropertyValidationPredicate) {
+    this._tPropertyValidationPredicate = tPropertyValidationPredicate;
     this._errorMessage = "Invalid value";
   }
 
@@ -356,25 +362,25 @@ class _InternalPropertyValidationRule<T, TProperty> {
     this._conditionPredicate = conditionPredicate;
   }
 
-  void withMessage({String message, String Function() messageFunc, bool overrideError = false}) {
+  void withMessage({String? message, String Function()? messageFunc, bool overrideError = false}) {
     this._errorMessage = message;
     this._errorFunc = messageFunc;
     this._overrideError = overrideError;
   }
 
   bool validate(T value, TProperty propertyValue) {
-    if (this._conditionPredicate != null && !this._conditionPredicate(value)) return true;
+    if (this._conditionPredicate != null && !this._conditionPredicate!(value)) return true;
 
-    if (this._tpropertyValidationPredicate != null)
-      return this._tpropertyValidationPredicate(propertyValue);
+    if (this._tPropertyValidationPredicate != null)
+      return this._tPropertyValidationPredicate!(propertyValue);
 
-    if (this._tValidationPredicate != null) return this._tValidationPredicate(value);
+    if (this._tValidationPredicate != null) return this._tValidationPredicate!(value);
 
-    if (this._validationRule != null) return this._validationRule.validate(propertyValue);
+    if (this._validationRule != null) return this._validationRule!.validate(propertyValue);
 
     if (this._validator != null) {
-      this._validator.validate(propertyValue);
-      return this._validator.isValid;
+      this._validator!.validate(propertyValue);
+      return this._validator!.isValid;
     }
 
     throw new Exception("Validate");
@@ -387,7 +393,7 @@ abstract class BaseValidationRule<T> implements ValidationRule<T> {
   dynamic _error;
 
   @override
-  Object get error => this._error;
+  Object? get error => this._error;
 
   @override
   bool validate(T value) {
@@ -406,37 +412,37 @@ abstract class BaseValidationRule<T> implements ValidationRule<T> {
 }
 
 // public
-abstract class BaseNumberValidationRule<T extends num> extends BaseValidationRule<T> {}
+abstract class BaseNumberValidationRule<T extends num?> extends BaseValidationRule<T> {}
 
-class _NumberHasMinValue<T extends num> extends BaseNumberValidationRule<T> {
+class _NumberHasMinValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasMinValue(num minValue) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t >= minValue, "Value cannot be less than $minValue"));
   }
 }
 
-class _NumberHasMaxValue<T extends num> extends BaseNumberValidationRule<T> {
+class _NumberHasMaxValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasMaxValue(num maxValue) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t <= maxValue, "Value cannot be greater than $maxValue"));
   }
 }
 
-class _NumberHasExactValue<T extends num> extends BaseNumberValidationRule<T> {
+class _NumberHasExactValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasExactValue(num exactValue) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t == exactValue, "Value has to be $exactValue"));
   }
 }
 
-class _NumberIsIn<T extends num> extends BaseNumberValidationRule<T> {
+class _NumberIsIn<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberIsIn(List<num> values) {
     this.addValidationRule(
         new _ConcreteValidationRule((t) => t == null || values.contains(t), "Invalid value"));
   }
 }
 
-class _NumberIsNotIn<T extends num> extends BaseNumberValidationRule<T> {
+class _NumberIsNotIn<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberIsNotIn(List<num> values) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || values.every((u) => u != t), "Invalid value"));
@@ -444,7 +450,7 @@ class _NumberIsNotIn<T extends num> extends BaseNumberValidationRule<T> {
 }
 
 // public
-abstract class BaseStringValidationRule extends BaseValidationRule<String> {
+abstract class BaseStringValidationRule<T extends String?> extends BaseValidationRule<T> {
   bool isNumber(String value) {
     value = value.trim();
     if (value.isEmpty) return false;
@@ -453,21 +459,21 @@ abstract class BaseStringValidationRule extends BaseValidationRule<String> {
   }
 }
 
-class _StringHasMinLength extends BaseStringValidationRule {
+class _StringHasMinLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasMinLength(num minLength) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t.trim().length >= minLength, "Min length of $minLength required"));
   }
 }
 
-class _StringHasMaxLength extends BaseStringValidationRule {
+class _StringHasMaxLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasMaxLength(num maxLength) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t.trim().length <= maxLength, "Max length of $maxLength required"));
   }
 }
 
-class _StringHasExactLength extends BaseStringValidationRule {
+class _StringHasExactLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasExactLength(num exactLength) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || t.trim().length == exactLength,
@@ -475,45 +481,45 @@ class _StringHasExactLength extends BaseStringValidationRule {
   }
 }
 
-class _StringIsIn extends BaseStringValidationRule {
+class _StringIsIn<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsIn(List<String> values, [bool ignoreCase = false]) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) =>
             t == null ||
             (ignoreCase
-                ? values.any((v) => v?.trim()?.toLowerCase() == t.trim().toLowerCase())
-                : values.any((v) => v?.trim() == t.trim())),
+                ? values.any((v) => v.trim().toLowerCase() == t.trim().toLowerCase())
+                : values.any((v) => v.trim() == t.trim())),
         "Invalid value"));
   }
 }
 
-class _StringIsNotIn extends BaseStringValidationRule {
+class _StringIsNotIn<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsNotIn(List<String> values, [bool ignoreCase = false]) {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) =>
             t == null ||
             (ignoreCase
-                ? values.every((v) => v?.trim()?.toLowerCase() != t.trim().toLowerCase())
-                : values.every((v) => v?.trim() != t.trim())),
+                ? values.every((v) => v.trim().toLowerCase() != t.trim().toLowerCase())
+                : values.every((v) => v.trim() != t.trim())),
         "Invalid value"));
   }
 }
 
-class _StringContainsOnlyNumbers extends BaseStringValidationRule {
+class _StringContainsOnlyNumbers<T extends String?> extends BaseStringValidationRule<T> {
   _StringContainsOnlyNumbers() {
     this.addValidationRule(
         new _ConcreteValidationRule((t) => t == null || this.isNumber(t), "Invalid value"));
   }
 }
 
-class _StringIsPhoneNumber extends BaseStringValidationRule {
+class _StringIsPhoneNumber<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsPhoneNumber() {
     this.addValidationRule(new _ConcreteValidationRule(
         (t) => t == null || (this.isNumber(t) && t.trim().length == 10), "Invalid value"));
   }
 }
 
-class _StringIsEmail extends BaseStringValidationRule {
+class _StringIsEmail<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsEmail() {
     this.addValidationRule(new _ConcreteValidationRule((t) {
       final re = RegExp(
@@ -523,7 +529,7 @@ class _StringIsEmail extends BaseStringValidationRule {
   }
 }
 
-class _StringMatchesRegex extends BaseStringValidationRule {
+class _StringMatchesRegex<T extends String?> extends BaseStringValidationRule<T> {
   _StringMatchesRegex(RegExp regex) {
     this.addValidationRule(
         new _ConcreteValidationRule((t) => t == null || regex.hasMatch(t), "Invalid format"));
@@ -531,63 +537,64 @@ class _StringMatchesRegex extends BaseStringValidationRule {
 }
 
 // public
-extension NumberPropertyValidatorExt<T, TProperty extends num> on PropertyValidator<T, TProperty> {
-  PropertyValidator<T, TProperty> hasMinValue(TProperty minValue) {
-    return this.useValidationRule(new _NumberHasMinValue(minValue));
+extension NumberPropertyValidatorExt<T, TProperty extends num?> on PropertyValidator<T, TProperty> {
+  PropertyValidator<T, TProperty> hasMinValue(num minValue) {
+    return this.useValidationRule(new _NumberHasMinValue<TProperty>(minValue));
   }
 
-  PropertyValidator<T, TProperty> hasMaxValue(TProperty maxValue) {
-    return this.useValidationRule(new _NumberHasMaxValue(maxValue));
+  PropertyValidator<T, TProperty> hasMaxValue(num maxValue) {
+    return this.useValidationRule(new _NumberHasMaxValue<TProperty>(maxValue));
   }
 
-  PropertyValidator<T, TProperty> hasExactValue(TProperty exactValue) {
-    return this.useValidationRule(new _NumberHasExactValue(exactValue));
+  PropertyValidator<T, TProperty> hasExactValue(num exactValue) {
+    return this.useValidationRule(new _NumberHasExactValue<TProperty>(exactValue));
   }
 
-  PropertyValidator<T, TProperty> isInNumbers(List<TProperty> values) {
-    return this.useValidationRule(new _NumberIsIn(values));
+  PropertyValidator<T, TProperty> isInNumbers(List<num> values) {
+    return this.useValidationRule(new _NumberIsIn<TProperty>(values));
   }
 
-  PropertyValidator<T, TProperty> isNotInNumbers(List<TProperty> values) {
-    return this.useValidationRule(new _NumberIsNotIn(values));
+  PropertyValidator<T, TProperty> isNotInNumbers(List<num> values) {
+    return this.useValidationRule(new _NumberIsNotIn<TProperty>(values));
   }
 }
 
 // public
-extension StringPropertyValidatorExt<T> on PropertyValidator<T, String> {
-  PropertyValidator<T, String> hasMinLength(num minLength) {
-    return this.useValidationRule(new _StringHasMinLength(minLength));
+extension StringPropertyValidatorExt<T, TProperty extends String?>
+    on PropertyValidator<T, TProperty> {
+  PropertyValidator<T, TProperty> hasMinLength(int minLength) {
+    return this.useValidationRule(new _StringHasMinLength<TProperty>(minLength));
   }
 
-  PropertyValidator<T, String> hasMaxLength(num maxLength) {
-    return this.useValidationRule(new _StringHasMaxLength(maxLength));
+  PropertyValidator<T, TProperty> hasMaxLength(int maxLength) {
+    return this.useValidationRule(new _StringHasMaxLength<TProperty>(maxLength));
   }
 
-  PropertyValidator<T, String> hasExactLength(num exactLength) {
-    return this.useValidationRule(new _StringHasExactLength(exactLength));
+  PropertyValidator<T, TProperty> hasExactLength(int exactLength) {
+    return this.useValidationRule(new _StringHasExactLength<TProperty>(exactLength));
   }
 
-  PropertyValidator<T, String> isInStrings(List<String> values, [bool ignoreCase = false]) {
-    return this.useValidationRule(new _StringIsIn(values, ignoreCase));
+  PropertyValidator<T, TProperty> isInStrings(List<String> values, [bool ignoreCase = false]) {
+    return this.useValidationRule(new _StringIsIn<TProperty>(values, ignoreCase));
   }
 
-  PropertyValidator<T, String> isNotInStrings(List<String> values, [bool ignoreCase = false]) {
-    return this.useValidationRule(new _StringIsNotIn(values, ignoreCase));
+  PropertyValidator<T, TProperty> isNotInStrings(List<String> values, [bool ignoreCase = false]) {
+    return this.useValidationRule(new _StringIsNotIn<TProperty>(values, ignoreCase));
   }
 
-  PropertyValidator<T, String> containsOnlyNumbers() {
-    return this.useValidationRule(new _StringContainsOnlyNumbers());
+  PropertyValidator<T, TProperty> containsOnlyNumbers() {
+    return this.useValidationRule(new _StringContainsOnlyNumbers<TProperty>());
   }
 
-  PropertyValidator<T, String> isPhoneNumber() {
-    return this.useValidationRule(new _StringIsPhoneNumber());
+  PropertyValidator<T, TProperty> isPhoneNumber() {
+    return this.useValidationRule(new _StringIsPhoneNumber<TProperty>());
   }
 
-  PropertyValidator<T, String> isEmail() {
-    return this.useValidationRule(new _StringIsEmail());
+  PropertyValidator<T, TProperty> isEmail() {
+    return this.useValidationRule(new _StringIsEmail<TProperty>());
   }
 
-  PropertyValidator<T, String> matchesRegex(RegExp regex) {
-    return this.useValidationRule(new _StringMatchesRegex(regex));
+  PropertyValidator<T, TProperty> matchesRegex(RegExp regex) {
+    return this.useValidationRule(new _StringMatchesRegex<TProperty>(regex));
   }
 }
