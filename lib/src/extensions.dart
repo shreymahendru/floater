@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
+
 import 'defensive.dart';
 
 extension MapStringDynamicExt on Map<String, dynamic> {
   T? getValue<T>(String key) {
+    if (key.isEmptyOrWhiteSpace) return null;
+
     key = key.trim();
-    if (key.isEmpty) return null;
 
     if (!key.contains(".")) {
       if (this.containsKey(key)) return this[key] as T?;
@@ -29,8 +32,9 @@ extension MapStringDynamicExt on Map<String, dynamic> {
   }
 
   void setValue(String key, dynamic value) {
+    if (key.isEmptyOrWhiteSpace) return;
+
     key = key.trim();
-    if (key.trim().isEmpty) return;
 
     if (!key.contains(".")) {
       this[key] = value;
@@ -55,10 +59,11 @@ extension MapStringDynamicExt on Map<String, dynamic> {
   }
 }
 
-extension ListExt<T> on List<T> {
-  T? find(bool Function(T element) predicate) {
-    given(predicate, "predicate").ensureHasValue();
+typedef Predicate<T> = bool Function(T t);
+typedef ValueFunction<T, TKey> = TKey Function(T t);
 
+extension ListExt<T> on List<T> {
+  T? find(Predicate<T> predicate) {
     for (var element in this) {
       if (predicate(element)) return element;
     }
@@ -66,7 +71,7 @@ extension ListExt<T> on List<T> {
     return null;
   }
 
-  List<T> orderBy<TKey extends Comparable>(TKey Function(T t) valueFunc) {
+  List<T> orderBy<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
     given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 
@@ -78,7 +83,7 @@ extension ListExt<T> on List<T> {
     return internal;
   }
 
-  List<T> orderByDesc<TKey extends Comparable>(TKey Function(T t) valueFunc) {
+  List<T> orderByDesc<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
     given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 

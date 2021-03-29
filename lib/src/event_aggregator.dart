@@ -1,5 +1,4 @@
 import 'dart:async';
-// import 'package:floater/floater.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:pedantic/pedantic.dart';
 import 'defensive.dart';

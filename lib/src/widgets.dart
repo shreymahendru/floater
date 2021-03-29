@@ -68,7 +68,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onInitState(void Function() callback) {
+  void onInitState(VoidCallback callback) {
     given(callback, "callback").ensureHasValue();
     this._onInitState = callback;
   }
@@ -98,7 +98,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onDeactivate(void Function() callback) {
+  void onDeactivate(VoidCallback callback) {
     given(callback, "callback").ensureHasValue();
     this._onDeactivate = callback;
   }
@@ -135,7 +135,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onStateChange(void Function() callback) {
+  void onStateChange(VoidCallback callback) {
     given(callback, "callback").ensureHasValue();
     this._onStateChange = callback;
   }
