@@ -180,3 +180,13 @@ extension ListDoubleExt on List<double> {
     return internal;
   }
 }
+
+extension StringExt on String {
+  bool get isEmptyOrWhiteSpace {
+    return this.trim().isEmpty;
+  }
+
+  bool get isNotEmptyOrWhiteSpace {
+    return !this.isEmptyOrWhiteSpace;
+  }
+}

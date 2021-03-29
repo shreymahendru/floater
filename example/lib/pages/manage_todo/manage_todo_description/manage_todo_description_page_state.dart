@@ -44,7 +44,7 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
     if (this._description == null)
       description = null;
     else
-      description = this._description!.trim().isEmpty ? null : this._description!.trim();
+      description = this._description!.isEmptyOrWhiteSpace ? null : this._description!.trim();
 
     this._todoManagementService.setDescription(description);
 

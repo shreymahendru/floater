@@ -24,6 +24,9 @@ class MockTodoProxy implements Todo {
 
   @override
   Future<void> update(String title, String? description) async {
+    given(title, "argName").ensure((t) => t.isNotEmptyOrWhiteSpace);
+    given(description, "description").ensure((t) => t?.isNotEmptyOrWhiteSpace ?? true);
+
     await Future.delayed(Duration(seconds: 2));
 
     final newDto = TodoDto(this.id, title, description, this.isComplete);

@@ -18,7 +18,8 @@ class MockTodosService implements TodosService {
 
   @override
   Future<void> createTodo(String title, String? description) async {
-    given(title, "title").ensure((t) => t.trim().isNotEmpty);
+    given(title, "title").ensure((t) => t.isNotEmptyOrWhiteSpace);
+    given(description, "description").ensure((t) => t?.isNotEmptyOrWhiteSpace ?? true);
 
     if (description != null) description = description.trim();
 
@@ -46,7 +47,7 @@ class MockTodosService implements TodosService {
 
   @override
   Future<Todo> getTodo(String id) async {
-    given(id, "id").ensure((t) => t.trim().isNotEmpty);
+    given(id, "id").ensure((t) => t.isNotEmptyOrWhiteSpace);
 
     // fake network delay
     await Future.delayed(Duration(seconds: 2));
