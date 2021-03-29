@@ -28,15 +28,13 @@ class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
-                  errorText: this.state.errors.getError("title"),
+                  errorText: this.state.errors.getError("title") as String?,
                 ),
               ),
               SizedBox(height: 30),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: this.state.hasErrors ? null : this.state.submit,
                 child: Text("Next"),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
               ),
             ],
           ),

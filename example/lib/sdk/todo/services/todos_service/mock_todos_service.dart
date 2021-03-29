@@ -4,8 +4,6 @@ import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/proxies/todo_dto.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
 import 'package:floater/floater.dart';
-import 'package:uuid/uuid.dart';
-
 
 class MockTodosService implements TodosService {
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
@@ -19,8 +17,10 @@ class MockTodosService implements TodosService {
   }
 
   @override
-  Future<void> createTodo(String title, String description) async {
-    given(title, "title").ensureHasValue().ensure((t) => t.trim().isNotEmpty);
+  Future<void> createTodo(String title, String? description) async {
+    given(title, "title").ensure((t) => t.trim().isNotEmpty);
+
+    if (description != null) description = description.trim();
 
     // fake network delay
     await Future.delayed(Duration(seconds: 1));
@@ -29,7 +29,7 @@ class MockTodosService implements TodosService {
         ? 1
         : this._allTodos.map((t) => int.parse(t.id.split("_")[1])).toList().orderByDesc()[0];
 
-    final mockTodoDto = TodoDto("tdo_${index + 1}", title, description, false);
+    final mockTodoDto = TodoDto("tdo_${index + 1}", title.trim(), description, false);
 
     final mockTodo = MockTodoProxy(mockTodoDto);
     this._eventAggregator.publish(TodoAddedEvent(mockTodo));
@@ -46,11 +46,11 @@ class MockTodosService implements TodosService {
 
   @override
   Future<Todo> getTodo(String id) async {
-    given(id, "id").ensureHasValue().ensure((t) => t.trim().isNotEmpty);
+    given(id, "id").ensure((t) => t.trim().isNotEmpty);
 
     // fake network delay
     await Future.delayed(Duration(seconds: 2));
 
-    return this._allTodos.find((e) => e.id == id);
+    return this._allTodos.find((e) => e.id == id)!;
   }
 }

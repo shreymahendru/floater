@@ -5,7 +5,7 @@ import 'package:floater/floater.dart';
 import 'manage_todo_page_state.dart';
 
 class ManageTodoPage extends StatefulWidgetBase<ManageTodoPageState> {
-  ManageTodoPage(String id) : super(() => ManageTodoPageState(id));
+  ManageTodoPage(String? id) : super(() => ManageTodoPageState(id));
   @override
   Widget build(BuildContext context) {
     return this.state.isServiceInitialized

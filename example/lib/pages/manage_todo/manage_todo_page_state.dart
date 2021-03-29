@@ -3,7 +3,7 @@ import 'package:floater/floater.dart';
 import 'manage_todo_page.dart';
 
 class ManageTodoPageState extends WidgetStateBase<ManageTodoPage> {
-  ServiceLocator _scope;
+  final ServiceLocator _scope = ServiceManager.instance.createScope();
   ServiceLocator get scope => this._scope;
 
   bool _isServiceInitialized = false;
@@ -11,9 +11,7 @@ class ManageTodoPageState extends WidgetStateBase<ManageTodoPage> {
   set isServiceInitialized(bool value) =>
       (this.._isServiceInitialized = value).triggerStateChange();
 
-  ManageTodoPageState(String id) : super() {
-    this._scope = ServiceManager.instance.createScope();
-    print("asd");
+  ManageTodoPageState(String? id) : super() {
     this
         ._scope
         .resolve<TodoManagementService>()

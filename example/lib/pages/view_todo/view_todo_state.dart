@@ -9,11 +9,15 @@ class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> {
   final _navigator = NavigationService.instance.retrieveNavigator("/");
 
   final String _id;
-  Todo todo;
+  late Todo todo;
 
   ViewTodoPageState(this._id) : super() {
     this.onInitState(() {
       this._init();
+    });
+
+    this.onDispose(() {
+      NavigationManager.instance.clearPersistedRoute();
     });
   }
 
@@ -22,7 +26,7 @@ class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> {
     try {
       this.todo = await this._todoService.getTodo(this._id);
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
       this._navigator.pop();
     } finally {
       this.hideLoading();

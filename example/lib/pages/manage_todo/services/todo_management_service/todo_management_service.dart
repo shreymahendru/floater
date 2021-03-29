@@ -6,17 +6,17 @@ import 'package:floater/floater.dart';
 class TodoManagementService {
   final _todosService = ServiceLocator.instance.resolve<TodosService>();
 
-  Todo _todo;
+  Todo? _todo;
 
   bool get isNewTodo => this._todo == null;
 
-  String _title;
-  String get title => this._title;
+  String? _title;
+  String? get title => this._title;
 
-  String _description;
-  String get description => this._description;
+  String? _description;
+  String? get description => this._description;
 
-  Future<void> init(String id) async {
+  Future<void> init(String? id) async {
     if (id != null) this._todo = await this._todosService.getTodo(id);
     // if a todo is passed copy the title and description or else leave it null.
     this._title = this._todo?.title;
@@ -24,12 +24,12 @@ class TodoManagementService {
   }
 
   void setTitle(String title) {
-    given(title, "title").ensureHasValue().ensure((t) => t.trim().isNotEmpty && t.length < 50);
+    given(title, "title").ensure((t) => t.trim().isNotEmpty && t.length < 50);
 
     this._title = title;
   }
 
-  void setDescription(String description) {
+  void setDescription(String? description) {
     given(description, "description")
         .ensure((t) => t == null || (t.trim().isNotEmpty && t.length < 500));
 
@@ -41,10 +41,10 @@ class TodoManagementService {
 
     // if a todo was not passed that means you are creating a new one, else you are updating the todo passed.
     if (this.isNewTodo) {
-      await this._todosService.createTodo(this._title, this._description);
+      await this._todosService.createTodo(this._title!, this._description);
       return;
     }
 
-    await this._todo.update(this._title, this._description);
+    await this._todo!.update(this._title!, this._description);
   }
 }

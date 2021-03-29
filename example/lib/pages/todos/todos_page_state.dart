@@ -11,8 +11,8 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   final _todosService = ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
 
-  List<Todo> _todos;
-  List<Todo> get todos => this._todos ?? [];
+  List<Todo> _todos = [];
+  List<Todo> get todos => this._todos;
 
   bool _isTogglingTodoCompletion = false;
   bool get isTogglingTodoCompletion => this._isTogglingTodoCompletion;
@@ -83,7 +83,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     try {
       this._todos = await this._todosService.getAllTodos();
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
       return;
     } finally {
       this.hideLoading();

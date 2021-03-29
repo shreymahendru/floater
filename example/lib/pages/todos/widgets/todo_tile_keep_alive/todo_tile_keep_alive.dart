@@ -8,18 +8,20 @@ class TodoTileKeepAlive extends StatefulWidgetBase<TodoTileKeepAliveState> {
   final VoidCallback onEditTodoPressed;
 
   TodoTileKeepAlive({
-    Todo todo,
-    this.toggleCompletionForTodo,
-    this.onEditTodoPressed,
+    required Todo todo,
+    required this.toggleCompletionForTodo,
+    required this.onEditTodoPressed,
   }) : super(() => TodoTileKeepAliveState(todo));
 
   @override
   Widget build(BuildContext context) {
     final todo = this.state.todo;
+    final title = todo.title;
+    final description = todo.description;
     return ListTile(
       tileColor: this.state.isClicked ? Colors.teal : Colors.white,
-      title: Text(todo.title),
-      subtitle: todo.description != null ? Text(todo.description) : null,
+      title: Text(title),
+      subtitle: description != null ? Text(description) : null,
       dense: true,
       onTap: this.state.onTodoPressed,
       leading: IconButton(
