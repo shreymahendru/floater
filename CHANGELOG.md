@@ -1,6 +1,7 @@
 ## [0.1.0] - March 29, 2021
 * Null safety
 * String isEmptyOrWhiteSpace and isNotEmptyOrWhiteSpace
+* BREAKING CHANGE: `given(value, "value").ensureHasValue()` is removed since it would have no values with new nullable dart types
 
 ## [0.0.5+1] - January 2, 2021
 * Route gen Bug fix

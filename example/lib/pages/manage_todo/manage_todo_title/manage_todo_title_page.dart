@@ -28,7 +28,7 @@ class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
-                  errorText: this.state.errors.getError("title") as String?,
+                  errorText: this.state.errors.getError("title"),
                 ),
               ),
               SizedBox(height: 30),

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:floater/src/service_locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import "defensive.dart";
 import 'navigation.dart';
 
 @immutable
@@ -27,8 +26,6 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
   Widget build(BuildContext context);
 
   void _setState(T state) {
-    given(state, "state").ensureHasValue();
-
     if (this._stateHolder.isEmpty) {
       this._stateHolder.add(state);
     } else {
@@ -69,7 +66,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @nonVirtual
   @mustCallSuper
   void onInitState(VoidCallback callback) {
-    given(callback, "callback").ensureHasValue();
+    // given(callback, "callback").ensureHasValue();
     this._onInitState = callback;
   }
 
@@ -99,7 +96,6 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @nonVirtual
   @mustCallSuper
   void onDeactivate(VoidCallback callback) {
-    given(callback, "callback").ensureHasValue();
     this._onDeactivate = callback;
   }
 
@@ -120,8 +116,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onDispose(void Function() callback) {
-    given(callback, "callback").ensureHasValue();
+  void onDispose(VoidCallback callback) {
     this._onDispose = callback;
   }
 
@@ -136,7 +131,6 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @nonVirtual
   @mustCallSuper
   void onStateChange(VoidCallback callback) {
-    given(callback, "callback").ensureHasValue();
     this._onStateChange = callback;
   }
 

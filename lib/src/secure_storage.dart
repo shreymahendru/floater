@@ -15,7 +15,7 @@ class FloaterSecureStorageService implements SecureStorageService {
   @override
   Future<void> store(String key, String value) async {
     given(key, "key").ensure((t) => key.isNotEmptyOrWhiteSpace);
-    given(value, "value").ensureHasValue();
+    // given(value, "value").ensureHasValue();
 
     await this._secureStorage.write(key: key.trim(), value: value);
   }

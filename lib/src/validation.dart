@@ -5,12 +5,12 @@ import 'extensions.dart';
 class ValidationErrors {
   final _errors = <String, Object?>{};
 
-  Object? getError(String propertyName) {
+  T? getError<T>(String propertyName) {
+    if (propertyName.isEmptyOrWhiteSpace) return null;
     propertyName = propertyName.trim();
-    if (propertyName.isEmpty) return null;
 
     if (!propertyName.contains(".")) {
-      if (this._errors.containsKey(propertyName)) return this._errors[propertyName];
+      if (this._errors.containsKey(propertyName)) return this._errors[propertyName] as T?;
       return null;
     }
 
@@ -33,7 +33,7 @@ class ValidationErrors {
           "In Map $this the value for key = ${split.getRange(0, i).join(".")} expected Map<String, dynamic> or ValidationErrors got ${current.runtimeType} [$current]");
     }
 
-    return current as Object?;
+    return current as T?;
   }
 
   void _setError(String propertyName, Object? value) {
@@ -45,6 +45,8 @@ class ValidationErrors {
     return this._errors.toString();
   }
 }
+
+// class ExternalValidator<T extends Object> extends Validator<T> {}
 
 class Validator<T extends Object?> {
   final List<_InternalPropertyValidator<T, Object?>> _propertyValidators = [];
@@ -64,8 +66,8 @@ class Validator<T extends Object?> {
 
   PropertyValidator<T, TProperty> prop<TProperty extends Object?>(
       String propertyName, TProperty Function(T value) propertyFunc) {
-    given(propertyName, "propertyName").ensureHasValue();
-    given(propertyFunc, "propertyFunc").ensureHasValue();
+    given(propertyName, "propertyName").ensure((t) => t.isNotEmptyOrWhiteSpace);
+
     final propertyValidator =
         new _InternalPropertyValidator<T, TProperty>(propertyName, propertyFunc);
     this._propertyValidators.add(propertyValidator);
@@ -74,7 +76,7 @@ class Validator<T extends Object?> {
   }
 
   void clearProp(String propertyName) {
-    given(propertyName, "propertyName").ensureHasValue();
+    given(propertyName, "propertyName").ensure((t) => t.isNotEmptyOrWhiteSpace);
     final _InternalPropertyValidator<T, Object?>? propertyValidator =
         this._propertyValidators.find((t) => t.propertyName == propertyName);
     if (propertyValidator == null) return;
@@ -84,7 +86,6 @@ class Validator<T extends Object?> {
   }
 
   void validate(T value) {
-    given(value, "value").ensureHasValue();
     this._hasErrors = false;
     if (this._isEnabled) {
       this._propertyValidators.forEach((t) {
@@ -131,8 +132,7 @@ abstract class ValidationRule<T> {
   bool validate(T value);
 
   factory ValidationRule(bool Function(T val) validationFunc, String error) {
-    given(validationFunc, "validationFunc").ensureHasValue();
-    given(error, "error").ensureHasValue();
+    given(error, "error").ensure((t) => t.isNotEmptyOrWhiteSpace);
     return new _ConcreteValidationRule(validationFunc, error);
   }
 }
@@ -190,6 +190,8 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
         this._propertyFunc = propertyFunc;
 
   void validate(T value) {
+    given(value, "value").ensure((t) => t != null);
+
     this._hasError = false;
     this._error = null;
 
@@ -257,7 +259,6 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 
   @override
   PropertyValidator<T, TProperty> ensure(bool Function(TProperty) propertyValidationPredicate) {
-    given(propertyValidationPredicate, "propertyValidationPredicate").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.ensure(propertyValidationPredicate);
     this._validationRules.add(this._lastValidationRule);
@@ -266,7 +267,6 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 
   @override
   PropertyValidator<T, TProperty> ensureT(bool Function(T) valueValidationPredicate) {
-    given(valueValidationPredicate, "valueValidationPredicate").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.ensureT(valueValidationPredicate);
     this._validationRules.add(this._lastValidationRule);
@@ -275,7 +275,6 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 
   @override
   PropertyValidator<T, TProperty> useValidationRule(ValidationRule<TProperty> validationRule) {
-    given(validationRule, "validationRule").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.useValidationRule(validationRule);
     this._validationRules.add(this._lastValidationRule);
@@ -284,7 +283,6 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 
   @override
   PropertyValidator<T, TProperty> useValidator(Validator<TProperty> validator) {
-    given(validator, "validator").ensureHasValue();
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.useValidator(validator);
     this._validationRules.add(this._lastValidationRule);
@@ -293,7 +291,6 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
 
   @override
   PropertyValidator<T, TProperty> when(bool Function(T) conditionPredicate) {
-    given(conditionPredicate, "conditionPredicate").ensureHasValue();
     if (this._lastValidationRule == null)
       this._conditionPredicate = conditionPredicate;
     else

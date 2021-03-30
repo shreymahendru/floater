@@ -1,5 +1,3 @@
-import 'defensive.dart';
-
 extension MapStringDynamicExt on Map<String, dynamic> {
   T? getValue<T>(String key) {
     if (key.isEmptyOrWhiteSpace) return null;
@@ -70,7 +68,7 @@ extension ListExt<T> on List<T> {
   }
 
   List<T> orderBy<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
-    given(valueFunc, "valueFunc").ensureHasValue();
+    // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 
     internal.sort((a, b) {
@@ -82,7 +80,7 @@ extension ListExt<T> on List<T> {
   }
 
   List<T> orderByDesc<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
-    given(valueFunc, "valueFunc").ensureHasValue();
+    // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 
     internal.sort((a, b) {

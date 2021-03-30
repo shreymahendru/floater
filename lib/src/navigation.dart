@@ -37,7 +37,7 @@ class _NavigationManager {
       bool fullscreenDialog = false,
       bool persist = false]) {
     given(route, "route")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim() != "/", "cannot be root")
         .ensure((t) => t.trim().startsWith("/"), "must start with '/'")
         .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("//"),
@@ -48,7 +48,7 @@ class _NavigationManager {
             "only top level routes can persist");
     // .ensure((t) => t.contains("?") ? t.split("?").length == 2 : true, "must have only one '?'");
 
-    given(factoryFunc, "factoryFunc").ensureHasValue();
+    // given(factoryFunc, "factoryFunc").ensureHasValue();
 
     var path = route.trim().replaceAll(new RegExp(r"\s"), "").trim();
     String? query;
@@ -117,7 +117,7 @@ class _NavigationManager {
 
   GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
     given(basePath, "basePath")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
 
     if (!this._navigatorKeys.containsKey(basePath)) {
@@ -134,10 +134,10 @@ class _NavigationManager {
 
   void disposeNavigatorKey(String basePath, GlobalKey<NavigatorState> key) {
     given(basePath, "basePath")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
 
-    given(key, "key").ensureHasValue();
+    // given(key, "key").ensureHasValue();
 
     if (!this._navigatorKeys.containsKey(basePath)) return;
 
@@ -156,7 +156,7 @@ class _NavigationManager {
   }
 
   Map<String, _PageRegistration> generateMappedRoutes(String basePath) {
-    given(basePath, "basePath").ensureHasValue().ensure(
+    given(basePath, "basePath").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
         (t) => this._pageRegistrations.any((element) => element.path == basePath),
         "Unknown path $basePath");
 
@@ -190,7 +190,7 @@ class _NavigationManager {
 
   NavigatorState retrieveNavigator(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].globalKey.currentState;
@@ -200,7 +200,7 @@ class _NavigationManager {
 
   ServiceLocator retrieveScope(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].scope;
@@ -314,7 +314,7 @@ class _PageRegistration {
 
   Map<String, dynamic> _parseQuery(String? query) {
     final result = <String, dynamic>{};
-    if (query == null || query.trim().isEmpty) return result;
+    if (query == null || query.isEmptyOrWhiteSpace) return result;
 
     if (query.contains(new RegExp(r'[{:}]'))) throw new Exception("Invalid query: $query");
 
@@ -462,7 +462,7 @@ class NavigationManager {
 
   String _generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
     given(routeTemplate, "routeTemplate")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.startsWith("/"), "invalid route template");
 
     final path = this._getJustPath(routeTemplate);
@@ -509,7 +509,7 @@ class NavigationManager {
 
   String _getJustPath(String route) {
     given(route, "route")
-        .ensureHasValue()
+        // .ensureHasValue()
         .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
 
     route = route.trim();
@@ -523,7 +523,7 @@ class NavigationManager {
 
   String? _getJustQuery(String route) {
     given(route, "route")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
     route = route.trim();
     if (!route.contains("?")) return null;
@@ -533,7 +533,7 @@ class NavigationManager {
 
   void persistRoute(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim().substring(1).split("/").length == 1);
 
     unawaited(SharedPreferences.getInstance().then((t) => t.setString(_persistKey, path))

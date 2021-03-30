@@ -1,7 +1,7 @@
 import 'extensions.dart';
 
 abstract class Ensurer<T> {
-  Ensurer<T> ensureHasValue();
+  // Ensurer<T> ensureHasValue();
   Ensurer<T> ensure(bool Function(T t) func, [String? reason]);
 }
 
@@ -17,15 +17,15 @@ class _EnsurerInternal<T> extends Ensurer<T> {
 
   _EnsurerInternal(this._arg, this._argName);
 
-  @override
-  Ensurer<T> ensureHasValue() {
-    if (this._arg == null) throw new ArgumentError(this._argName);
+  // @override
+  // Ensurer<T> ensureHasValue() {
+  //   if (this._arg == null) throw new ArgumentError(this._argName);
 
-    if (this._arg is String && (this._arg as String).isEmptyOrWhiteSpace)
-      throw new ArgumentError("Argument ${this._argName} does not not have a value");
+  //   if (this._arg is String && (this._arg as String).isEmptyOrWhiteSpace)
+  //     throw new ArgumentError("Argument ${this._argName} does not not have a value");
 
-    return this;
-  }
+  //   return this;
+  // }
 
   @override
   Ensurer<T> ensure(bool Function(T) func, [String? reason]) {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:pedantic/pedantic.dart';
-import 'defensive.dart';
+// import 'defensive.dart';
 import 'service_locator.dart';
 
 /// Event Aggregator
@@ -53,7 +53,7 @@ class FloaterEventAggregator implements EventAggregator {
   /// Publish an new event.
   @override
   void publish<T>(T event) {
-    given(event, "event").ensureHasValue();
+    // given(event, "event").ensureHasValue();
 
     if (this._isDisposed) throw new Exception("Object disposed");
 
