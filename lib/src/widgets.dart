@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:floater/src/service_locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import "defensive.dart";
 import 'navigation.dart';
 
 @immutable
@@ -16,7 +15,7 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
   @protected
   T get state => this._stateHolder[0];
 
-  StatefulWidgetBase(T Function() createState, {Key key})
+  StatefulWidgetBase(T Function() createState, {Key? key})
       : this._createState = createState,
         super(key: key);
 
@@ -27,8 +26,6 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
   Widget build(BuildContext context);
 
   void _setState(T state) {
-    given(state, "state").ensureHasValue();
-
     if (this._stateHolder.isEmpty) {
       this._stateHolder.add(state);
     } else {
@@ -41,10 +38,10 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   final _watches = <Stream, StreamSubscription>{};
   bool _isInitialized = false;
 
-  void Function() _onInitState;
-  void Function() _onDeactivate;
-  void Function() _onDispose;
-  void Function() _onStateChange;
+  VoidCallback? _onInitState;
+  VoidCallback? _onDeactivate;
+  VoidCallback? _onDispose;
+  VoidCallback? _onStateChange;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -62,14 +59,14 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     super.initState();
 
     this._isInitialized = true;
-    if (this._onInitState != null) this._onInitState();
+    if (this._onInitState != null) this._onInitState!();
   }
 
   @protected
   @nonVirtual
   @mustCallSuper
-  void onInitState(void Function() callback) {
-    given(callback, "callback").ensureHasValue();
+  void onInitState(VoidCallback callback) {
+    // given(callback, "callback").ensureHasValue();
     this._onInitState = callback;
   }
 
@@ -77,9 +74,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void setState([void Function() fn]) {
+  void setState([VoidCallback? fn]) {
     if (fn != null) fn();
-    if (this._onStateChange != null) this._onStateChange();
+    if (this._onStateChange != null) this._onStateChange!();
     if (!this._isInitialized) return;
     if (this._isDisposed) return;
     super.setState(() {});
@@ -90,7 +87,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @nonVirtual
   @mustCallSuper
   void deactivate() {
-    if (this._onDeactivate != null) this._onDeactivate();
+    if (this._onDeactivate != null) this._onDeactivate!();
 
     super.deactivate();
   }
@@ -98,8 +95,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onDeactivate(void Function() callback) {
-    given(callback, "callback").ensureHasValue();
+  void onDeactivate(VoidCallback callback) {
     this._onDeactivate = callback;
   }
 
@@ -112,7 +108,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     this._watches.values.forEach((watcher) => watcher.cancel());
     this._watches.clear();
 
-    if (this._onDispose != null) this._onDispose();
+    if (this._onDispose != null) this._onDispose!();
 
     super.dispose();
   }
@@ -120,8 +116,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onDispose(void Function() callback) {
-    given(callback, "callback").ensureHasValue();
+  void onDispose(VoidCallback callback) {
     this._onDispose = callback;
   }
 
@@ -135,19 +130,18 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
-  void onStateChange(void Function() callback) {
-    given(callback, "callback").ensureHasValue();
+  void onStateChange(VoidCallback callback) {
     this._onStateChange = callback;
   }
 
   @protected
   @nonVirtual
   @mustCallSuper
-  void watch<U>(Stream<U> stream, [FutureOr<void> Function(U data) onData]) {
+  void watch<U>(Stream<U> stream, [FutureOr<void> Function(U data)? onData]) {
     if (this._watches.containsKey(stream)) return;
     onData ??= (U data) {};
     this._watches[stream] = stream.listen((event) async {
-      await onData(event);
+      await onData!(event);
       this.triggerStateChange();
     });
   }
@@ -157,7 +151,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @mustCallSuper
   void unwatch(Stream stream) {
     if (!this._watches.containsKey(stream)) return;
-    final watcher = this._watches[stream];
+    final watcher = this._watches[stream]!;
     this._watches.remove(stream);
     watcher.cancel();
   }
@@ -187,10 +181,10 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   }
 }
 
-/// For clients of AutomaticKeepAlive (example: ListView). 
+/// For clients of AutomaticKeepAlive (example: ListView).
 /// This keeps the state of a widget alive, given the wantAlive is set to true.
-abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
-    extends WidgetStateBase<T> with AutomaticKeepAliveClientMixin {
+abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends WidgetStateBase<T>
+    with AutomaticKeepAliveClientMixin {
   bool _keepAlive = true;
 
   @override
@@ -220,15 +214,15 @@ abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
 @sealed
 class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
   final String _initialRoute;
-  final Map<String, dynamic> _initialRouteArgs;
+  final Map<String, dynamic>? _initialRouteArgs;
   final TransitionDelegate<dynamic> _transitionDelegate;
 
   ScopedNavigator(
     String basePath, {
-    @required String initialRoute,
-    Map<String, dynamic> initialRouteArgs,
+    required String initialRoute,
+    Map<String, dynamic>? initialRouteArgs,
     TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
-    ServiceLocator scope,
+    ServiceLocator? scope,
   })  : this._initialRoute = initialRoute,
         this._initialRouteArgs = initialRouteArgs,
         this._transitionDelegate = transitionDelegate,
@@ -268,7 +262,7 @@ class _ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
   String get basePath => this._basePath;
   GlobalKey<NavigatorState> get key => this._key;
 
-  _ScopedNavigatorState(String basePath, ServiceLocator scope)
+  _ScopedNavigatorState(String basePath, ServiceLocator? scope)
       : this._basePath = basePath,
         this._key = NavigationManager.instance.generateNavigatorKey(basePath, scope) {
     this.onDispose(() => NavigationManager.instance.disposeNavigatorKey(this._basePath, this._key));

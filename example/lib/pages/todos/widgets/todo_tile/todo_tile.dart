@@ -9,17 +9,18 @@ class TodoTile extends StatelessWidgetBase {
   final VoidCallback onEditTodoPressed;
 
   TodoTile({
-    this.todo,
-    this.onTodoPressed,
-    this.toggleCompletionForTodo,
-    this.onEditTodoPressed,
+    required this.todo,
+    required this.onTodoPressed,
+    required this.toggleCompletionForTodo,
+    required this.onEditTodoPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    final description = todo.description;
     return ListTile(
       title: Text(todo.title),
-      subtitle: todo.description != null ? Text(todo.description) : null,
+      subtitle: description != null ? Text(description) : null,
       dense: true,
       onTap: this.onTodoPressed,
       leading: IconButton(

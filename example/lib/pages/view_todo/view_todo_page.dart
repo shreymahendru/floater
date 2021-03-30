@@ -23,7 +23,7 @@ class ViewTodoPage extends StatefulWidgetBase<ViewTodoPageState> {
         child: Center(
           child: LoadingSpinner(),
         ),
-      );    
+      );
 
     return Center(
       child: Column(
@@ -34,10 +34,11 @@ class ViewTodoPage extends StatefulWidgetBase<ViewTodoPageState> {
             this.state.todo.title,
             style: Theme.of(context).textTheme.headline6,
           ),
-          Text(
-            this.state.todo.description,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
+          if (this.state.todo.description != null)
+            Text(
+              this.state.todo.description!,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
         ],
       ),
     );

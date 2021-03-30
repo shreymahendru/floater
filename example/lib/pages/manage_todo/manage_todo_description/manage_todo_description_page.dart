@@ -34,15 +34,13 @@ class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescription
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                    errorText: this.state.errors.getError("description"),
+                    errorText: this.state.errors.getError("description") as String?,
                   ),
                 ),
                 SizedBox(height: 30),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: this.state.hasErrors ? null : this.state.submit,
                   child: Text(this.state.isNewTodo ? "Create" : "Update"),
-                  color: Colors.blueAccent,
-                  textColor: Colors.white,
                 ),
               ],
             ),

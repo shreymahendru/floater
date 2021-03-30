@@ -7,8 +7,8 @@ class OverlayLoadingSpinner extends StatelessWidgetBase {
   final bool isEnabled;
 
   OverlayLoadingSpinner({
-    @required this.child,
-    @required this.isEnabled,
+    required this.child,
+    required this.isEnabled,
   });
 
   @override

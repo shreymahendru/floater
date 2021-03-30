@@ -1,28 +1,51 @@
 import "package:flutter_test/flutter_test.dart";
 import 'package:floater/src/validation.dart';
 
+class Stats {
+  int stat1;
+  int stat2;
+
+  Stats(this.stat1, this.stat2);
+}
+
 class TestVal {
   String firstName;
-  String lastName;
+  String? lastName;
   int age;
+  int? height;
   List<int> scores;
+  List<int>? oldScores;
   dynamic address;
-  String phone;
-  String email;
+  bool? active;
+  Stats? stats;
+
+  TestVal({
+    required this.firstName,
+    this.lastName,
+    required this.age,
+    this.height,
+    required this.scores,
+    this.oldScores,
+    this.address,
+    this.active,
+  });
 }
 
 void main() {
-  TestVal testVal;
-  Validator<TestVal> validator;
+  late TestVal testVal;
+  late Validator<TestVal> validator;
 
   setUp(() {
-    testVal = new TestVal();
-    testVal.firstName = "John";
-    testVal.lastName = "doh";
-    testVal.age = 31;
-    testVal.scores = [200, 400, 800];
-    testVal.phone = "1112223456";
-    testVal.email = "test@test.com";
+    testVal = new TestVal(
+      firstName: "John",
+      lastName: "doh",
+      age: 31,
+      height: 6,
+      scores: [200, 400, 800],
+      oldScores: null,
+      address: {"street": "15 Benton rd", "province": "ON"},
+      active: true,
+    );
   });
 
   group("hasMinValue", () {
@@ -39,18 +62,59 @@ void main() {
       validator.prop("age", (t) => t.age).hasMinValue(18);
       testVal.age = 16;
       validator.validate(testVal);
-      expect(validator.isValid, false, reason: "Should be true");
+      expect(validator.isValid, false, reason: "Should be false");
       expect(validator.hasErrors, true, reason: "Should have error");
-      // expect(validator.errors["age"], "Value cannot be less than 18",
-      //     reason: "Should have a correct message");
 
       expect(validator.errors.getError("age"), "Value cannot be less than 18",
           reason: "Should have a correct message");
     });
+
     test("should pass when the property of the object being validated has value equal to 18", () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).hasMinValue(18);
       testVal.age = 18;
+      validator.validate(testVal);
+      expect(validator.isValid, true, reason: "Should be true");
+    });
+
+    test(
+        "should pass when nullable property of the object being validated has value greater than 18",
+        () {
+      validator = new Validator<TestVal>();
+      testVal.height = 20;
+      validator.prop("height", (t) => t.height).hasMinValue(18);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should pass when nullable property of the object being validated has value of null", () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMinValue(18);
+      testVal.height = null;
+      validator.validate(testVal);
+
+      expect(validator.isValid, true, reason: "Should be false");
+      expect(validator.hasErrors, false, reason: "Should not have error");
+    });
+
+    test("should fail when nullable property of the object being validated has value less than 18",
+        () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMinValue(18);
+      testVal.height = 16;
+      validator.validate(testVal);
+      expect(validator.isValid, false, reason: "Should be false");
+      expect(validator.hasErrors, true, reason: "Should have error");
+
+      expect(validator.errors.getError("height"), "Value cannot be less than 18",
+          reason: "Should have a correct message");
+    });
+
+    test("should pass when nullable property of the object being validated has value equal to 18",
+        () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMinValue(18);
+      testVal.height = 18;
       validator.validate(testVal);
       expect(validator.isValid, true, reason: "Should be true");
     });
@@ -74,15 +138,57 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be true");
       expect(validator.hasErrors, true, reason: "Should have error");
-      // expect(validator.errors["age"], "Value cannot be greater than 18",
-      //     reason: "Should have a correct message");
+
       expect(validator.errors.getError("age"), "Value cannot be greater than 18",
           reason: "Should have a correct message");
     });
+
     test("should pass when the property of the object being validated has value equal to 18", () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).hasMaxValue(18);
       testVal.age = 18;
+      validator.validate(testVal);
+      expect(validator.isValid, true, reason: "Should be true");
+    });
+
+    test("should pass when nullable property of the object being validated has value less than 18",
+        () {
+      validator = new Validator<TestVal>();
+      testVal.height = 2;
+      validator.prop("height", (t) => t.height).hasMaxValue(18);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should pass when nullable property of the object being validated has value of null", () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMaxValue(18);
+      testVal.height = null;
+      validator.validate(testVal);
+
+      expect(validator.isValid, true, reason: "Should be false");
+      expect(validator.hasErrors, false, reason: "Should not have error");
+    });
+
+    test(
+        "should fail when nullable property of the object being validated has value is greater than 18",
+        () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMaxValue(18);
+      testVal.height = 26;
+      validator.validate(testVal);
+      expect(validator.isValid, false, reason: "Should be true");
+      expect(validator.hasErrors, true, reason: "Should have error");
+
+      expect(validator.errors.getError("height"), "Value cannot be greater than 18",
+          reason: "Should have a correct message");
+    });
+
+    test("should pass when nullable property of the object being validated has value equal to 18",
+        () {
+      validator = new Validator<TestVal>();
+      validator.prop("height", (t) => t.height).hasMaxValue(18);
+      testVal.height = 18;
       validator.validate(testVal);
       expect(validator.isValid, true, reason: "Should be true");
     });
@@ -104,7 +210,7 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      // expect(validator.errors["age"], "Invalid value", reason: "Should have a correct message");
+
       expect(validator.errors.getError("age"), "Invalid value",
           reason: "Should have a correct message");
     });
@@ -116,8 +222,42 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      // expect(validator.errors["age"], "Invalid value", reason: "Should have a correct message");
+
       expect(validator.errors.getError("age"), "Invalid value",
+          reason: "Should have a correct message");
+    });
+
+    test("should pass when nullable property of the object being validated is in the given set",
+        () {
+      validator = new Validator<TestVal>();
+      final setList = [12, 323, 18, 25, 31];
+      testVal.height = 323;
+      validator.prop("height", (t) => t.height).isInNumbers(setList);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should pass when nullable property of the object being validated is null", () {
+      validator = new Validator<TestVal>();
+      final setList = [12, 323, 18, 25, 31];
+      testVal.height = null;
+      validator.prop("height", (t) => t.height).isInNumbers(setList);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should fail when nullable property of the object being validated is not in the given set",
+        () {
+      validator = new Validator<TestVal>();
+      final setList = [1, 2, 3, 4];
+      testVal.height = 323;
+      validator.prop("height", (t) => t.height).isInNumbers(setList);
+
+      validator.validate(testVal);
+
+      expect(validator.isValid, false, reason: "Should be invalid");
+      expect(validator.hasErrors, true, reason: "Should have error");
+      expect(validator.errors.getError("height"), "Invalid value",
           reason: "Should have a correct message");
     });
   });
@@ -138,8 +278,8 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      // expect(validator.errors["age"], "Invalid value", reason: "Should have a correct message");
-      expect(validator.errors.getError("age"), "Invalid value", reason: "Should have a correct message");
+      expect(validator.errors.getError("age"), "Invalid value",
+          reason: "Should have a correct message");
     });
 
     test("should pass when the given set empty", () {
@@ -150,15 +290,37 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    // test("should fail when the property of the object being validated is null and is in the given set", () {
-    //   validator = new Validator<TestVal>();
-    //   final setList = [1, 2, 3, null];
-    //   validator.prop("age", (t) => t.age).isNotInNumbers(setList);
-    //   testVal.age = null;
-    //   validator.validate(testVal);
-    //   expect(validator.isValid, false, reason: "Should be invalid");
-    //   expect(validator.hasErrors, true, reason: "Should have error");
-    //   expect(validator.errors["age"], "Invalid value", reason: "Should have a correct message");
-    // });
+    test("should pass when nullable property of the object being validated is not in the given set",
+        () {
+      validator = new Validator<TestVal>();
+      final setList = [12, 323, 18, 25];
+      testVal.height = 213;
+      validator.prop("height", (t) => t.height).isNotInNumbers(setList);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should pass when the property is set to null", () {
+      validator = new Validator<TestVal>();
+      final setList = <int>[];
+      testVal.height = null;
+      validator.prop("height", (t) => t.height).isNotInNumbers(setList);
+      validator.validate(testVal);
+      expect(validator.isValid, true);
+    });
+
+    test("should fail when nullable property of the object being validated is in the given set",
+        () {
+      validator = new Validator<TestVal>();
+      final setList = [1, 2, 3, 4, 31];
+      testVal.height = 2;
+      validator.prop("height", (t) => t.height).isNotInNumbers(setList);
+      validator.validate(testVal);
+      expect(validator.isValid, false, reason: "Should be invalid");
+      expect(validator.hasErrors, true, reason: "Should have error");
+      // expect(validator.errors["age"], "Invalid value", reason: "Should have a correct message");
+      expect(validator.errors.getError("height"), "Invalid value",
+          reason: "Should have a correct message");
+    });
   });
 }

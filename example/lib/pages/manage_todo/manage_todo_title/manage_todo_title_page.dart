@@ -32,11 +32,9 @@ class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
                 ),
               ),
               SizedBox(height: 30),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: this.state.hasErrors ? null : this.state.submit,
                 child: Text("Next"),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
               ),
             ],
           ),

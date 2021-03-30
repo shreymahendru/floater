@@ -37,7 +37,7 @@ class _NavigationManager {
       bool fullscreenDialog = false,
       bool persist = false]) {
     given(route, "route")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim() != "/", "cannot be root")
         .ensure((t) => t.trim().startsWith("/"), "must start with '/'")
         .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("//"),
@@ -48,10 +48,10 @@ class _NavigationManager {
             "only top level routes can persist");
     // .ensure((t) => t.contains("?") ? t.split("?").length == 2 : true, "must have only one '?'");
 
-    given(factoryFunc, "factoryFunc").ensureHasValue();
+    // given(factoryFunc, "factoryFunc").ensureHasValue();
 
     var path = route.trim().replaceAll(new RegExp(r"\s"), "").trim();
-    String query;
+    String? query;
     if (path.contains("?")) {
       final split = path.split("?");
       path = split[0].trim();
@@ -115,16 +115,16 @@ class _NavigationManager {
     }
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator scope]) {
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
     given(basePath, "basePath")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
 
     if (!this._navigatorKeys.containsKey(basePath)) {
       this._navigatorKeys[basePath] = new Queue<_NavTracker>();
     }
 
-    final queue = this._navigatorKeys[basePath];
+    final queue = this._navigatorKeys[basePath]!;
     final navTracker = new _NavTracker(new GlobalKey<NavigatorState>(debugLabel: basePath),
         scope ?? ServiceManager.instance.createScope());
     queue.add(navTracker);
@@ -134,14 +134,14 @@ class _NavigationManager {
 
   void disposeNavigatorKey(String basePath, GlobalKey<NavigatorState> key) {
     given(basePath, "basePath")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
 
-    given(key, "key").ensureHasValue();
+    // given(key, "key").ensureHasValue();
 
     if (!this._navigatorKeys.containsKey(basePath)) return;
 
-    final queue = this._navigatorKeys[basePath];
+    final queue = this._navigatorKeys[basePath]!;
     final tracker = queue.last;
 
     // given(key, "key")
@@ -156,7 +156,7 @@ class _NavigationManager {
   }
 
   Map<String, _PageRegistration> generateMappedRoutes(String basePath) {
-    given(basePath, "basePath").ensureHasValue().ensure(
+    given(basePath, "basePath").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
         (t) => this._pageRegistrations.any((element) => element.path == basePath),
         "Unknown path $basePath");
 
@@ -170,8 +170,8 @@ class _NavigationManager {
     return result;
   }
 
-  List<Route<dynamic>> generateInitialRoutes(String path, String query,
-      [Map<String, dynamic> initialRouteArgs]) {
+  List<Route<dynamic>> generateInitialRoutes(String path, String? query,
+      [Map<String, dynamic>? initialRouteArgs]) {
     final result = <Route<dynamic>>[];
     // FIXME: this is incorrect and should be implemented properly to facilitate deep linking
     // Ref: https://api.flutter.dev/flutter/widgets/Navigator/defaultGenerateInitialRoutes.html
@@ -190,22 +190,22 @@ class _NavigationManager {
 
   NavigatorState retrieveNavigator(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].globalKey.currentState;
 
-    return this._navigatorKeys[path.trim()].last.globalKey.currentState;
+    return this._navigatorKeys[path.trim()]!.last.globalKey.currentState!;
   }
 
   ServiceLocator retrieveScope(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].scope;
 
-    return this._navigatorKeys[path.trim()].last.scope;
+    return this._navigatorKeys[path.trim()]!.last.scope;
   }
 
   Widget _createRootWidget() {
@@ -221,7 +221,7 @@ class _PageRegistration {
   final String route;
   final String path;
   final List<String> pathSegments;
-  final String query;
+  final String? query;
   final Map<String, String> queryParams;
   final dynamic Function(dynamic args) factoryFunc;
   final PageType pageType;
@@ -234,13 +234,13 @@ class _PageRegistration {
   _PageRegistration(this.route, this.path, this.pathSegments, this.query, this.queryParams,
       this.factoryFunc, this.pageType, this.fullscreenDialog, this.persist);
 
-  Route generateRoute(RouteSettings settings, String query) {
+  Route generateRoute(RouteSettings settings, String? query) {
     final queryArgs = this._parseQuery(query);
 
     final widgetBuilder = (BuildContext context) {
-      settings ??= ModalRoute.of(context).settings;
+      // settings ??= ModalRoute.of(context)!.settings;
       final args = queryArgs;
-      args.addAll(settings.arguments ?? {});
+      args.addAll(settings.arguments as Map<String, dynamic>? ?? {});
       final consolidatedArgs = <String, dynamic>{};
 
       this.queryParams.forEach((key, type) {
@@ -255,20 +255,20 @@ class _PageRegistration {
         switch (type) {
           case _ValidTypes.string:
             given(argValue, key).ensure((t) => t is String, "must be String");
-            argValue = argValue as String;
+            argValue = argValue as String?;
             break;
           case _ValidTypes.number:
             given(argValue, key).ensure((t) => t is num, "must be num");
-            argValue = argValue as num;
+            argValue = argValue as num?;
             break;
           case _ValidTypes.boolean:
             given(argValue, key).ensure((t) => t is bool, "must be bool");
-            argValue = argValue as bool;
+            argValue = argValue as bool?;
             break;
           case _ValidTypes.object:
             // ignore: unnecessary_type_check
             given(argValue, key).ensure((t) => t is Object, "must be Object");
-            argValue = argValue as Object;
+            argValue = argValue as Object?;
             break;
         }
 
@@ -285,7 +285,7 @@ class _PageRegistration {
         var runtimePath = this.path;
         final runtimeArgs =
             consolidatedArgs.entries.map((t) => "${t.key}=${t.value}").join("&").trim();
-        if (runtimeArgs != null && runtimeArgs.isNotEmpty) runtimePath += "?" + runtimeArgs;
+        if (runtimeArgs.isNotEmpty) runtimePath += "?" + runtimeArgs;
 
         // print("RUNTIME PATH $runtimePath");
         NavigationManager.instance.persistRoute(runtimePath);
@@ -312,9 +312,9 @@ class _PageRegistration {
     }
   }
 
-  Map<String, dynamic> _parseQuery(String query) {
+  Map<String, dynamic> _parseQuery(String? query) {
     final result = <String, dynamic>{};
-    if (query == null || query.trim().isEmpty) return result;
+    if (query == null || query.isEmptyOrWhiteSpace) return result;
 
     if (query.contains(new RegExp(r'[{:}]'))) throw new Exception("Invalid query: $query");
 
@@ -347,7 +347,6 @@ class _PageRegistration {
             break;
           case _ValidTypes.object:
             throw new Exception("Unsupported Type");
-            break;
         }
 
       result[key] = typedValue;
@@ -356,8 +355,8 @@ class _PageRegistration {
     return result;
   }
 
-  bool _parseBool(String value) {
-    if (value == null || value.trim().isEmpty) return null;
+  bool? _parseBool(String value) {
+    if (value.trim().isEmpty) return null;
     value = value.trim().toLowerCase();
     switch (value) {
       case "true":
@@ -404,11 +403,11 @@ class NavigationManager {
     final mappedRoutes = _manager.generateMappedRoutes(path);
 
     final routeFactory = (RouteSettings settings) {
-      final route = settings.name.trim();
+      final route = settings.name!.trim();
       final path = this._getJustPath(route);
       final query = this._getJustQuery(route);
       if (!mappedRoutes.containsKey(path)) throw Exception('Invalid route: ${settings.name}');
-      return mappedRoutes[path].generateRoute(settings, query);
+      return mappedRoutes[path]!.generateRoute(settings, query);
     };
 
     return routeFactory;
@@ -424,7 +423,7 @@ class NavigationManager {
   //   return result;
   // }
 
-  RouteListFactory generateRouteListFactory([Map<String, dynamic> initialRouteArgs]) {
+  RouteListFactory generateRouteListFactory([Map<String, dynamic>? initialRouteArgs]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
 
     final result = (NavigatorState navigator, String route) {
@@ -435,7 +434,7 @@ class NavigationManager {
     return result;
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator scope]) {
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     basePath = this._getJustPath(basePath);
 
@@ -461,9 +460,9 @@ class NavigationManager {
     return _manager.retrieveScope(this._getJustPath(path));
   }
 
-  String _generateRoute(String routeTemplate, [Map<String, dynamic> routeArgs]) {
+  String _generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
     given(routeTemplate, "routeTemplate")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.startsWith("/"), "invalid route template");
 
     final path = this._getJustPath(routeTemplate);
@@ -500,7 +499,6 @@ class NavigationManager {
           break;
         case _ValidTypes.object:
           throw new Exception("Unsupported Type");
-          break;
       }
       if (result.isNotEmpty) result += "&";
       result += "$key=$argValue";
@@ -511,7 +509,7 @@ class NavigationManager {
 
   String _getJustPath(String route) {
     given(route, "route")
-        .ensureHasValue()
+        // .ensureHasValue()
         .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
 
     route = route.trim();
@@ -523,9 +521,9 @@ class NavigationManager {
     return route;
   }
 
-  String _getJustQuery(String route) {
+  String? _getJustQuery(String route) {
     given(route, "route")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim().startsWith("/"), "Invalid route '$route'");
     route = route.trim();
     if (!route.contains("?")) return null;
@@ -535,16 +533,18 @@ class NavigationManager {
 
   void persistRoute(String path) {
     given(path, "path")
-        .ensureHasValue()
+        .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim().substring(1).split("/").length == 1);
 
-    unawaited(SharedPreferences.getInstance()
-        .then((t) => t.setString(_persistKey, path))
+    unawaited(SharedPreferences.getInstance().then((t) => t.setString(_persistKey, path))
         // .then((t) => print("Saved=$t"))
-        .catchError((e) => print(e)));
+        .catchError((e) {
+      print(e);
+      return false;
+    }));
   }
 
-  Future<String> retrievePersistedRoute() async {
+  Future<String?> retrievePersistedRoute() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(_persistKey);
@@ -555,9 +555,10 @@ class NavigationManager {
   }
 
   void clearPersistedRoute() {
-    unawaited(SharedPreferences.getInstance()
-        .then((t) => t.remove(_persistKey))
-        .catchError((e) => print(e)));
+    unawaited(SharedPreferences.getInstance().then((t) => t.remove(_persistKey)).catchError((e) {
+      print(e);
+      return false;
+    }));
   }
 }
 
@@ -577,7 +578,7 @@ class NavigationService {
     return NavigationManager.instance._retrieveScope(path);
   }
 
-  String generateRoute(String routeTemplate, [Map<String, dynamic> routeArgs]) {
+  String generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
     return NavigationManager.instance._generateRoute(routeTemplate, routeArgs);
   }
 }

@@ -6,8 +6,6 @@ import 'package:floater/floater.dart';
 class Installer extends ServiceInstaller {
   @override
   void install(ServiceRegistry registry) {
-    given(registry, "registry").ensureHasValue();
-
     // Network Services
     // you can change the MockTodoService with RemoteTodoService (which makes the call to an api) without changing any part of your code.
     // it is a Singleton, so there will be only one instance of TodoService through out the lifecycle if the app.

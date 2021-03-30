@@ -10,13 +10,13 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
-  String _description;
-  String get description => this._description;
-  set description(String value) => (this.._description = value).triggerStateChange();
+  String? _description;
+  String? get description => this._description;
+  set description(String? value) => (this.._description = value).triggerStateChange();
 
   bool get isNewTodo => this._todoManagementService.isNewTodo;
 
-  Validator<ManageTodoDescriptionPageState> _validator;
+  late Validator<ManageTodoDescriptionPageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
@@ -40,9 +40,11 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
       return;
     }
 
-    final description = this._description == null || this._description.trim().isEmpty
-        ? null
-        : this._description.trim();
+    final String? description;
+    if (this._description == null)
+      description = null;
+    else
+      description = this._description!.isEmptyOrWhiteSpace ? null : this._description!.trim();
 
     this._todoManagementService.setDescription(description);
 

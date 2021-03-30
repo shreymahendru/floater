@@ -9,19 +9,18 @@ class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
   final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
-  String _title;
+  late String _title;
   String get title => this._title;
   set title(String value) => (this.._title = value).triggerStateChange();
 
   bool get isNewTodo => this._todoManagementService.isNewTodo;
 
-  Validator<ManageTodoTitlePageState> _validator;
+  late Validator<ManageTodoTitlePageState> _validator;
   bool get hasErrors => this._validator.hasErrors;
   ValidationErrors get errors => this._validator.errors;
 
   ManageTodoTitlePageState() : super() {
-    this._title = this._todoManagementService.title;
-
+    this._title = this._todoManagementService.title ?? "";
     this._createValidator();
     this.onStateChange(() {
       // this function is called every time state is about to change, hence best place to run our validation

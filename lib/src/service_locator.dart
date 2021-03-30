@@ -5,62 +5,62 @@ import 'event_aggregator.dart';
 import 'secure_storage.dart';
 
 abstract class ServiceRegistry {
-  void registerInstance<T>(T value);
-  void registerSingleton<T>(T Function() factoryFunc);
-  void registerTransient<T>(T Function() factoryFunc);
-  void registerScoped<T>(T Function() factoryFunc);
+  void registerInstance<T extends Object>(T value);
+  void registerSingleton<T extends Object>(T Function() factoryFunc);
+  void registerTransient<T extends Object>(T Function() factoryFunc);
+  void registerScoped<T extends Object>(T Function() factoryFunc);
 }
 
-abstract class _Registration<T> {
+abstract class _Registration<T extends Object> {
   final Type type = T;
 
   void register(GetIt getIt);
 }
 
-class _InstanceRegistration<T> extends _Registration<T> {
+class _InstanceRegistration<T extends Object> extends _Registration<T> {
   final T value;
 
   _InstanceRegistration(this.value);
 
   @override
   void register(GetIt getIt) {
-    given(getIt, "getIt").ensureHasValue();
+    // given(getIt, "getIt").ensureHasValue();
     getIt.registerSingleton<T>(this.value);
   }
 }
 
-class _SingletonRegistration<T> extends _Registration<T> {
+class _SingletonRegistration<T extends Object> extends _Registration<T> {
   final T Function() factoryFunc;
 
   _SingletonRegistration(this.factoryFunc);
 
   @override
   void register(GetIt getIt) {
-    given(getIt, "getIt").ensureHasValue();
+    // given(getIt, "getIt").ensureHasValue();
     getIt.registerLazySingleton<T>(this.factoryFunc);
   }
 }
 
-class _TransientRegistration<T> extends _Registration<T> {
+class _TransientRegistration<T extends Object> extends _Registration<T> {
   final T Function() factoryFunc;
 
   _TransientRegistration(this.factoryFunc);
 
   @override
   void register(GetIt getIt) {
-    given(getIt, "getIt").ensureHasValue();
+    // given(getIt, "getIt").ensureHasValue();
     getIt.registerFactory<T>(this.factoryFunc);
   }
 }
 
-class _ScopedRegistration<T> extends _Registration<T> {
+class _ScopedRegistration<T extends Object> extends _Registration<T> {
   final T Function() factoryFunc;
 
   _ScopedRegistration(this.factoryFunc);
 
   @override
   void register(GetIt getIt) {
-    given(getIt, "getIt").ensureHasValue();
+    // given(getIt, "getIt").ensureHasValue();
     getIt.registerLazySingleton<T>(this.factoryFunc);
   }
 }
@@ -75,8 +75,8 @@ class _Container implements ServiceRegistry {
   bool _isBootstrapped = false;
 
   @override
-  void registerInstance<T>(T value) {
-    given(value, "value").ensureHasValue();
+  void registerInstance<T extends Object>(T value) {
+    // given(value, "value").ensureHasValue();
     given(this, "this")
         .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
@@ -85,8 +85,8 @@ class _Container implements ServiceRegistry {
   }
 
   @override
-  void registerSingleton<T>(T Function() factoryFunc) {
-    given(factoryFunc, "factoryFunc").ensureHasValue();
+  void registerSingleton<T extends Object>(T Function() factoryFunc) {
+    // given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
         .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
@@ -95,8 +95,8 @@ class _Container implements ServiceRegistry {
   }
 
   @override
-  void registerTransient<T>(T Function() factoryFunc) {
-    given(factoryFunc, "factoryFunc").ensureHasValue();
+  void registerTransient<T extends Object>(T Function() factoryFunc) {
+    // given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
         .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
@@ -105,8 +105,8 @@ class _Container implements ServiceRegistry {
   }
 
   @override
-  void registerScoped<T>(T Function() factoryFunc) {
-    given(factoryFunc, "factoryFunc").ensureHasValue();
+  void registerScoped<T extends Object>(T Function() factoryFunc) {
+    // given(factoryFunc, "factoryFunc").ensureHasValue();
     given(this, "this")
         .ensure((t) => !t._types.contains(T), "Type $T is already registered")
         .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
@@ -137,7 +137,7 @@ class _Container implements ServiceRegistry {
     return new _ChildScope(this);
   }
 
-  T resolve<T>() {
+  T resolve<T extends Object>() {
     given(this, "this").ensure((t) => t._isBootstrapped, "Not bootstrapped");
 
     return this._getIt.get();
@@ -152,7 +152,7 @@ class ServiceLocator {
 
   ServiceLocator._private();
 
-  T resolve<T>() {
+  T resolve<T extends Object>() {
     return ServiceManager.instance._resolve();
   }
 }
@@ -172,7 +172,7 @@ class _ChildScope implements ServiceLocator, Disposable {
   }
 
   @override
-  T resolve<T>() {
+  T resolve<T extends Object>() {
     if (this._isDisposed) throw new Exception("Object disposed");
 
     if (this._parentScope.scopedRegistrations.any((element) => element.type == T)) {
@@ -208,7 +208,7 @@ class ServiceManager {
   ServiceManager._private();
 
   void useInstaller(ServiceInstaller installer) {
-    given(installer, "installer").ensureHasValue();
+    // given(installer, "installer").ensureHasValue();
 
     if (_isBootstrapped) throw new StateError("Already bootstrapped");
 
@@ -222,7 +222,7 @@ class ServiceManager {
     _isBootstrapped = true;
   }
 
-  T _resolve<T>() {
+  T _resolve<T extends Object>() {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
 
     return _container.resolve();

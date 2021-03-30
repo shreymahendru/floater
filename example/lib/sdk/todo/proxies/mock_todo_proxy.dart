@@ -17,13 +17,16 @@ class MockTodoProxy implements Todo {
   String get title => this._dto.title;
 
   @override
-  String get description => this._dto.description;
+  String? get description => this._dto.description;
 
   @override
   bool get isComplete => this._dto.isComplete;
 
   @override
-  Future<void> update(String title, String description) async {
+  Future<void> update(String title, String? description) async {
+    given(title, "argName").ensure((t) => t.isNotEmptyOrWhiteSpace);
+    given(description, "description").ensure((t) => t?.isNotEmptyOrWhiteSpace ?? true);
+
     await Future.delayed(Duration(seconds: 2));
 
     final newDto = TodoDto(this.id, title, description, this.isComplete);

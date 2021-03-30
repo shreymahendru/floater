@@ -8,15 +8,17 @@ import 'package:flutter/material.dart';
 
 class TodosPageState extends WidgetStateBase<TodosPage> {
   final _navigator = NavigationService.instance.retrieveNavigator("/");
-  final _todosService = ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
+  final _todosService =
+      ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
 
-  List<Todo> _todos;
-  List<Todo> get todos => this._todos ?? [];
+  List<Todo> _todos = [];
+  List<Todo> get todos => this._todos;
 
   bool _isTogglingTodoCompletion = false;
   bool get isTogglingTodoCompletion => this._isTogglingTodoCompletion;
-  set isTogglingTodoCompletion(bool value) => (this.._isTogglingTodoCompletion = value).triggerStateChange();
+  set isTogglingTodoCompletion(bool value) =>
+      (this.._isTogglingTodoCompletion = value).triggerStateChange();
 
   TodosPageState() : super() {
     this.onInitState(() async {
@@ -35,8 +37,6 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   Future<void> onTodoPressed(Todo todo) async {
-    given(todo, "todo").ensureHasValue();
-
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.viewTodo),
       arguments: {
@@ -46,7 +46,6 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
-    given(todo, "todo").ensureHasValue();
     this._navigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
@@ -65,8 +64,6 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   void toggleCompletionForTodo(Todo todo) async {
-    given(todo, "todo").ensureHasValue();
-
     this.isTogglingTodoCompletion = true;
     try {
       await todo.toggleComplete();
@@ -83,7 +80,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
     try {
       this._todos = await this._todosService.getAllTodos();
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
       return;
     } finally {
       this.hideLoading();
