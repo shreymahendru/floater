@@ -1,13 +1,15 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
 import 'package:example/pages/routes.dart';
+import 'package:example/services/tab_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 import 'manage_todo_description_page.dart';
 
-class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage> {
+class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage>
+    with TabManagerMixin {
   final _todoManagementService =
       NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
-  final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
+  // final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   String? _description;
@@ -58,7 +60,7 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
       this.hideLoading();
     }
 
-    this._rootNavigator.pop();
+    this.currentTabNavigator.pop();
   }
 
   bool _validate() {

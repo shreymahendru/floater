@@ -40,8 +40,7 @@ class MockTodosService implements TodosService {
   @override
   Future<List<Todo>> getAllTodos() async {
     // fake network delay
-    await Future.delayed(Duration(seconds: 1));
-
+    await Future.delayed(Duration(milliseconds: 200));
     return this._allTodos.map((e) => e).toList();
   }
 
@@ -50,7 +49,7 @@ class MockTodosService implements TodosService {
     given(id, "id").ensure((t) => t.isNotEmptyOrWhiteSpace);
 
     // fake network delay
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 200));
 
     return this._allTodos.find((e) => e.id == id)!;
   }

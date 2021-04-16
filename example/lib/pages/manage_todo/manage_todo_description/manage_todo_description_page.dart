@@ -12,6 +12,7 @@ class ManageTodoDescriptionPage extends StatefulWidgetBase<ManageTodoDescription
       child: Scaffold(
         appBar: AppBar(
           title: Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Description"),
+          backgroundColor: this.state.appBarColor,
           leading: IconButton(
             icon: Icon(Icons.chevron_left),
             onPressed: this.state.back,

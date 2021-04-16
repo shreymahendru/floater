@@ -18,6 +18,6 @@ class SplashPageState extends WidgetStateBase<SplashPage> {
 
     await Future.delayed(Duration(seconds: 2));
 
-    this._navigator.pushReplacementNamed(Routes.todos);
+    this._navigator.pushReplacementNamed(Routes.home);
   }
 }

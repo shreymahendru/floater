@@ -1,12 +1,13 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
+import 'package:example/services/tab_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import '../../routes.dart';
 import 'manage_todo_title_page.dart';
 
-class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
+class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> with TabManagerMixin {
   final _todoManagementService =
       NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
-  final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
+  // final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
   final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   late String _title;
@@ -30,7 +31,7 @@ class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage> {
 
   void back() {
     // using the root navigator since this is the initial route for this navigator.
-    this._rootNavigator.pop();
+    this.currentTabNavigator.pop();
   }
 
   void submit() {

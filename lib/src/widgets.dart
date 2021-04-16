@@ -212,7 +212,7 @@ abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends 
 }
 
 @sealed
-class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
+class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
   final String _initialRoute;
   final Map<String, dynamic>? _initialRouteArgs;
   final TransitionDelegate<dynamic> _transitionDelegate;
@@ -223,10 +223,11 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
     Map<String, dynamic>? initialRouteArgs,
     TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
     ServiceLocator? scope,
+    Key? key,
   })  : this._initialRoute = initialRoute,
         this._initialRouteArgs = initialRouteArgs,
         this._transitionDelegate = transitionDelegate,
-        super(() => new _ScopedNavigatorState(basePath, scope));
+        super(() => new ScopedNavigatorState(basePath, scope), key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -255,14 +256,16 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
   }
 }
 
-class _ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
+class ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
   final String _basePath;
   final GlobalKey<NavigatorState> _key;
 
   String get basePath => this._basePath;
   GlobalKey<NavigatorState> get key => this._key;
 
-  _ScopedNavigatorState(String basePath, ServiceLocator? scope)
+  NavigatorState? get navigator => this._key.currentState;
+
+  ScopedNavigatorState(String basePath, ServiceLocator? scope)
       : this._basePath = basePath,
         this._key = NavigationManager.instance.generateNavigatorKey(basePath, scope) {
     this.onDispose(() => NavigationManager.instance.disposeNavigatorKey(this._basePath, this._key));

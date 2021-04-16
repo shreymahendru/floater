@@ -3,11 +3,12 @@ import 'package:example/pages/routes.dart';
 import 'package:example/pages/todos/todos_page.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
+import 'package:example/services/tab_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class TodosPageState extends WidgetStateBase<TodosPage> {
-  final _navigator = NavigationService.instance.retrieveNavigator("/");
+class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
+  // final _navigator = NavigationService.instance.retrieveNavigator("/");
   final _todosService =
       ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
@@ -27,7 +28,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
       final persistedRoute = await NavigationManager.instance.retrievePersistedRoute();
       print(persistedRoute);
       if (persistedRoute != null) {
-        this._navigator.pushNamed(persistedRoute);
+        this.currentTabNavigator.pushNamed(persistedRoute);
       }
     });
 
@@ -37,7 +38,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   Future<void> onTodoPressed(Todo todo) async {
-    this._navigator.pushNamed(
+    this.currentTabNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.viewTodo),
       arguments: {
         "id": todo.id,
@@ -46,7 +47,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
-    this._navigator.pushNamed(
+    this.currentTabNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "id": todo.id,
@@ -55,7 +56,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> {
   }
 
   void onAddTodoPressed() {
-    this._navigator.pushNamed(
+    this.currentTabNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "id": null,
