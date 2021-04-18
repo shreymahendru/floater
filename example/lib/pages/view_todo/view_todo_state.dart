@@ -1,11 +1,11 @@
 import 'package:example/pages/view_todo/view_todo_page.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
-import 'package:example/services/tab_manager_mixin.dart';
+import 'package:example/services/bottom_nav_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> with TabManagerMixin {
+class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> with BottomNavManagerMixin {
   final _todoService = ServiceLocator.instance.resolve<TodosService>();
   // final _navigator = NavigationService.instance.retrieveNavigator("/");
 
@@ -28,7 +28,7 @@ class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> with TabManagerMix
       this.todo = await this._todoService.getTodo(this._id);
     } catch (e) {
       debugPrint(e.toString());
-      this.currentTabNavigator.pop();
+      this.currentNavigator.pop();
     } finally {
       this.hideLoading();
     }

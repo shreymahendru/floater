@@ -3,11 +3,11 @@ import 'package:example/pages/routes.dart';
 import 'package:example/pages/todos/todos_page.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
-import 'package:example/services/tab_manager_mixin.dart';
+import 'package:example/services/bottom_nav_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
+class TodosPageState extends WidgetStateBase<TodosPage> with BottomNavManagerMixin {
   // final _navigator = NavigationService.instance.retrieveNavigator("/");
   final _todosService =
       ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
@@ -28,7 +28,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
       final persistedRoute = await NavigationManager.instance.retrievePersistedRoute();
       print(persistedRoute);
       if (persistedRoute != null) {
-        this.currentTabNavigator.pushNamed(persistedRoute);
+        this.currentNavigator.pushNamed(persistedRoute);
       }
     });
 
@@ -38,7 +38,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
   }
 
   Future<void> onTodoPressed(Todo todo) async {
-    this.currentTabNavigator.pushNamed(
+    this.currentNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.viewTodo),
       arguments: {
         "id": todo.id,
@@ -47,7 +47,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
   }
 
   Future<void> onEditTodoPressed(Todo todo) async {
-    this.currentTabNavigator.pushNamed(
+    this.currentNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "id": todo.id,
@@ -56,7 +56,7 @@ class TodosPageState extends WidgetStateBase<TodosPage> with TabManagerMixin {
   }
 
   void onAddTodoPressed() {
-    this.currentTabNavigator.pushNamed(
+    this.currentNavigator.pushNamed(
       NavigationService.instance.generateRoute(Routes.manageTodo),
       arguments: {
         "id": null,

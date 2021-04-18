@@ -1,5 +1,5 @@
+import 'package:example/pages/home/home_page_state.dart';
 import 'package:example/pages/routes.dart';
-import 'package:example/services/tab_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:floater/floater.dart';
 
@@ -7,14 +7,12 @@ class HomePage extends StatefulWidgetBase<HomePageState> {
   HomePage() : super(() => HomePageState());
   @override
   Widget build(BuildContext context) {
-    // return ScopedNavigator("/home", initialRoute: "/homeTab");
-
     return Scaffold(
       body: this._buildBody(),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: this.state.activeTab,
+        currentIndex: this.state.activeNavItem,
         type: BottomNavigationBarType.shifting,
-        onTap: (index) => this.state.activeTab = index,
+        onTap: this.state.onActiveNavItemChanged,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -39,54 +37,27 @@ class HomePage extends StatefulWidgetBase<HomePageState> {
 
   Widget _buildBody() {
     return IndexedStack(
-      index: this.state.activeTab,
+      index: this.state.activeNavItem,
       children: [
         ScopedNavigator(
           // NavigationService.instance.generateRoute(Routes.home, {"tab": 0}),
           "/home",
           initialRoute: Routes.todos,
-          key: this.state.tab0Key,
-          initialRouteArgs: {
-            "color": Colors.blue,
-          },
+          key: this.state.nav0Key,
         ),
         ScopedNavigator(
           // NavigationService.instance.generateRoute(Routes.home, {"tab": 1}),
           "/home",
-          key: this.state.tab1Key,
+          key: this.state.nav1Key,
           initialRoute: Routes.todos,
-          initialRouteArgs: {
-            "color": Colors.teal,
-          },
         ),
         ScopedNavigator(
           // NavigationService.instance.generateRoute(Routes.home, {"tab": 2}),
           "/home",
-          key: this.state.tab2Key,
+          key: this.state.nav2Key,
           initialRoute: Routes.todos,
-          initialRouteArgs: {
-            "color": Colors.green,
-          },
         ),
       ],
     );
   }
-}
-
-class HomePageState extends WidgetStateBase<HomePage> {
-  final _tabService = ServiceLocator.instance.resolve<TabManager>();
-
-  late final GlobalKey<ScopedNavigatorState> tab0Key = this._tabService.tab0Key;
-  late final GlobalKey<ScopedNavigatorState> tab1Key = this._tabService.tab1Key;
-  late final GlobalKey<ScopedNavigatorState> tab2Key = this._tabService.tab2Key;
-
-  late int _activeTab = this._tabService.currentTab;
-  int get activeTab => this._activeTab;
-  set activeTab(int value) {
-    this._activeTab = value;
-    ServiceLocator.instance.resolve<TabManager>().currentTab = value;
-    this..triggerStateChange();
-  }
-
-  HomePageState() : super();
 }

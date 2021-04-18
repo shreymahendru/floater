@@ -1,7 +1,7 @@
 import 'package:example/pages/manage_todo/services/todo_management_service/todo_management_service.dart';
 import 'package:example/sdk/todo/services/todos_service/mock_todos_service.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
-import 'package:example/services/tab_manager.dart';
+import 'package:example/services/bottom_nav_manager.dart';
 import 'package:floater/floater.dart';
 
 class Installer extends ServiceInstaller {
@@ -12,11 +12,11 @@ class Installer extends ServiceInstaller {
     // it is a Singleton, so there will be only one instance of TodoService through out the lifecycle if the app.
     registry.registerSingleton<TodosService>(() => MockTodosService());
 
-    registry.registerSingleton<TabManager>(() => TabManager());
 
     // ui Services
     // services that facilitate clean communication between pages and/or widgets
     // these services are usually scoped
     registry.registerScoped<TodoManagementService>(() => TodoManagementService());
+    registry.registerSingleton<BottomNavManager>(() => BottomNavManager());
   }
 }
