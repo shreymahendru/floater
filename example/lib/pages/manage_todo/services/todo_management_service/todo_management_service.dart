@@ -24,14 +24,15 @@ class TodoManagementService {
   }
 
   void setTitle(String title) {
-    given(title, "title").ensure((t) => t.isNotEmptyOrWhiteSpace && t.trim().length < 50);
+    given(title, "title")
+        .ensure((t) => t.isNotEmptyOrWhiteSpace && t.trim().length < 50);
 
     this._title = title;
   }
 
   void setDescription(String? description) {
-    given(description, "description")
-        .ensure((t) => t == null || (t.isNotEmptyOrWhiteSpace && t.trim().length < 500));
+    given(description, "description").ensure((t) =>
+        t == null || (t.isNotEmptyOrWhiteSpace && t.trim().length < 500));
 
     this._description = description?.trim() ?? null;
   }

@@ -54,7 +54,10 @@ void main() {
           .isRequired()
           .ensure((t) => t.startsWith("N"))
           .withMessage(message: "should begin with 'N'");
-      validator.prop("lastName", (t) => t.lastName).isOptional().ensure((t) => t!.endsWith("h"));
+      validator
+          .prop("lastName", (t) => t.lastName)
+          .isOptional()
+          .ensure((t) => t!.endsWith("h"));
       validator
           .prop("age", (t) => t.age)
           .isRequired()
@@ -107,7 +110,8 @@ void main() {
 
       validator.validate(testVal);
 
-      expect(validator.errors.getError("age"), "should be greater than equal to 18");
+      expect(validator.errors.getError("age"),
+          "should be greater than equal to 18");
     });
   });
 
@@ -129,7 +133,9 @@ void main() {
     });
 
     group("init", () {
-      test("should init with no errors and with no property validators and should be valid", () {
+      test(
+          "should init with no errors and with no property validators and should be valid",
+          () {
         validator = new Validator<TestVal>();
 
         expect(validator.hasRules, false, reason: "Should have no rules");
@@ -148,14 +154,17 @@ void main() {
         expect(validator.isValid, true, reason: "Should be valid");
       });
 
-      test("should throw an ArgumentException when property given is an empty string", () {
+      test(
+          "should throw an ArgumentException when property given is an empty string",
+          () {
         validator = new Validator<TestVal>();
         expect(() => validator.prop("", (t) => null), throwsArgumentError);
       });
     });
 
     group("validate", () {
-      test("should create a validation rule for a given property in the object and should be valid",
+      test(
+          "should create a validation rule for a given property in the object and should be valid",
           () {
         validator = new Validator<TestVal>();
         validator.prop("firstName", (t) => t.firstName).isRequired();
@@ -165,7 +174,8 @@ void main() {
         expect(validator.isValid, true);
       });
 
-      test("should create a validation rule for a property not in the object and should be invalid",
+      test(
+          "should create a validation rule for a property not in the object and should be invalid",
           () {
         validator = new Validator<TestVal>();
         validator.prop("no-name", (t) => null).isRequired();
@@ -205,7 +215,9 @@ void main() {
     });
 
     group("isRequired", () {
-      test("should pass when the property is given in the object being validated", () {
+      test(
+          "should pass when the property is given in the object being validated",
+          () {
         validator = new Validator<TestVal>();
         validator.prop("firstName", (t) => t.firstName).isRequired();
 
@@ -214,7 +226,9 @@ void main() {
         expect(validator.isValid, true);
       });
 
-      test("should fail when a nullable property is set to null in the object being validated", () {
+      test(
+          "should fail when a nullable property is set to null in the object being validated",
+          () {
         validator = new Validator<TestVal>();
         testVal.lastName = null;
         validator.prop("lastName", (t) => t.lastName).isRequired();
@@ -236,7 +250,9 @@ void main() {
         expect(validator.isValid, true);
       });
 
-      test("should fail when the property is not given in the object being validated", () {
+      test(
+          "should fail when the property is not given in the object being validated",
+          () {
         validator = new Validator<TestVal>();
         validator.prop("no-name", (t) => null).isRequired();
 
@@ -271,7 +287,9 @@ void main() {
     });
 
     group("isOptional", () {
-      test("should pass when a nullable property is not given in the object being validated", () {
+      test(
+          "should pass when a nullable property is not given in the object being validated",
+          () {
         validator = new Validator<TestVal>();
         testVal.lastName = null;
         validator.prop("lastName", (t) => t.lastName).isOptional();
@@ -293,7 +311,9 @@ void main() {
         expect(validator.isValid, true);
       });
 
-      test("should pass when a nullable property is given in the object being validated", () {
+      test(
+          "should pass when a nullable property is given in the object being validated",
+          () {
         validator = new Validator<TestVal>();
         testVal.lastName = "Joseph";
         validator.prop("lastName", (t) => t.lastName).isOptional();
@@ -338,7 +358,9 @@ void main() {
           "should pass when the property(string) is given in the object being validated does satisfy the given predicate",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).ensure((t) => t.length >= 2);
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .ensure((t) => t.length >= 2);
 
         validator.validate(testVal);
 
@@ -349,7 +371,9 @@ void main() {
           "should fail when the property(string) is given in the object being validated doesn't satisfy the given predicate",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).ensure((t) => t.length <= 2);
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .ensure((t) => t.length <= 2);
 
         validator.validate(testVal);
 
@@ -419,7 +443,9 @@ void main() {
           "should pass when the property(string) given in the object being validated does satisfy the given predicate",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).ensureT((t) => t.firstName.length >= 2);
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .ensureT((t) => t.firstName.length >= 2);
 
         validator.validate(testVal);
 
@@ -430,7 +456,9 @@ void main() {
           "should fail when the property(string) given in the object being validated doesn't satisfy the given predicate",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).ensureT((t) => t.firstName.length <= 2);
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .ensureT((t) => t.firstName.length <= 2);
 
         validator.validate(testVal);
 
@@ -449,7 +477,9 @@ void main() {
         }
 
         validator = new Validator<TestVal>();
-        validator.prop("scores", (t) => t.scores).ensureT((t) => checkArray(t.scores));
+        validator
+            .prop("scores", (t) => t.scores)
+            .ensureT((t) => checkArray(t.scores));
 
         validator.validate(testVal);
 
@@ -468,7 +498,9 @@ void main() {
         }
 
         validator = new Validator<TestVal>();
-        validator.prop("scores", (t) => t.scores).ensureT((t) => checkArray(t.scores));
+        validator
+            .prop("scores", (t) => t.scores)
+            .ensureT((t) => checkArray(t.scores));
 
         validator.validate(testVal);
 
@@ -482,7 +514,8 @@ void main() {
           () {
         validator = new Validator<TestVal>();
         validator.prop("firstName", (t) => t.firstName).useValidationRule(
-            new ValidationRule(((t) => t[0] == "N"), "firstName Does not start with N"));
+            new ValidationRule(
+                ((t) => t[0] == "N"), "firstName Does not start with N"));
 
         validator.validate(testVal);
 
@@ -497,13 +530,15 @@ void main() {
         testVal.firstName = "John";
 
         validator.prop("firstName", (t) => t.firstName).useValidationRule(
-            new ValidationRule(((t) => t[0] == "N"), "firstName Does not start with N"));
+            new ValidationRule(
+                ((t) => t[0] == "N"), "firstName Does not start with N"));
 
         validator.validate(testVal);
 
         expect(validator.isValid, false, reason: "Should be invalid");
         expect(validator.hasErrors, true, reason: "Should have errors");
-        expect(validator.errors.getError("firstName"), "firstName Does not start with N",
+        expect(validator.errors.getError("firstName"),
+            "firstName Does not start with N",
             reason: "Should have the correct error message");
       });
     });
@@ -511,10 +546,15 @@ void main() {
     group("useValidator", () {
       test("should pass validation given 2 validators", () {
         final secondaryValidator = new Validator<dynamic>();
-        secondaryValidator.prop("province", (t) => t["province"]).ensure((t) => t == "ON");
+        secondaryValidator
+            .prop("province", (t) => t["province"])
+            .ensure((t) => t == "ON");
 
         validator = new Validator<TestVal>();
-        validator.prop("address", (t) => t.address).isRequired().useValidator(secondaryValidator);
+        validator
+            .prop("address", (t) => t.address)
+            .isRequired()
+            .useValidator(secondaryValidator);
 
         validator.validate(testVal);
 
@@ -530,7 +570,9 @@ void main() {
 
         validator = new Validator<TestVal>();
         testVal.stats = Stats(12, 12);
-        validator.prop("stats", (t) => t.stats).useValidator(secondaryValidator);
+        validator
+            .prop("stats", (t) => t.stats)
+            .useValidator(secondaryValidator);
 
         validator.validate(testVal);
 
@@ -546,7 +588,9 @@ void main() {
 
         validator = new Validator<TestVal>();
         testVal.stats = Stats(12, 12);
-        validator.prop("stats", (t) => t.stats).useValidator(secondaryValidator);
+        validator
+            .prop("stats", (t) => t.stats)
+            .useValidator(secondaryValidator);
 
         validator.validate(testVal);
 
@@ -556,7 +600,9 @@ void main() {
 
       test("should fail validation when secondary validator fails", () {
         final secondaryValidator = new Validator<dynamic>();
-        secondaryValidator.prop("province", (t) => t["province"]).ensure((t) => t != "ON");
+        secondaryValidator
+            .prop("province", (t) => t["province"])
+            .ensure((t) => t != "ON");
 
         validator = new Validator<TestVal>();
         validator
@@ -574,12 +620,18 @@ void main() {
 
       test("should fail validation when third validator fails", () {
         final thirdValidator = new Validator<dynamic>();
-        thirdValidator.prop("one", (value) => value["one"]).ensure((t) => t == "xyz");
+        thirdValidator
+            .prop("one", (value) => value["one"])
+            .ensure((t) => t == "xyz");
         thirdValidator.prop("two", (value) => value["two"]).isRequired();
 
         final secondaryValidator = new Validator<dynamic>();
-        secondaryValidator.prop("province", (t) => t["province"]).ensure((t) => t != "ON");
-        secondaryValidator.prop("street", (value) => value["street"]).useValidator(thirdValidator);
+        secondaryValidator
+            .prop("province", (t) => t["province"])
+            .ensure((t) => t != "ON");
+        secondaryValidator
+            .prop("street", (value) => value["street"])
+            .useValidator(thirdValidator);
 
         final val = TestVal(
           firstName: "Nivin",
@@ -601,7 +653,10 @@ void main() {
         };
 
         validator = new Validator<TestVal>();
-        validator.prop("address", (t) => t.address).isRequired().useValidator(secondaryValidator);
+        validator
+            .prop("address", (t) => t.address)
+            .isRequired()
+            .useValidator(secondaryValidator);
 
         validator.validate(val);
 
@@ -614,7 +669,9 @@ void main() {
 
       test("should fail validation when primary validator fails", () {
         final secondaryValidator = new Validator<dynamic>();
-        secondaryValidator.prop("province", (t) => t["province"]).ensure((t) => t == "ON");
+        secondaryValidator
+            .prop("province", (t) => t["province"])
+            .ensure((t) => t == "ON");
 
         validator = new Validator<TestVal>();
         validator
@@ -632,7 +689,9 @@ void main() {
 
       test("should fail validation when both validators fails", () {
         final secondaryValidator = new Validator<dynamic>();
-        secondaryValidator.prop("province", (t) => t["province"]).ensure((t) => t == "AB");
+        secondaryValidator
+            .prop("province", (t) => t["province"])
+            .ensure((t) => t == "AB");
 
         validator = new Validator<TestVal>();
         validator
@@ -768,7 +827,10 @@ void main() {
           "should pass when a given property is required and ensure is true in the object being validated",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).isRequired().ensure((t) => t == "Nivin");
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .isRequired()
+            .ensure((t) => t == "Nivin");
 
         validator.validate(testVal);
 
@@ -779,7 +841,10 @@ void main() {
           "should fail when a given property is required and ensure is false in the object being validated",
           () {
         validator = new Validator<TestVal>();
-        validator.prop("firstName", (t) => t.firstName).isRequired().ensure((t) => t == "Shrey");
+        validator
+            .prop("firstName", (t) => t.firstName)
+            .isRequired()
+            .ensure((t) => t == "Shrey");
 
         validator.validate(testVal);
 
@@ -807,7 +872,10 @@ void main() {
         validator = new Validator<TestVal>();
         testVal.lastName = "hello";
 
-        validator.prop("lastName", (t) => t.lastName).isOptional().ensure((t) => t == "mid-name");
+        validator
+            .prop("lastName", (t) => t.lastName)
+            .isOptional()
+            .ensure((t) => t == "mid-name");
 
         validator.validate(testVal);
 
@@ -829,7 +897,8 @@ void main() {
 
         expect(validator.isValid, false, reason: "Should be invalid");
         expect(validator.hasErrors, true, reason: "Should have errors");
-        expect(validator.errors.getError("middleName"), "middle name is required");
+        expect(
+            validator.errors.getError("middleName"), "middle name is required");
       });
 
       test(
@@ -888,7 +957,8 @@ void main() {
 
         expect(validator.isValid, false, reason: "Should be invalid");
         expect(validator.hasErrors, true, reason: "Should have errors");
-        expect(validator.errors.getError("firstName"), "name has to be 6 letters",
+        expect(
+            validator.errors.getError("firstName"), "name has to be 6 letters",
             reason: "Should have a correct message");
       });
 
@@ -909,7 +979,8 @@ void main() {
 
         expect(validator.isValid, false, reason: "Should be invalid");
         expect(validator.hasErrors, true, reason: "Should have errors");
-        expect(validator.errors.getError("firstName"), "First name is not shrey");
+        expect(
+            validator.errors.getError("firstName"), "First name is not shrey");
       });
     });
   });

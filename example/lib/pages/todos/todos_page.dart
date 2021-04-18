@@ -11,12 +11,14 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
   TodosPage() : super(() => TodosPageState());
   @override
   Widget build(BuildContext context) {
+    // this.state.currentTab
     return OverlayLoadingSpinner(
       isEnabled: this.state.isTogglingTodoCompletion,
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text("Todos"),
+          backgroundColor: this.state.appBarColor,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: this.state.onAddTodoPressed,
@@ -46,7 +48,8 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
     return ListView.builder(
       addAutomaticKeepAlives: true,
       itemCount: this.state.todos.length,
-      itemBuilder: (context, index) => this._buildListTile(this.state.todos[index]),
+      itemBuilder: (context, index) =>
+          this._buildListTile(this.state.todos[index]),
     );
   }
 

@@ -9,6 +9,7 @@ class ManageTodoTitlePage extends StatefulWidgetBase<ManageTodoTitlePageState> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${this.state.isNewTodo ? 'New' : 'Edit'} Todo Title"),
+        backgroundColor: this.state.appBarColor,
         leading: IconButton(
           icon: Icon(Icons.chevron_left),
           onPressed: this.state.back,

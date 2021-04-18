@@ -1,3 +1,8 @@
+## [0.1.1] - March 29, 2021
+* Added Key for Scoped Navigator
+* Example App now includes and example for a Bottom nav set up for an app
+* formatting package files
+
 ## [0.1.0] - March 29, 2021
 * Null safety
 * String isEmptyOrWhiteSpace and isNotEmptyOrWhiteSpace

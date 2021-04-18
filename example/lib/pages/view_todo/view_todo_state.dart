@@ -1,12 +1,14 @@
 import 'package:example/pages/view_todo/view_todo_page.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
 import 'package:example/sdk/todo/services/todos_service/todos_service.dart';
+import 'package:example/services/bottom_nav_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> {
+class ViewTodoPageState extends WidgetStateBase<ViewTodoPage>
+    with BottomNavManagerMixin {
   final _todoService = ServiceLocator.instance.resolve<TodosService>();
-  final _navigator = NavigationService.instance.retrieveNavigator("/");
+  // final _navigator = NavigationService.instance.retrieveNavigator("/");
 
   final String _id;
   late Todo todo;
@@ -27,7 +29,7 @@ class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> {
       this.todo = await this._todoService.getTodo(this._id);
     } catch (e) {
       debugPrint(e.toString());
-      this._navigator.pop();
+      this.currentNavigator.pop();
     } finally {
       this.hideLoading();
     }

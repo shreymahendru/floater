@@ -12,6 +12,7 @@ class ViewTodoPage extends StatefulWidgetBase<ViewTodoPageState> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("View Todo"),
+        backgroundColor: this.state.appBarColor,
       ),
       body: this._buildBody(context),
     );

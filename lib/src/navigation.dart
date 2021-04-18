@@ -32,7 +32,8 @@ class _NavigationManager {
   final _pageRegistrations = <_PageRegistration>[];
   final _navigatorKeys = <String, Queue<_NavTracker>>{};
 
-  void registerPage<T extends Widget>(String route, T Function(dynamic args) factoryFunc,
+  void registerPage<T extends Widget>(
+      String route, T Function(dynamic args) factoryFunc,
       [PageType pageType = PageType.material,
       bool fullscreenDialog = false,
       bool persist = false]) {
@@ -40,11 +41,15 @@ class _NavigationManager {
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim() != "/", "cannot be root")
         .ensure((t) => t.trim().startsWith("/"), "must start with '/'")
-        .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("//"),
+        .ensure(
+            (t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("//"),
             "route contains empty path segments")
-        .ensure((t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("&&"),
+        .ensure(
+            (t) => !t.trim().replaceAll(new RegExp(r"\s"), "").contains("&&"),
             "route contains empty query params")
-        .ensure((t) => persist ? t.trim().substring(1).split("/").length == 1 : true,
+        .ensure(
+            (t) =>
+                persist ? t.trim().substring(1).split("/").length == 1 : true,
             "only top level routes can persist");
     // .ensure((t) => t.contains("?") ? t.split("?").length == 2 : true, "must have only one '?'");
 
@@ -61,7 +66,8 @@ class _NavigationManager {
     final pathSegments = <String>[];
     if (path != "/") {
       pathSegments.addAll(path.substring(1).split("/").map((e) => e.trim()));
-      given(route, "route").ensure((_) => pathSegments.every((t) => t.isNotEmpty));
+      given(route, "route")
+          .ensure((_) => pathSegments.every((t) => t.isNotEmpty));
     }
 
     final queryParams = <String, String>{};
@@ -78,27 +84,35 @@ class _NavigationManager {
                     key.startsWith("{") &&
                     split[1].trim().isNotEmpty &&
                     split[1].trim().endsWith("}") &&
-                    _ValidTypes.all.contains(
-                        split[1].trim().substring(0, split[1].trim().length - 1).toLowerCase()),
+                    _ValidTypes.all.contains(split[1]
+                        .trim()
+                        .substring(0, split[1].trim().length - 1)
+                        .toLowerCase()),
                 "invalid query params")
-            .ensure((_) => !queryParams.containsKey(key), "duplicate key in query params");
+            .ensure((_) => !queryParams.containsKey(key),
+                "duplicate key in query params");
 
-        queryParams[key.substring(1).trim()] =
-            split[1].trim().substring(0, split[1].trim().length - 1).toLowerCase();
+        queryParams[key.substring(1).trim()] = split[1]
+            .trim()
+            .substring(0, split[1].trim().length - 1)
+            .toLowerCase();
       });
     }
 
     given(route, "route").ensure(
-        (_) => this._pageRegistrations.every((t) => t.path.toLowerCase() != path.toLowerCase()),
+        (_) => this
+            ._pageRegistrations
+            .every((t) => t.path.toLowerCase() != path.toLowerCase()),
         "duplicate path");
 
-    this._pageRegistrations.add(new _PageRegistration(route, path, pathSegments, query, queryParams,
-        factoryFunc, pageType, fullscreenDialog, persist));
+    this._pageRegistrations.add(new _PageRegistration(route, path, pathSegments,
+        query, queryParams, factoryFunc, pageType, fullscreenDialog, persist));
   }
 
   void buildTree() {
     given(this, "this").ensure(
-        (t) => t._pageRegistrations.every((element) => !element.isRoot), "tree already built");
+        (t) => t._pageRegistrations.every((element) => !element.isRoot),
+        "tree already built");
 
     final root = new _PageRegistration("/", "/", <String>[], null, {},
         ([args]) => this._createRootWidget(), PageType.material, false, false);
@@ -107,25 +121,30 @@ class _NavigationManager {
     for (final pr in this._pageRegistrations) {
       if (pr.isRoot) continue;
 
-      final parentPath = "/" + pr.pathSegments.sublist(0, pr.pathSegments.length - 1).join("/");
-      final parent = this._pageRegistrations.find((element) => element.path == parentPath);
-      if (parent == null) throw new StateError("Route '${pr.route}' has no parent");
+      final parentPath = "/" +
+          pr.pathSegments.sublist(0, pr.pathSegments.length - 1).join("/");
+      final parent =
+          this._pageRegistrations.find((element) => element.path == parentPath);
+      if (parent == null)
+        throw new StateError("Route '${pr.route}' has no parent");
 
       parent.children.add(pr);
     }
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
-    given(basePath, "basePath")
-        .ensure((t) => t.isNotEmptyOrWhiteSpace)
-        .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath,
+      [ServiceLocator? scope]) {
+    given(basePath, "basePath").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
+        (t) =>
+            this._pageRegistrations.any((element) => element.path == basePath));
 
     if (!this._navigatorKeys.containsKey(basePath)) {
       this._navigatorKeys[basePath] = new Queue<_NavTracker>();
     }
 
     final queue = this._navigatorKeys[basePath]!;
-    final navTracker = new _NavTracker(new GlobalKey<NavigatorState>(debugLabel: basePath),
+    final navTracker = new _NavTracker(
+        new GlobalKey<NavigatorState>(debugLabel: basePath),
         scope ?? ServiceManager.instance.createScope());
     queue.add(navTracker);
 
@@ -133,9 +152,9 @@ class _NavigationManager {
   }
 
   void disposeNavigatorKey(String basePath, GlobalKey<NavigatorState> key) {
-    given(basePath, "basePath")
-        .ensure((t) => t.isNotEmptyOrWhiteSpace)
-        .ensure((t) => this._pageRegistrations.any((element) => element.path == basePath));
+    given(basePath, "basePath").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
+        (t) =>
+            this._pageRegistrations.any((element) => element.path == basePath));
 
     // given(key, "key").ensureHasValue();
 
@@ -157,10 +176,13 @@ class _NavigationManager {
 
   Map<String, _PageRegistration> generateMappedRoutes(String basePath) {
     given(basePath, "basePath").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
-        (t) => this._pageRegistrations.any((element) => element.path == basePath),
+        (t) =>
+            this._pageRegistrations.any((element) => element.path == basePath),
         "Unknown path $basePath");
 
-    final base = this._pageRegistrations.firstWhere((element) => element.path == basePath);
+    final base = this
+        ._pageRegistrations
+        .firstWhere((element) => element.path == basePath);
     final result = <String, _PageRegistration>{};
     final list = <_PageRegistration>[...base.children];
     if (!base.isRoot) list.add(base);
@@ -180,7 +202,8 @@ class _NavigationManager {
 
     initialRouteArgs ??= <String, dynamic>{};
 
-    final pageRegistration = this._pageRegistrations.firstWhere((element) => element.path == path);
+    final pageRegistration =
+        this._pageRegistrations.firstWhere((element) => element.path == path);
 
     result.add(pageRegistration.generateRoute(
         new RouteSettings(name: path, arguments: initialRouteArgs), query));
@@ -189,9 +212,9 @@ class _NavigationManager {
   }
 
   NavigatorState retrieveNavigator(String path) {
-    given(path, "path")
-        .ensure((t) => t.isNotEmptyOrWhiteSpace)
-        .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
+    given(path, "path").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
+        (t) => this._navigatorKeys.containsKey(path.trim()),
+        "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].globalKey.currentState;
 
@@ -199,9 +222,9 @@ class _NavigationManager {
   }
 
   ServiceLocator retrieveScope(String path) {
-    given(path, "path")
-        .ensure((t) => t.isNotEmptyOrWhiteSpace)
-        .ensure((t) => this._navigatorKeys.containsKey(path.trim()), "key is unavailable");
+    given(path, "path").ensure((t) => t.isNotEmptyOrWhiteSpace).ensure(
+        (t) => this._navigatorKeys.containsKey(path.trim()),
+        "key is unavailable");
 
     // return this._navigatorKeys[path.trim()].scope;
 
@@ -231,8 +254,16 @@ class _PageRegistration {
 
   bool get isRoot => this.route == "/";
 
-  _PageRegistration(this.route, this.path, this.pathSegments, this.query, this.queryParams,
-      this.factoryFunc, this.pageType, this.fullscreenDialog, this.persist);
+  _PageRegistration(
+      this.route,
+      this.path,
+      this.pathSegments,
+      this.query,
+      this.queryParams,
+      this.factoryFunc,
+      this.pageType,
+      this.fullscreenDialog,
+      this.persist);
 
   Route generateRoute(RouteSettings settings, String? query) {
     final queryArgs = this._parseQuery(query);
@@ -248,7 +279,8 @@ class _PageRegistration {
         if (isOptional) key = key.substring(0, key.length - 1);
         if (!args.containsKey(key) || args[key] == null) {
           if (isOptional) return;
-          throw new ArgumentError("Argument for param '$key' was not provided.");
+          throw new ArgumentError(
+              "Argument for param '$key' was not provided.");
         }
 
         var argValue = args[key];
@@ -280,11 +312,13 @@ class _PageRegistration {
 
       // print("GENERATE ROUTE ${this.persist}");
       if (this.persist &&
-          consolidatedArgs.entries
-              .every((t) => t.value is String || t.value is num || t.value is bool)) {
+          consolidatedArgs.entries.every(
+              (t) => t.value is String || t.value is num || t.value is bool)) {
         var runtimePath = this.path;
-        final runtimeArgs =
-            consolidatedArgs.entries.map((t) => "${t.key}=${t.value}").join("&").trim();
+        final runtimeArgs = consolidatedArgs.entries
+            .map((t) => "${t.key}=${t.value}")
+            .join("&")
+            .trim();
         if (runtimeArgs.isNotEmpty) runtimePath += "?" + runtimeArgs;
 
         // print("RUNTIME PATH $runtimePath");
@@ -303,10 +337,14 @@ class _PageRegistration {
     switch (this.pageType) {
       case PageType.material:
         return MaterialPageRoute<dynamic>(
-            builder: widgetBuilder, settings: settings, fullscreenDialog: this.fullscreenDialog);
+            builder: widgetBuilder,
+            settings: settings,
+            fullscreenDialog: this.fullscreenDialog);
       case PageType.cupertino:
         return CupertinoPageRoute<dynamic>(
-            builder: widgetBuilder, settings: settings, fullscreenDialog: this.fullscreenDialog);
+            builder: widgetBuilder,
+            settings: settings,
+            fullscreenDialog: this.fullscreenDialog);
       default:
         throw new Exception("Unsupported PageType");
     }
@@ -316,7 +354,8 @@ class _PageRegistration {
     final result = <String, dynamic>{};
     if (query == null || query.isEmptyOrWhiteSpace) return result;
 
-    if (query.contains(new RegExp(r'[{:}]'))) throw new Exception("Invalid query: $query");
+    if (query.contains(new RegExp(r'[{:}]')))
+      throw new Exception("Invalid query: $query");
 
     query.split("&").forEach((element) {
       final split = element.split("=");
@@ -381,13 +420,15 @@ class NavigationManager {
 
   NavigationManager._private();
 
-  void registerPage<T extends Widget>(String route, T Function(dynamic routeArgs) factoryFunc,
+  void registerPage<T extends Widget>(
+      String route, T Function(dynamic routeArgs) factoryFunc,
       {PageType pageType = PageType.material,
       bool fullscreenDialog = false,
       bool persist = false}) {
     if (_isBootstrapped) throw new StateError("Already bootstrapped");
 
-    _manager.registerPage(route, factoryFunc, pageType, fullscreenDialog, persist);
+    _manager.registerPage(
+        route, factoryFunc, pageType, fullscreenDialog, persist);
   }
 
   void bootstrap() {
@@ -406,7 +447,8 @@ class NavigationManager {
       final route = settings.name!.trim();
       final path = this._getJustPath(route);
       final query = this._getJustQuery(route);
-      if (!mappedRoutes.containsKey(path)) throw Exception('Invalid route: ${settings.name}');
+      if (!mappedRoutes.containsKey(path))
+        throw Exception('Invalid route: ${settings.name}');
       return mappedRoutes[path]!.generateRoute(settings, query);
     };
 
@@ -423,18 +465,20 @@ class NavigationManager {
   //   return result;
   // }
 
-  RouteListFactory generateRouteListFactory([Map<String, dynamic>? initialRouteArgs]) {
+  RouteListFactory generateRouteListFactory(
+      [Map<String, dynamic>? initialRouteArgs]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
 
     final result = (NavigatorState navigator, String route) {
-      return _manager.generateInitialRoutes(
-          this._getJustPath(route), this._getJustQuery(route), initialRouteArgs);
+      return _manager.generateInitialRoutes(this._getJustPath(route),
+          this._getJustQuery(route), initialRouteArgs);
     };
 
     return result;
   }
 
-  GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
+  GlobalKey<NavigatorState> generateNavigatorKey(String basePath,
+      [ServiceLocator? scope]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     basePath = this._getJustPath(basePath);
 
@@ -460,14 +504,17 @@ class NavigationManager {
     return _manager.retrieveScope(this._getJustPath(path));
   }
 
-  String _generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
+  String _generateRoute(String routeTemplate,
+      [Map<String, dynamic>? routeArgs]) {
     given(routeTemplate, "routeTemplate")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.startsWith("/"), "invalid route template");
 
     final path = this._getJustPath(routeTemplate);
-    final pageRegistration = _manager._pageRegistrations.find((element) => element.path == path);
-    if (pageRegistration == null) throw new Exception("Unknown route: $routeTemplate");
+    final pageRegistration =
+        _manager._pageRegistrations.find((element) => element.path == path);
+    if (pageRegistration == null)
+      throw new Exception("Unknown route: $routeTemplate");
     if (routeArgs == null) return path;
     final query = this._getJustQuery(routeTemplate);
     if (query == null) return routeTemplate;
@@ -477,12 +524,15 @@ class NavigationManager {
     routeArgs.forEach((key, value) {
       final requiredKey = key;
       final optionalKey = key + "?";
-      final hasRequiredKey = pageRegistration.queryParams.containsKey(requiredKey);
-      final hasOptionalKey = pageRegistration.queryParams.containsKey(optionalKey);
+      final hasRequiredKey =
+          pageRegistration.queryParams.containsKey(requiredKey);
+      final hasOptionalKey =
+          pageRegistration.queryParams.containsKey(optionalKey);
 
       if (!hasRequiredKey && !hasOptionalKey) return;
 
-      final type = pageRegistration.queryParams[hasRequiredKey ? requiredKey : optionalKey];
+      final type = pageRegistration
+          .queryParams[hasRequiredKey ? requiredKey : optionalKey];
       var argValue = value;
       switch (type) {
         case _ValidTypes.string:
@@ -536,7 +586,8 @@ class NavigationManager {
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
         .ensure((t) => t.trim().substring(1).split("/").length == 1);
 
-    unawaited(SharedPreferences.getInstance().then((t) => t.setString(_persistKey, path))
+    unawaited(SharedPreferences.getInstance()
+        .then((t) => t.setString(_persistKey, path))
         // .then((t) => print("Saved=$t"))
         .catchError((e) {
       print(e);
@@ -555,7 +606,9 @@ class NavigationManager {
   }
 
   void clearPersistedRoute() {
-    unawaited(SharedPreferences.getInstance().then((t) => t.remove(_persistKey)).catchError((e) {
+    unawaited(SharedPreferences.getInstance()
+        .then((t) => t.remove(_persistKey))
+        .catchError((e) {
       print(e);
       return false;
     }));
@@ -578,7 +631,8 @@ class NavigationService {
     return NavigationManager.instance._retrieveScope(path);
   }
 
-  String generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
+  String generateRoute(String routeTemplate,
+      [Map<String, dynamic>? routeArgs]) {
     return NavigationManager.instance._generateRoute(routeTemplate, routeArgs);
   }
 }

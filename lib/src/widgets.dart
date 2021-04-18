@@ -8,7 +8,8 @@ import 'navigation.dart';
 abstract class StatelessWidgetBase extends StatelessWidget {}
 
 @immutable
-abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWidget {
+abstract class StatefulWidgetBase<T extends WidgetStateBase>
+    extends StatefulWidget {
   final T Function() _createState;
   final List<T> _stateHolder = <T>[];
 
@@ -183,8 +184,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
 /// For clients of AutomaticKeepAlive (example: ListView).
 /// This keeps the state of a widget alive, given the wantAlive is set to true.
-abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends WidgetStateBase<T>
-    with AutomaticKeepAliveClientMixin {
+abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
+    extends WidgetStateBase<T> with AutomaticKeepAliveClientMixin {
   bool _keepAlive = true;
 
   @override
@@ -212,7 +213,7 @@ abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends 
 }
 
 @sealed
-class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
+class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
   final String _initialRoute;
   final Map<String, dynamic>? _initialRouteArgs;
   final TransitionDelegate<dynamic> _transitionDelegate;
@@ -221,12 +222,14 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
     String basePath, {
     required String initialRoute,
     Map<String, dynamic>? initialRouteArgs,
-    TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
+    TransitionDelegate<dynamic> transitionDelegate =
+        const DefaultTransitionDelegate<dynamic>(),
     ServiceLocator? scope,
+    Key? key,
   })  : this._initialRoute = initialRoute,
         this._initialRouteArgs = initialRouteArgs,
         this._transitionDelegate = transitionDelegate,
-        super(() => new _ScopedNavigatorState(basePath, scope));
+        super(() => new ScopedNavigatorState(basePath, scope), key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +238,10 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
       child: Navigator(
         key: this.state.key,
         initialRoute: this._initialRoute,
-        onGenerateRoute: NavigationManager.instance.generateRouteFactory(this.state.basePath),
-        onGenerateInitialRoutes:
-            NavigationManager.instance.generateRouteListFactory(this._initialRouteArgs),
+        onGenerateRoute: NavigationManager.instance
+            .generateRouteFactory(this.state.basePath),
+        onGenerateInitialRoutes: NavigationManager.instance
+            .generateRouteListFactory(this._initialRouteArgs),
         transitionDelegate: this._transitionDelegate,
       ),
       // onWillPop: () {
@@ -249,22 +253,27 @@ class ScopedNavigator extends StatefulWidgetBase<_ScopedNavigatorState> {
       //   } else
       //     return Future.value(true);
       // },
-      onWillPop: () async =>
-          !await NavigationService.instance.retrieveNavigator(this.state.basePath).maybePop(),
+      onWillPop: () async => !await NavigationService.instance
+          .retrieveNavigator(this.state.basePath)
+          .maybePop(),
     );
   }
 }
 
-class _ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
+class ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
   final String _basePath;
   final GlobalKey<NavigatorState> _key;
 
   String get basePath => this._basePath;
   GlobalKey<NavigatorState> get key => this._key;
 
-  _ScopedNavigatorState(String basePath, ServiceLocator? scope)
+  NavigatorState? get navigator => this._key.currentState;
+
+  ScopedNavigatorState(String basePath, ServiceLocator? scope)
       : this._basePath = basePath,
-        this._key = NavigationManager.instance.generateNavigatorKey(basePath, scope) {
-    this.onDispose(() => NavigationManager.instance.disposeNavigatorKey(this._basePath, this._key));
+        this._key =
+            NavigationManager.instance.generateNavigatorKey(basePath, scope) {
+    this.onDispose(() => NavigationManager.instance
+        .disposeNavigatorKey(this._basePath, this._key));
   }
 }

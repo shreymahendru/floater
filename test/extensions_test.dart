@@ -19,9 +19,17 @@ void main() {
       setUp(() {
         targetCountry = {"name": "Canada", "code": "CA"};
 
-        targetAddress = {"street": "711 Kennedy rd", "city": "Toronto", "country": targetCountry};
+        targetAddress = {
+          "street": "711 Kennedy rd",
+          "city": "Toronto",
+          "country": targetCountry
+        };
 
-        target = {"firstName": "John", "lastName": "Smith", "address": targetAddress};
+        target = {
+          "firstName": "John",
+          "lastName": "Smith",
+          "address": targetAddress
+        };
       });
 
       tearDown(() {
@@ -42,13 +50,15 @@ void main() {
         expect(value, null);
       });
 
-      test("should return null if the key is a string with just whitespace", () {
+      test("should return null if the key is a string with just whitespace",
+          () {
         final key = "  ";
         final value = target!.getValue(key);
         expect(value, null);
       });
 
-      test("should return null if the key does not exist on the target object", () {
+      test("should return null if the key does not exist on the target object",
+          () {
         final key = "something";
         final value = target!.getValue(key);
         expect(value, null);
@@ -60,13 +70,17 @@ void main() {
         expect(value, "John");
       });
 
-      test("should return value if the multi level key exists on the target object", () {
+      test(
+          "should return value if the multi level key exists on the target object",
+          () {
         final key = "address.country";
         final value = target!.getValue(key);
         expect(value, targetCountry);
       });
 
-      test("should return value if the multi level (3 levels) key exists on the target object", () {
+      test(
+          "should return value if the multi level (3 levels) key exists on the target object",
+          () {
         final key = "address.country.code";
         final value = target!.getValue(key);
         expect(value, "CA");
@@ -108,9 +122,17 @@ void main() {
       setUp(() {
         targetCountry = {"name": "Canada", "code": "CA"};
 
-        targetAddress = {"street": "711 Kennedy rd", "city": "Toronto", "country": targetCountry};
+        targetAddress = {
+          "street": "711 Kennedy rd",
+          "city": "Toronto",
+          "country": targetCountry
+        };
 
-        target = {"firstName": "John", "lastName": "Smith", "address": targetAddress};
+        target = {
+          "firstName": "John",
+          "lastName": "Smith",
+          "address": targetAddress
+        };
 
         targetString = jsonEncode(target);
       });
@@ -134,7 +156,8 @@ void main() {
         expect(getCurrentTargetString(), targetString);
       });
 
-      test("should not do anything if the key is a string with just whitespace", () {
+      test("should not do anything if the key is a string with just whitespace",
+          () {
         final key = "  ";
         target!.setValue(key, "some val");
         expect(getCurrentTargetString(), targetString);
@@ -232,22 +255,28 @@ void main() {
     };
 
     group("find", () {
-      test("should return a int value when the int is present in a list of int", () {
+      test("should return a int value when the int is present in a list of int",
+          () {
         final value = numbers.find((element) => element == 2);
         expect(value, 2);
       });
 
-      test("should return null when the value is not present in a list of int", () {
+      test("should return null when the value is not present in a list of int",
+          () {
         final value = numbers.find((element) => element == 122);
         expect(value, null);
       });
 
-      test("should return the string value when the int is present in a list of strings", () {
+      test(
+          "should return the string value when the int is present in a list of strings",
+          () {
         final value = strings.find((element) => element == "india");
         expect(value, "india");
       });
 
-      test("should return null value when the string is not present in a list of strings", () {
+      test(
+          "should return null value when the string is not present in a list of strings",
+          () {
         final value = strings.find((element) => element == "india a");
         expect(value, null);
       });
@@ -268,7 +297,9 @@ void main() {
     });
 
     group("orderBy", () {
-      test("should return a new empty array object when target is an empty array", () {
+      test(
+          "should return a new empty array object when target is an empty array",
+          () {
         final ordered = empty.orderBy();
         expect(ordered.length, 0);
         expect(ordered != empty, true);
@@ -297,7 +328,8 @@ void main() {
 
       test("should return array of strings in ascending order", () {
         final ordered = strings.orderBy();
-        expect(arrayEqual(ordered, ["alpha", "bravo", "charlie", "india"]), true);
+        expect(
+            arrayEqual(ordered, ["alpha", "bravo", "charlie", "india"]), true);
       });
 
       test("should return array of objects in ascending order", () {
@@ -307,7 +339,9 @@ void main() {
     });
 
     group("orderByDesc", () {
-      test("should return a new empty array object when target is an empty array", () {
+      test(
+          "should return a new empty array object when target is an empty array",
+          () {
         final ordered = empty.orderByDesc();
         expect(ordered.length, empty.length);
         expect(ordered != empty, true);
@@ -336,7 +370,8 @@ void main() {
 
       test("should return array of strings in descending order", () {
         final ordered = strings.orderByDesc();
-        expect(arrayEqual(ordered, ["india", "charlie", "bravo", "alpha"]), true);
+        expect(
+            arrayEqual(ordered, ["india", "charlie", "bravo", "alpha"]), true);
       });
 
       test("should return array of objects in descending order", () {

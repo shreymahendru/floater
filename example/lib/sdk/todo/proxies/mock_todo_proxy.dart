@@ -25,7 +25,8 @@ class MockTodoProxy implements Todo {
   @override
   Future<void> update(String title, String? description) async {
     given(title, "argName").ensure((t) => t.isNotEmptyOrWhiteSpace);
-    given(description, "description").ensure((t) => t?.isNotEmptyOrWhiteSpace ?? true);
+    given(description, "description")
+        .ensure((t) => t?.isNotEmptyOrWhiteSpace ?? true);
 
     await Future.delayed(Duration(seconds: 2));
 
@@ -38,7 +39,8 @@ class MockTodoProxy implements Todo {
   Future<void> toggleComplete() async {
     await Future.delayed(Duration(seconds: 1));
 
-    final newDto = TodoDto(this.id, this.title, this.description, !this.isComplete);
+    final newDto =
+        TodoDto(this.id, this.title, this.description, !this.isComplete);
     this._dto = newDto;
   }
 

@@ -3,8 +3,8 @@ import 'splash_page.dart';
 import 'package:example/pages/routes.dart';
 
 class SplashPageState extends WidgetStateBase<SplashPage> {
-  final _navigator =
-      NavigationService.instance.retrieveNavigator("/"); // getting the root navigator.
+  final _navigator = NavigationService.instance
+      .retrieveNavigator("/"); // getting the root navigator.
 
   SplashPageState() : super() {
     this.onInitState(() {
@@ -18,6 +18,6 @@ class SplashPageState extends WidgetStateBase<SplashPage> {
 
     await Future.delayed(Duration(seconds: 2));
 
-    this._navigator.pushReplacementNamed(Routes.todos);
+    this._navigator.pushReplacementNamed(Routes.home);
   }
 }
