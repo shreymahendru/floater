@@ -12,11 +12,11 @@ class Installer extends ServiceInstaller {
     // it is a Singleton, so there will be only one instance of TodoService through out the lifecycle if the app.
     registry.registerSingleton<TodosService>(() => MockTodosService());
 
-
     // ui Services
     // services that facilitate clean communication between pages and/or widgets
     // these services are usually scoped
-    registry.registerScoped<TodoManagementService>(() => TodoManagementService());
+    registry
+        .registerScoped<TodoManagementService>(() => TodoManagementService());
     registry.registerSingleton<BottomNavManager>(() => BottomNavManager());
   }
 }

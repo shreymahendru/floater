@@ -5,7 +5,8 @@ import 'package:example/services/bottom_nav_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class ViewTodoPageState extends WidgetStateBase<ViewTodoPage> with BottomNavManagerMixin {
+class ViewTodoPageState extends WidgetStateBase<ViewTodoPage>
+    with BottomNavManagerMixin {
   final _todoService = ServiceLocator.instance.resolve<TodosService>();
   // final _navigator = NavigationService.instance.retrieveNavigator("/");
 

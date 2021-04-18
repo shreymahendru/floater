@@ -3,8 +3,8 @@ import 'splash_page.dart';
 import 'package:example/pages/routes.dart';
 
 class SplashPageState extends WidgetStateBase<SplashPage> {
-  final _navigator =
-      NavigationService.instance.retrieveNavigator("/"); // getting the root navigator.
+  final _navigator = NavigationService.instance
+      .retrieveNavigator("/"); // getting the root navigator.
 
   SplashPageState() : super() {
     this.onInitState(() {

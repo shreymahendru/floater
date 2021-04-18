@@ -79,7 +79,8 @@ extension ListExt<T> on List<T> {
     return internal;
   }
 
-  List<T> orderByDesc<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
+  List<T> orderByDesc<TKey extends Comparable>(
+      ValueFunction<T, TKey> valueFunc) {
     // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 

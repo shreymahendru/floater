@@ -7,7 +7,8 @@ mixin BottomNavManagerMixin {
 
   NavigatorState get currentNavigator => this.bottomNavService.navigatorState;
 
-  int get currentSelectedNavItem => this.bottomNavService.currentSelectedNavItem;
+  int get currentSelectedNavItem =>
+      this.bottomNavService.currentSelectedNavItem;
 
   Color get appBarColor {
     if (this.currentSelectedNavItem == 0)

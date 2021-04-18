@@ -48,7 +48,8 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
     return ListView.builder(
       addAutomaticKeepAlives: true,
       itemCount: this.state.todos.length,
-      itemBuilder: (context, index) => this._buildListTile(this.state.todos[index]),
+      itemBuilder: (context, index) =>
+          this._buildListTile(this.state.todos[index]),
     );
   }
 

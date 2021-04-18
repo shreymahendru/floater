@@ -41,7 +41,8 @@ void main() {
   });
 
   group("hasMinLength", () {
-    test("should pass when the property of the object being validated has length greater than 3",
+    test(
+        "should pass when the property of the object being validated has length greater than 3",
         () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMinLength(3);
@@ -49,7 +50,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated has length less than 3", () {
+    test(
+        "should fail when the property of the object being validated has length less than 3",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMinLength(3);
       testVal.firstName = "Jo";
@@ -60,7 +63,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated is an empty string", () {
+    test(
+        "should fail when the property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMinLength(3);
       testVal.firstName = "";
@@ -81,7 +86,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is null", () {
+    test(
+        "should pass when nullable property of the object being validated is null",
+        () {
       validator = new Validator<TestVal>();
       testVal.lastName = null;
 
@@ -90,7 +97,8 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated has length less than 3",
+    test(
+        "should fail when nullable property of the object being validated has length less than 3",
         () {
       validator = new Validator<TestVal>();
       validator.prop("lastName", (t) => t.lastName).hasMinLength(3);
@@ -102,7 +110,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the nullable property of the object being validated is an empty string",
+    test(
+        "should fail when the nullable property of the object being validated is an empty string",
         () {
       validator = new Validator<TestVal>();
       validator.prop("lastName", (t) => t.lastName).hasMinLength(3);
@@ -116,14 +125,17 @@ void main() {
   });
 
   group("hasMaxLength", () {
-    test("should pass when the property of the object being validated has length less than 5", () {
+    test(
+        "should pass when the property of the object being validated has length less than 5",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMaxLength(5);
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated has length greater than 5",
+    test(
+        "should fail when the property of the object being validated has length greater than 5",
         () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMaxLength(5);
@@ -136,7 +148,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when the property of the object being validated is an empty string", () {
+    test(
+        "should pass when the property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasMaxLength(5);
       testVal.firstName = "";
@@ -144,7 +158,8 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated has length less than 5",
+    test(
+        "should pass when nullable property of the object being validated has length less than 5",
         () {
       validator = new Validator<TestVal>();
       validator.prop("lastName", (t) => t.lastName).hasMaxLength(5);
@@ -152,7 +167,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is null", () {
+    test(
+        "should pass when nullable property of the object being validated is null",
+        () {
       validator = new Validator<TestVal>();
       testVal.lastName = null;
       validator.prop("lastName", (t) => t.lastName).hasMaxLength(5);
@@ -174,7 +191,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when nullable property of the object being validated is an empty string", () {
+    test(
+        "should pass when nullable property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       testVal.lastName = "";
       validator.prop("lastName", (t) => t.lastName).hasMaxLength(5);
@@ -184,14 +203,17 @@ void main() {
   });
 
   group("hasExactLength", () {
-    test("should pass when the property of the object being validated has length exactly 4", () {
+    test(
+        "should pass when the property of the object being validated has length exactly 4",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasExactLength(4);
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated has length greater than 4",
+    test(
+        "should fail when the property of the object being validated has length greater than 4",
         () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasExactLength(4);
@@ -199,22 +221,27 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      expect(validator.errors.getError("firstName"), "Exact length of 4 required",
+      expect(
+          validator.errors.getError("firstName"), "Exact length of 4 required",
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated has length less than 4", () {
+    test(
+        "should fail when the property of the object being validated has length less than 4",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("firstName", (t) => t.firstName).hasExactLength(4);
       testVal.firstName = "Jo";
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      expect(validator.errors.getError("firstName"), "Exact length of 4 required",
+      expect(
+          validator.errors.getError("firstName"), "Exact length of 4 required",
           reason: "Should have a correct message");
     });
 
-    test("should pass when nullable property of the object being validated has length exactly 4",
+    test(
+        "should pass when nullable property of the object being validated has length exactly 4",
         () {
       validator = new Validator<TestVal>();
       testVal.lastName = "Step";
@@ -240,11 +267,13 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      expect(validator.errors.getError("lastName"), "Exact length of 4 required",
+      expect(
+          validator.errors.getError("lastName"), "Exact length of 4 required",
           reason: "Should have a correct message");
     });
 
-    test("should fail when nullable property of the object being validated has length less than 4",
+    test(
+        "should fail when nullable property of the object being validated has length less than 4",
         () {
       validator = new Validator<TestVal>();
       validator.prop("lastName", (t) => t.lastName).hasExactLength(4);
@@ -252,13 +281,16 @@ void main() {
       validator.validate(testVal);
       expect(validator.isValid, false, reason: "Should be invalid");
       expect(validator.hasErrors, true, reason: "Should have error");
-      expect(validator.errors.getError("lastName"), "Exact length of 4 required",
+      expect(
+          validator.errors.getError("lastName"), "Exact length of 4 required",
           reason: "Should have a correct message");
     });
   });
 
   group("isIn", () {
-    test("should pass when the property of the object being validated is in the given set", () {
+    test(
+        "should pass when the property of the object being validated is in the given set",
+        () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "John"];
       validator.prop("firstName", (t) => t.firstName).isInStrings(setList);
@@ -266,7 +298,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated is not in the given set", () {
+    test(
+        "should fail when the property of the object being validated is not in the given set",
+        () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test"];
       validator.prop("firstName", (t) => t.firstName).isInStrings(setList);
@@ -293,12 +327,15 @@ void main() {
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "JOHN"];
-      validator.prop("firstName", (t) => t.firstName).isInStrings(setList, true);
+      validator
+          .prop("firstName", (t) => t.firstName)
+          .isInStrings(setList, true);
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is in the given set",
+    test(
+        "should pass when nullable property of the object being validated is in the given set",
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "John"];
@@ -317,7 +354,8 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated is not in the given set",
+    test(
+        "should fail when nullable property of the object being validated is not in the given set",
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test"];
@@ -342,7 +380,9 @@ void main() {
   });
 
   group("isNotIn", () {
-    test("should pass when the property of the object being validated is not in the given set", () {
+    test(
+        "should pass when the property of the object being validated is not in the given set",
+        () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test"];
       validator.prop("firstName", (t) => t.firstName).isNotInStrings(setList);
@@ -350,7 +390,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated is in the given set", () {
+    test(
+        "should fail when the property of the object being validated is in the given set",
+        () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "John"];
       validator.prop("firstName", (t) => t.firstName).isNotInStrings(setList);
@@ -375,7 +417,9 @@ void main() {
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "JOHN"];
-      validator.prop("firstName", (t) => t.firstName).isNotInStrings(setList, true);
+      validator
+          .prop("firstName", (t) => t.firstName)
+          .isNotInStrings(setList, true);
       validator.validate(testVal);
       expect(validator.isValid, false);
       expect(validator.hasErrors, true, reason: "Should have error");
@@ -383,7 +427,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when nullable property of the object being validated is not in the given set",
+    test(
+        "should pass when nullable property of the object being validated is not in the given set",
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test"];
@@ -401,7 +446,8 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated is in the given set",
+    test(
+        "should fail when nullable property of the object being validated is in the given set",
         () {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "John"];
@@ -420,7 +466,9 @@ void main() {
       validator = new Validator<TestVal>();
       final setList = ["Jo", "J", "test", "JOHN"];
       testVal.lastName = "John";
-      validator.prop("lastName", (t) => t.lastName).isNotInStrings(setList, true);
+      validator
+          .prop("lastName", (t) => t.lastName)
+          .isNotInStrings(setList, true);
       validator.validate(testVal);
       expect(validator.isValid, false);
       expect(validator.hasErrors, true, reason: "Should have error");
@@ -430,14 +478,18 @@ void main() {
   });
 
   group("containsOnlyNumbers", () {
-    test("should pass when the property of the object being validated contain only numbers", () {
+    test(
+        "should pass when the property of the object being validated contain only numbers",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).containsOnlyNumbers();
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated contains no numbers", () {
+    test(
+        "should fail when the property of the object being validated contains no numbers",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).containsOnlyNumbers();
       testVal.age = "no-age";
@@ -448,7 +500,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated contains numbers and letters",
+    test(
+        "should fail when the property of the object being validated contains numbers and letters",
         () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).containsOnlyNumbers();
@@ -460,7 +513,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated is an empty string", () {
+    test(
+        "should fail when the property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("age", (t) => t.age).containsOnlyNumbers();
       testVal.age = "";
@@ -471,7 +526,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when the property of the object being validated contain only numbers", () {
+    test(
+        "should pass when the property of the object being validated contain only numbers",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("height", (t) => t.height).containsOnlyNumbers();
       validator.validate(testVal);
@@ -486,7 +543,8 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated contains no numbers",
+    test(
+        "should fail when nullable property of the object being validated contains no numbers",
         () {
       validator = new Validator<TestVal>();
       validator.prop("height", (t) => t.height).containsOnlyNumbers();
@@ -511,7 +569,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when nullable property of the object being validated is an empty string", () {
+    test(
+        "should fail when nullable property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("height", (t) => t.height).containsOnlyNumbers();
       testVal.height = "";
@@ -524,14 +584,18 @@ void main() {
   });
 
   group("isPhoneNumber", () {
-    test("should pass when the property of the object being validated is a valid phone number", () {
+    test(
+        "should pass when the property of the object being validated is a valid phone number",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone", (t) => t.phone).isPhoneNumber();
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated contains letters", () {
+    test(
+        "should fail when the property of the object being validated contains letters",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone", (t) => t.phone).isPhoneNumber();
       testVal.phone = "1sa4567292";
@@ -542,7 +606,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated has length less than 10", () {
+    test(
+        "should fail when the property of the object being validated has length less than 10",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone", (t) => t.phone).isPhoneNumber();
       testVal.phone = "1232112";
@@ -553,7 +619,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated has length greater than 10",
+    test(
+        "should fail when the property of the object being validated has length greater than 10",
         () {
       validator = new Validator<TestVal>();
       validator.prop("phone", (t) => t.phone).isPhoneNumber();
@@ -565,7 +632,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated is an empty string", () {
+    test(
+        "should fail when the property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone", (t) => t.phone).isPhoneNumber();
       testVal.phone = "";
@@ -576,7 +645,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when nullable property of the object being validated is a valid phone number",
+    test(
+        "should pass when nullable property of the object being validated is a valid phone number",
         () {
       validator = new Validator<TestVal>();
       validator.prop("phone2", (t) => t.phone2).isPhoneNumber();
@@ -584,7 +654,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is null", () {
+    test(
+        "should pass when nullable property of the object being validated is null",
+        () {
       validator = new Validator<TestVal>();
       testVal.phone2 = null;
       validator.prop("phone2", (t) => t.phone2).isPhoneNumber();
@@ -592,7 +664,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated contains letters", () {
+    test(
+        "should fail when nullable property of the object being validated contains letters",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone2", (t) => t.phone2).isPhoneNumber();
       testVal.phone2 = "1sa4567292";
@@ -603,7 +677,8 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when nullable property of the object being validated has length less than 10",
+    test(
+        "should fail when nullable property of the object being validated has length less than 10",
         () {
       validator = new Validator<TestVal>();
       validator.prop("phone2", (t) => t.phone2).isPhoneNumber();
@@ -628,7 +703,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when nullable property of the object being validated is an empty string", () {
+    test(
+        "should fail when nullable property of the object being validated is an empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("phone2", (t) => t.phone2).isPhoneNumber();
       testVal.phone2 = "";
@@ -641,14 +718,18 @@ void main() {
   });
 
   group("isEmail", () {
-    test("should pass when the property of the object being validated is a valid email", () {
+    test(
+        "should pass when the property of the object being validated is a valid email",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email", (t) => t.email).isEmail();
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should fail when the property of the object being validated is a invalid email", () {
+    test(
+        "should fail when the property of the object being validated is a invalid email",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email", (t) => t.email).isEmail();
       testVal.email = "test.com";
@@ -659,7 +740,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when the property of the object being validated is a empty string", () {
+    test(
+        "should fail when the property of the object being validated is a empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email", (t) => t.email).isEmail();
       testVal.email = "";
@@ -670,7 +753,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should pass when the property of the object being validated is a valid email", () {
+    test(
+        "should pass when the property of the object being validated is a valid email",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email", (t) => t.email).isEmail();
       testVal.email = "test1.tester@mail.tester.ca";
@@ -678,14 +763,18 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is a valid email", () {
+    test(
+        "should pass when nullable property of the object being validated is a valid email",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email2", (t) => t.email2).isEmail();
       validator.validate(testVal);
       expect(validator.isValid, true);
     });
 
-    test("should pass when nullable property of the object being validated is null", () {
+    test(
+        "should pass when nullable property of the object being validated is null",
+        () {
       validator = new Validator<TestVal>();
       testVal.email2 = null;
       validator.prop("email2", (t) => t.email2).isEmail();
@@ -693,7 +782,9 @@ void main() {
       expect(validator.isValid, true);
     });
 
-    test("should fail when nullable property of the object being validated is a invalid email", () {
+    test(
+        "should fail when nullable property of the object being validated is a invalid email",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email2", (t) => t.email2).isEmail();
       testVal.email2 = "test.com";
@@ -704,7 +795,9 @@ void main() {
           reason: "Should have a correct message");
     });
 
-    test("should fail when nullable property of the object being validated is a empty string", () {
+    test(
+        "should fail when nullable property of the object being validated is a empty string",
+        () {
       validator = new Validator<TestVal>();
       validator.prop("email2", (t) => t.email2).isEmail();
       testVal.email2 = "";

@@ -30,10 +30,14 @@ abstract class Routes {
     // Home Tab Pages
     NavigationManager.instance
       ..registerPage(Routes.todos, (routeArgs) => TodosPage())
-      ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]))
-      ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
-      ..registerPage(Routes.manageTodoDescription, (routeArgs) => ManageTodoDescriptionPage())
-      ..registerPage(Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]));
+      ..registerPage(
+          Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]))
+      ..registerPage(
+          Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
+      ..registerPage(Routes.manageTodoDescription,
+          (routeArgs) => ManageTodoDescriptionPage())
+      ..registerPage(
+          Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]));
 
     // bootstrapping Navigation
     NavigationManager.instance.bootstrap();

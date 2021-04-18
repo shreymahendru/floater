@@ -6,7 +6,8 @@ abstract class Ensurer<T> {
 }
 
 Ensurer<T> given<T>(T arg, String argName) {
-  if (argName.isEmptyOrWhiteSpace) throw new ArgumentError("argName can't be empty");
+  if (argName.isEmptyOrWhiteSpace)
+    throw new ArgumentError("argName can't be empty");
 
   return new _EnsurerInternal(arg, argName.trim());
 }

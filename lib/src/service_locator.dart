@@ -115,17 +115,25 @@ class _Container implements ServiceRegistry {
   }
 
   void bootstrap() {
-    given(this, "this").ensure((t) => !t._isBootstrapped, "Already bootstrapped");
+    given(this, "this")
+        .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
 
     if (!this._types.contains(EventAggregator))
       this.registerSingleton<EventAggregator>(() => FloaterEventAggregator());
 
     if (!this._types.contains(SecureStorageService))
-      this.registerSingleton<SecureStorageService>(() => FloaterSecureStorageService());
+      this.registerSingleton<SecureStorageService>(
+          () => FloaterSecureStorageService());
 
-    this.instanceRegistrations.forEach((element) => element.register(this._getIt));
-    this.singletonRegistrations.forEach((element) => element.register(this._getIt));
-    this.transientRegistrations.forEach((element) => element.register(this._getIt));
+    this
+        .instanceRegistrations
+        .forEach((element) => element.register(this._getIt));
+    this
+        .singletonRegistrations
+        .forEach((element) => element.register(this._getIt));
+    this
+        .transientRegistrations
+        .forEach((element) => element.register(this._getIt));
     // Deliberately not doing scoped registrations
 
     this._isBootstrapped = true;
@@ -168,14 +176,20 @@ class _ChildScope implements ServiceLocator, Disposable {
   var _isDisposed = false;
 
   _ChildScope(_Container parentScope) : this._parentScope = parentScope {
-    this._parentScope.scopedRegistrations.forEach((element) => element.register(this._getIt));
+    this
+        ._parentScope
+        .scopedRegistrations
+        .forEach((element) => element.register(this._getIt));
   }
 
   @override
   T resolve<T extends Object>() {
     if (this._isDisposed) throw new Exception("Object disposed");
 
-    if (this._parentScope.scopedRegistrations.any((element) => element.type == T)) {
+    if (this
+        ._parentScope
+        .scopedRegistrations
+        .any((element) => element.type == T)) {
       final instance = this._getIt.get<T>();
       if (instance is Disposable && !this._instances.contains(instance))
         this._instances.add(instance);

@@ -6,10 +6,12 @@ import 'manage_todo_title_page.dart';
 
 class ManageTodoTitlePageState extends WidgetStateBase<ManageTodoTitlePage>
     with BottomNavManagerMixin {
-  final _todoManagementService =
-      NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
+  final _todoManagementService = NavigationService.instance
+      .retrieveScope(Routes.manageTodo)
+      .resolve<TodoManagementService>();
   // final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
-  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
+  final _scopedNavigator =
+      NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   late String _title;
   String get title => this._title;

@@ -7,10 +7,11 @@ import 'package:example/services/bottom_nav_manager_mixin.dart';
 import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 
-class TodosPageState extends WidgetStateBase<TodosPage> with BottomNavManagerMixin {
+class TodosPageState extends WidgetStateBase<TodosPage>
+    with BottomNavManagerMixin {
   // final _navigator = NavigationService.instance.retrieveNavigator("/");
-  final _todosService =
-      ServiceLocator.instance.resolve<TodosService>(); // getting the todoService installed
+  final _todosService = ServiceLocator.instance
+      .resolve<TodosService>(); // getting the todoService installed
   final _eventAggregator = ServiceLocator.instance.resolve<EventAggregator>();
 
   List<Todo> _todos = [];
@@ -25,14 +26,16 @@ class TodosPageState extends WidgetStateBase<TodosPage> with BottomNavManagerMix
     this.onInitState(() async {
       this._loadTodos();
 
-      final persistedRoute = await NavigationManager.instance.retrievePersistedRoute();
+      final persistedRoute =
+          await NavigationManager.instance.retrievePersistedRoute();
       print(persistedRoute);
       if (persistedRoute != null) {
         this.currentNavigator.pushNamed(persistedRoute);
       }
     });
 
-    this.watch<TodoAddedEvent>(this._eventAggregator.subscribe<TodoAddedEvent>(), (event) {
+    this.watch<TodoAddedEvent>(
+        this._eventAggregator.subscribe<TodoAddedEvent>(), (event) {
       this._todos.add(event.todo);
     });
   }

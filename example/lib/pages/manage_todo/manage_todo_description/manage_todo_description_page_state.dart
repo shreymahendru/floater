@@ -5,16 +5,20 @@ import 'package:floater/floater.dart';
 import 'package:flutter/material.dart';
 import 'manage_todo_description_page.dart';
 
-class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescriptionPage>
+class ManageTodoDescriptionPageState
+    extends WidgetStateBase<ManageTodoDescriptionPage>
     with BottomNavManagerMixin {
-  final _todoManagementService =
-      NavigationService.instance.retrieveScope(Routes.manageTodo).resolve<TodoManagementService>();
+  final _todoManagementService = NavigationService.instance
+      .retrieveScope(Routes.manageTodo)
+      .resolve<TodoManagementService>();
   // final _rootNavigator = NavigationService.instance.retrieveNavigator("/");
-  final _scopedNavigator = NavigationService.instance.retrieveNavigator(Routes.manageTodo);
+  final _scopedNavigator =
+      NavigationService.instance.retrieveNavigator(Routes.manageTodo);
 
   String? _description;
   String? get description => this._description;
-  set description(String? value) => (this.._description = value).triggerStateChange();
+  set description(String? value) =>
+      (this.._description = value).triggerStateChange();
 
   bool get isNewTodo => this._todoManagementService.isNewTodo;
 
@@ -46,7 +50,9 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
     if (this._description == null)
       description = null;
     else
-      description = this._description!.isEmptyOrWhiteSpace ? null : this._description!.trim();
+      description = this._description!.isEmptyOrWhiteSpace
+          ? null
+          : this._description!.trim();
 
     this._todoManagementService.setDescription(description);
 
@@ -76,6 +82,7 @@ class ManageTodoDescriptionPageState extends WidgetStateBase<ManageTodoDescripti
         .prop("description", (t) => t.description)
         .isOptional()
         .hasMaxLength(500)
-        .withMessage(message: "Description should be less than 500 characters.");
+        .withMessage(
+            message: "Description should be less than 500 characters.");
   }
 }
