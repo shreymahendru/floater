@@ -1,4 +1,7 @@
-## [0.1.1] - March 29, 2021
+## [0.1.1+1] - April 18, 2021
+* Fix changelog typo
+
+## [0.1.1] - April 18, 2021
 * Added Key for Scoped Navigator
 * Example App now includes and example for a Bottom nav set up for an app
 * formatting package files
