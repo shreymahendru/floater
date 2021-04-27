@@ -217,6 +217,7 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
   final String _initialRoute;
   final Map<String, dynamic>? _initialRouteArgs;
   final TransitionDelegate<dynamic> _transitionDelegate;
+  final List<NavigatorObserver> observers;
 
   ScopedNavigator(
     String basePath, {
@@ -226,6 +227,7 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
         const DefaultTransitionDelegate<dynamic>(),
     ServiceLocator? scope,
     Key? key,
+    this.observers = const <NavigatorObserver>[],
   })  : this._initialRoute = initialRoute,
         this._initialRouteArgs = initialRouteArgs,
         this._transitionDelegate = transitionDelegate,
@@ -243,6 +245,7 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
         onGenerateInitialRoutes: NavigationManager.instance
             .generateRouteListFactory(this._initialRouteArgs),
         transitionDelegate: this._transitionDelegate,
+        observers: this.observers,
       ),
       // onWillPop: () {
       //   print("onWillPop ${this.state.basePath}");
