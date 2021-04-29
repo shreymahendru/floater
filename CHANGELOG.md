@@ -1,3 +1,6 @@
+## [0.1.2] - April 29, 2021
+* Expose navigation observers property for scoped navigator.
+
 ## [0.1.1+1] - April 18, 2021
 * Fix changelog typo
 
