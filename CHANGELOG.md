@@ -1,3 +1,7 @@
+## [0.132] - October 25, 2021
+* Listen/Unlisten utility helpers for stateful widgets
+* const constructor for Stateless widgets  
+
 ## [0.1.2] - April 29, 2021
 * Expose navigation observers property for scoped navigator.
 
