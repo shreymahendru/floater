@@ -5,11 +5,14 @@ import 'package:meta/meta.dart';
 import 'navigation.dart';
 
 @immutable
-abstract class StatelessWidgetBase extends StatelessWidget {}
+abstract class StatelessWidgetBase extends StatelessWidget {
+  const StatelessWidgetBase({
+    Key? key,
+  }) : super(key: key);
+}
 
 @immutable
-abstract class StatefulWidgetBase<T extends WidgetStateBase>
-    extends StatefulWidget {
+abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWidget {
   final T Function() _createState;
   final List<T> _stateHolder = <T>[];
 
@@ -37,6 +40,7 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase>
 
 abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   final _watches = <Stream, StreamSubscription>{};
+  final _listeners = <Listenable, void Function()>{};
   bool _isInitialized = false;
 
   VoidCallback? _onInitState;
@@ -109,6 +113,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     this._watches.values.forEach((watcher) => watcher.cancel());
     this._watches.clear();
 
+    this._listeners.keys.forEach((listenable) => this.unlisten(listenable));
+
     if (this._onDispose != null) this._onDispose!();
 
     super.dispose();
@@ -157,6 +163,28 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     watcher.cancel();
   }
 
+  @protected
+  @nonVirtual
+  @mustCallSuper
+  void listen<T extends Listenable>(T listenable, void Function() onChange) {
+    if (this._listeners.containsKey(listenable)) {
+      throw Exception("Listenable $listenable already being listened to");
+    }
+
+    this._listeners[listenable] = onChange;
+    listenable.addListener(onChange);
+  }
+
+  @protected
+  @nonVirtual
+  @mustCallSuper
+  void unlisten<T extends Listenable>(T listenable) {
+    if (!this._listeners.containsKey(listenable)) return;
+
+    final listener = this._listeners.remove(listenable);
+    listenable.removeListener(listener!);
+  }
+
   @override
   @protected
   @nonVirtual
@@ -184,8 +212,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
 /// For clients of AutomaticKeepAlive (example: ListView).
 /// This keeps the state of a widget alive, given the wantAlive is set to true.
-abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget>
-    extends WidgetStateBase<T> with AutomaticKeepAliveClientMixin {
+abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends WidgetStateBase<T>
+    with AutomaticKeepAliveClientMixin {
   bool _keepAlive = true;
 
   @override
@@ -223,8 +251,7 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
     String basePath, {
     required String initialRoute,
     Map<String, dynamic>? initialRouteArgs,
-    TransitionDelegate<dynamic> transitionDelegate =
-        const DefaultTransitionDelegate<dynamic>(),
+    TransitionDelegate<dynamic> transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
     ServiceLocator? scope,
     Key? key,
     this.observers = const <NavigatorObserver>[],
@@ -240,10 +267,8 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
       child: Navigator(
         key: this.state.key,
         initialRoute: this._initialRoute,
-        onGenerateRoute: NavigationManager.instance
-            .generateRouteFactory(this.state.basePath),
-        onGenerateInitialRoutes: NavigationManager.instance
-            .generateRouteListFactory(this._initialRouteArgs),
+        onGenerateRoute: NavigationManager.instance.generateRouteFactory(this.state.basePath),
+        onGenerateInitialRoutes: NavigationManager.instance.generateRouteListFactory(this._initialRouteArgs),
         transitionDelegate: this._transitionDelegate,
         observers: this.observers,
       ),
@@ -256,9 +281,7 @@ class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
       //   } else
       //     return Future.value(true);
       // },
-      onWillPop: () async => !await NavigationService.instance
-          .retrieveNavigator(this.state.basePath)
-          .maybePop(),
+      onWillPop: () async => !await NavigationService.instance.retrieveNavigator(this.state.basePath).maybePop(),
     );
   }
 }
@@ -274,9 +297,7 @@ class ScopedNavigatorState extends WidgetStateBase<ScopedNavigator> {
 
   ScopedNavigatorState(String basePath, ServiceLocator? scope)
       : this._basePath = basePath,
-        this._key =
-            NavigationManager.instance.generateNavigatorKey(basePath, scope) {
-    this.onDispose(() => NavigationManager.instance
-        .disposeNavigatorKey(this._basePath, this._key));
+        this._key = NavigationManager.instance.generateNavigatorKey(basePath, scope) {
+    this.onDispose(() => NavigationManager.instance.disposeNavigatorKey(this._basePath, this._key));
   }
 }
