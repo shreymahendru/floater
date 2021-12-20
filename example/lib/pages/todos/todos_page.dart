@@ -1,4 +1,5 @@
 import 'package:example/pages/todos/todos_page_state.dart';
+import 'package:example/pages/todos/widgets/todo_tile/todo_tile.dart';
 // import 'package:example/pages/todos/widgets/todo_tile/todo_tile.dart';
 import 'package:example/pages/todos/widgets/todo_tile_keep_alive/todo_tile_keep_alive.dart';
 import 'package:example/sdk/todo/proxies/todo.dart';
@@ -48,23 +49,22 @@ class TodosPage extends StatefulWidgetBase<TodosPageState> {
     return ListView.builder(
       addAutomaticKeepAlives: true,
       itemCount: this.state.todos.length,
-      itemBuilder: (context, index) =>
-          this._buildListTile(this.state.todos[index]),
+      itemBuilder: (context, index) => this._buildListTile(this.state.todos[index]),
     );
   }
 
   Widget _buildListTile(Todo todo) {
-    // return TodoTile(
-    //   todo: todo,
-    //   onEditTodoPressed: () => this.state.onEditTodoPressed(todo),
-    //   onTodoPressed: () => this.state.onTodoPressed(todo),
-    //   toggleCompletionForTodo: () => this.state.toggleCompletionForTodo(todo),
-    // );
-
-    return TodoTileKeepAlive(
+    return TodoTile(
       todo: todo,
       onEditTodoPressed: () => this.state.onEditTodoPressed(todo),
+      onTodoPressed: () => this.state.onTodoPressed(todo),
       toggleCompletionForTodo: () => this.state.toggleCompletionForTodo(todo),
     );
+
+    // return TodoTileKeepAlive(
+    //   todo: todo,
+    //   onEditTodoPressed: () => this.state.onEditTodoPressed(todo),
+    //   toggleCompletionForTodo: () => this.state.toggleCompletionForTodo(todo),
+    // );
   }
 }

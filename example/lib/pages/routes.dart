@@ -6,6 +6,7 @@ import 'package:example/pages/todos/todos_page.dart';
 import 'package:example/pages/view_todo/view_todo_page.dart';
 import 'package:floater/floater.dart';
 import 'package:example/pages/splash/splash_page.dart';
+import 'package:flutter/widgets.dart';
 
 abstract class Routes {
   static const splash = "/splash";
@@ -30,14 +31,28 @@ abstract class Routes {
     // Home Tab Pages
     NavigationManager.instance
       ..registerPage(Routes.todos, (routeArgs) => TodosPage())
+      ..registerPage(Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]))
+      ..registerPage(Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
+      ..registerPage(Routes.manageTodoDescription, (routeArgs) => ManageTodoDescriptionPage())
       ..registerPage(
-          Routes.manageTodo, (routeArgs) => ManageTodoPage(routeArgs["id"]))
-      ..registerPage(
-          Routes.manageTodoTitle, (routeArgs) => ManageTodoTitlePage())
-      ..registerPage(Routes.manageTodoDescription,
-          (routeArgs) => ManageTodoDescriptionPage())
-      ..registerPage(
-          Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]));
+        Routes.viewTodo,
+        (routeArgs) => ViewTodoPage(routeArgs["id"]),
+        fullscreenDialog: false,
+        pageType: PageType.custom,
+        customPageRouteBuilder: CustomPageRouteBuilder(
+          opaque: false,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final tween = Tween(begin: 0.0, end: 1.0);
+            final fadeAnimation = animation.drive(tween);
+            return FadeTransition(
+              opacity: fadeAnimation,
+              child: child,
+            );
+          },
+        ),
+      );
+    // ..registerPage(
+    //     Routes.viewTodo, (routeArgs) => ViewTodoPage(routeArgs["id"]));
 
     // bootstrapping Navigation
     NavigationManager.instance.bootstrap();
