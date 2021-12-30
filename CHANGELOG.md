@@ -1,3 +1,6 @@
+## [0.1.4+1] - December 29, 2021
+* Remove stateful widget listeners when disposing correctly.  
+
 ## [0.1.4] - December 20, 2021
 * Expose `CustomPageRouteBuilder` to build custom route transitions
 

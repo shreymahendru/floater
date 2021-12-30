@@ -113,7 +113,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
     this._watches.values.forEach((watcher) => watcher.cancel());
     this._watches.clear();
 
-    this._listeners.keys.forEach((listenable) => this.unlisten(listenable));
+    this._listeners.entries.forEach((t) => t.key.removeListener(t.value));
+    this._listeners.clear();
 
     if (this._onDispose != null) this._onDispose!();
 
