@@ -15,6 +15,7 @@ This will make flutter app development simple and elegant as Steph Curry's float
 9. Event Aggregator.
 
 
+
 Check out the example Todo application to see these features in action, [here.](./example/lib/main.dart) 
 
 [Dart Package](https://pub.dev/packages/floater)
