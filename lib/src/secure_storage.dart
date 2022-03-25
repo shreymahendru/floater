@@ -2,6 +2,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'defensive.dart';
 import 'extensions.dart';
 
+/// Secure Storage
+///
+/// Used to [store] file, [retrieve] file, [delete] file and check a specific file belongs using [contains].
+/// All these are done by passing the [key].
+///
+/// [FlutterSecureStorage] is implemented in [SecureStorageService] for additional security,
+///  which encrypts and saves the [key] with the given [value].
+
 abstract class SecureStorageService {
   Future<void> store(String key, String value);
   Future<String?> retrieve(String key);

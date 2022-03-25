@@ -4,6 +4,32 @@ import 'package:meta/meta.dart';
 import 'event_aggregator.dart';
 import 'secure_storage.dart';
 
+/// Service Locator
+///
+/// [registerInstance] service creates a new instance.
+/// [registerSingleton] service does for every subsequent request, the same instance get called.
+/// The data is passed inside the scope.
+///
+/// [registerTransient] service returns a new instance each time it gets called.
+/// [registerScoped] service is used when same data is passed within multiple pages.
+///
+/// Example:
+///
+/// ```dart
+/// Used to locate the service.
+/// class Service {
+///  final _service = ServiceLocator.instance.resolve<Service>();
+///  final _managementService = NavigationService.instance.retrieveScope(Routes.home).resolve<ManagementService>();
+///  final _newService;
+///
+///  Future<void> init(String? id) async {
+///  if (id != null) this._newService = await this._service.get(id);
+///  }
+/// ```
+///
+/// Scoped service creates a new instance and shared across the request.
+/// Singleton service creates only one instance and shared across application.
+
 abstract class ServiceRegistry {
   void registerInstance<T extends Object>(T value);
   void registerSingleton<T extends Object>(T Function() factoryFunc);
@@ -115,25 +141,16 @@ class _Container implements ServiceRegistry {
   }
 
   void bootstrap() {
-    given(this, "this")
-        .ensure((t) => !t._isBootstrapped, "Already bootstrapped");
+    given(this, "this").ensure((t) => !t._isBootstrapped, "Already bootstrapped");
 
-    if (!this._types.contains(EventAggregator))
-      this.registerSingleton<EventAggregator>(() => FloaterEventAggregator());
+    if (!this._types.contains(EventAggregator)) this.registerSingleton<EventAggregator>(() => FloaterEventAggregator());
 
     if (!this._types.contains(SecureStorageService))
-      this.registerSingleton<SecureStorageService>(
-          () => FloaterSecureStorageService());
+      this.registerSingleton<SecureStorageService>(() => FloaterSecureStorageService());
 
-    this
-        .instanceRegistrations
-        .forEach((element) => element.register(this._getIt));
-    this
-        .singletonRegistrations
-        .forEach((element) => element.register(this._getIt));
-    this
-        .transientRegistrations
-        .forEach((element) => element.register(this._getIt));
+    this.instanceRegistrations.forEach((element) => element.register(this._getIt));
+    this.singletonRegistrations.forEach((element) => element.register(this._getIt));
+    this.transientRegistrations.forEach((element) => element.register(this._getIt));
     // Deliberately not doing scoped registrations
 
     this._isBootstrapped = true;
@@ -176,23 +193,16 @@ class _ChildScope implements ServiceLocator, Disposable {
   var _isDisposed = false;
 
   _ChildScope(_Container parentScope) : this._parentScope = parentScope {
-    this
-        ._parentScope
-        .scopedRegistrations
-        .forEach((element) => element.register(this._getIt));
+    this._parentScope.scopedRegistrations.forEach((element) => element.register(this._getIt));
   }
 
   @override
   T resolve<T extends Object>() {
     if (this._isDisposed) throw new Exception("Object disposed");
 
-    if (this
-        ._parentScope
-        .scopedRegistrations
-        .any((element) => element.type == T)) {
+    if (this._parentScope.scopedRegistrations.any((element) => element.type == T)) {
       final instance = this._getIt.get<T>();
-      if (instance is Disposable && !this._instances.contains(instance))
-        this._instances.add(instance);
+      if (instance is Disposable && !this._instances.contains(instance)) this._instances.add(instance);
       return instance;
     } else
       return this._parentScope.resolve();

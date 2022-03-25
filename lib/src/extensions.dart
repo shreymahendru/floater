@@ -1,3 +1,11 @@
+/// Extensions
+///
+/// [extension] enables some extra functionalities to already existing collections like [Map] and [List].
+/// Some of the [extensions] are [MapStringDynamicExt] for [Map], [ListExt] for [List] and [StringExt] for [String].
+///
+/// Examples of [ListExt] are [ListStringExt], [ListNumExt], [ListIntExt],[ListDoubleExt].
+/// Each of these [extensions] can be used for specific tasks.
+
 extension MapStringDynamicExt on Map<String, dynamic> {
   T? getValue<T>(String key) {
     if (key.isEmptyOrWhiteSpace) return null;
@@ -79,8 +87,7 @@ extension ListExt<T> on List<T> {
     return internal;
   }
 
-  List<T> orderByDesc<TKey extends Comparable>(
-      ValueFunction<T, TKey> valueFunc) {
+  List<T> orderByDesc<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
     // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
 

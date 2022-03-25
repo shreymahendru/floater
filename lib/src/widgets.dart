@@ -4,12 +4,16 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'navigation.dart';
 
+/// Uses [StatelessWidgetBase] instead of [StatelessWidget].
+
 @immutable
 abstract class StatelessWidgetBase extends StatelessWidget {
   const StatelessWidgetBase({
     Key? key,
   }) : super(key: key);
 }
+
+/// Uses [StatefulWidgetBase] instead of [StatefulWidget].
 
 @immutable
 abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWidget {
@@ -38,6 +42,10 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
   }
 }
 
+/// The widget is separated by design and state.
+///
+/// All the business logics goes in state file, the UI designs goes in design file.
+
 abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   final _watches = <Stream, StreamSubscription>{};
   final _listeners = <Listenable, void Function()>{};
@@ -47,6 +55,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   VoidCallback? _onDeactivate;
   VoidCallback? _onDispose;
   VoidCallback? _onStateChange;
+
+  /// Access variables from state file by setting a public getter and
+  /// calling it to the design file.
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -127,6 +138,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   void onDispose(VoidCallback callback) {
     this._onDispose = callback;
   }
+
+  /// [setState] is replaced by [triggerStateChange] which is more convenient.
 
   @protected
   @nonVirtual
@@ -213,6 +226,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
 /// For clients of AutomaticKeepAlive (example: ListView).
 /// This keeps the state of a widget alive, given the wantAlive is set to true.
+
 abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends WidgetStateBase<T>
     with AutomaticKeepAliveClientMixin {
   bool _keepAlive = true;

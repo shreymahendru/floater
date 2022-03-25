@@ -11,6 +11,7 @@ import 'service_locator.dart';
 /// If no type is provided, the subscriber gets all the events.
 ///
 /// Example:
+///
 /// ```dart
 /// class IntEvent {
 ///   final int value;

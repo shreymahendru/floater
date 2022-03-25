@@ -10,6 +10,30 @@ import 'package:meta/meta.dart';
 import 'service_locator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Navigation
+///
+/// [Navigation] service is used for setting routes for pages.
+///
+/// Example:
+///
+/// ```dart
+/// abstract class Routes {
+/// static const home = "/home";
+/// static void initializeNavigation() {
+/// NavigationManager.instance
+///      ..registerPage(Routes.home, (routeArgs) => HomePage());
+///
+///     // bootstrapping Navigation
+///     NavigationManager.instance.bootstrap();
+///   }
+/// }
+/// ```
+///
+/// This example shows how to set route for HomePage and the routeName
+/// can be called in any page to navigate to HomePage.
+///
+/// You can also pass routeArguments to do specific tasks.
+
 enum PageType { material, cupertino, custom }
 
 class _NavTracker {
