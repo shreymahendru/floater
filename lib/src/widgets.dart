@@ -4,8 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'navigation.dart';
 
-/// Uses [StatelessWidgetBase] instead of [StatelessWidget].
-
+/// Uses [StatelessWidgetBase] instead of [StatelessWidget]. There isn't much difference.
 @immutable
 abstract class StatelessWidgetBase extends StatelessWidget {
   const StatelessWidgetBase({
@@ -14,7 +13,6 @@ abstract class StatelessWidgetBase extends StatelessWidget {
 }
 
 /// Uses [StatefulWidgetBase] instead of [StatefulWidget].
-
 @immutable
 abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWidget {
   final T Function() _createState;
@@ -42,9 +40,9 @@ abstract class StatefulWidgetBase<T extends WidgetStateBase> extends StatefulWid
   }
 }
 
-/// The widget is separated by design and state.
+/// The widget is separated by Design and State.
 ///
-/// All the business logics goes in state file, the UI designs goes in design file.
+/// All the business logics goes in State file, the UI designs goes in Design file.
 
 abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   final _watches = <Stream, StreamSubscription>{};
@@ -56,9 +54,7 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   VoidCallback? _onDispose;
   VoidCallback? _onStateChange;
 
-  /// Access variables from state file by setting a public getter and
-  /// calling it to the design file.
-
+  /// Access private variables from state file by setting a public getter and calling it to the design file.
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -81,6 +77,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [onInitState] is a callback to [initState].
+  /// If a State's build method depends on an object that can itself change state, [onInitState] is called.
   void onInitState(VoidCallback callback) {
     // given(callback, "callback").ensureHasValue();
     this._onInitState = callback;
@@ -90,6 +89,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// Notify the framework that the internal state of this object has changed.
+  /// Whenever you change the internal state of a State object, make the change in a function that you pass to [setState].
   void setState([VoidCallback? fn]) {
     if (fn != null) fn();
     if (this._onStateChange != null) this._onStateChange!();
@@ -102,6 +104,11 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// The framework calls this method whenever it removes this State object from the tree.
+  /// In some cases, the framework will reinsert the State object into another part of the tree.
+  /// If that happens, the framework will call [activate] to give the State object a chance to
+  /// reacquire any resources that it released in [deactivate].
   void deactivate() {
     if (this._onDeactivate != null) this._onDeactivate!();
 
@@ -111,6 +118,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [onDeactivate] is a callback to [deactivate].
   void onDeactivate(VoidCallback callback) {
     this._onDeactivate = callback;
   }
@@ -119,6 +128,10 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// Called when this object is removed from the tree permanently.
+  /// The framework calls this method when this State object will never build again.After the framework
+  /// calls [dispose], the State object is considered unmounted and the mounted property is false.
   void dispose() {
     this._isDisposed = true;
     this._watches.values.forEach((watcher) => watcher.cancel());
@@ -135,12 +148,13 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [onDispose] is a callback to [dispose].
   void onDispose(VoidCallback callback) {
     this._onDispose = callback;
   }
 
   /// [setState] is replaced by [triggerStateChange] which is more convenient.
-
   @protected
   @nonVirtual
   @mustCallSuper
@@ -158,6 +172,10 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [watch] is used for [Stream].
+  /// When you have a [Stream], [watch] will listens to the stream and disposes after use even if you did not
+  /// use [unwatch].
   void watch<U>(Stream<U> stream, [FutureOr<void> Function(U data)? onData]) {
     if (this._watches.containsKey(stream)) return;
     onData ??= (U data) {};
@@ -170,6 +188,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [unwatch] is used to dispose a [Stream] after use.
   void unwatch(Stream stream) {
     if (!this._watches.containsKey(stream)) return;
     final watcher = this._watches[stream]!;
@@ -180,6 +200,11 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [listen] is used for [Listenable].
+  /// The idea of [listen] is same as [watch] in [Stream].
+  /// When you have a [Listenable], [listen] will listens to the [Listenable] and disposes after use even if you
+  /// did not use [unlisten].
   void listen<T extends Listenable>(T listenable, void Function() onChange) {
     if (this._listeners.containsKey(listenable)) {
       throw Exception("Listenable $listenable already being listened to");
@@ -192,6 +217,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
   @protected
   @nonVirtual
   @mustCallSuper
+
+  /// [unlisten] is used to dispose a [Listenable] after use.
   void unlisten<T extends Listenable>(T listenable) {
     if (!this._listeners.containsKey(listenable)) return;
 
@@ -211,6 +238,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
   @protected
   @mustCallSuper
+
+  /// When loading starts, [showLoading] is called which sets [_isLoading] to true.
   void showLoading() {
     this._isLoading = true;
     this.triggerStateChange();
@@ -218,6 +247,8 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
   @protected
   @mustCallSuper
+
+  /// After loading finishes, [hideLoading] is called which sets [_isLoading] to false.
   void hideLoading() {
     this._isLoading = false;
     this.triggerStateChange();
@@ -229,6 +260,9 @@ abstract class WidgetStateBase<T extends StatefulWidget> extends State<T> {
 
 abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends WidgetStateBase<T>
     with AutomaticKeepAliveClientMixin {
+  /// Marks a child as needing to remain alive.
+  /// The child and keepAlive arguments must not be null.
+  /// Usually used when scrolling needs.
   bool _keepAlive = true;
 
   @override
@@ -256,10 +290,16 @@ abstract class KeepAliveClientWidgetStateBase<T extends StatefulWidget> extends 
 }
 
 @sealed
+
+/// [ScopedNavigator] is used when same data is passed across multiple pages.
 class ScopedNavigator extends StatefulWidgetBase<ScopedNavigatorState> {
   final String _initialRoute;
   final Map<String, dynamic>? _initialRouteArgs;
+
+  /// [TransitionDelegate] creates a delegate and enables subclass to create a constant class.
   final TransitionDelegate<dynamic> _transitionDelegate;
+
+  /// [NavigatorObserver] is an interface for observing the behavior of a [Navigator].
   final List<NavigatorObserver> observers;
 
   ScopedNavigator(

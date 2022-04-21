@@ -6,12 +6,13 @@ import 'secure_storage.dart';
 
 /// Service Locator
 ///
-/// [registerInstance] service creates a new instance.
-/// [registerSingleton] service does for every subsequent request, the same instance get called.
+/// [registerInstance] service registers a new instance.
+/// [registerSingleton] service registers a type as Singleton by passing an [instance] of that type
+/// and for every subsequent request, the same instance get called.
 /// The data is passed inside the scope.
 ///
 /// [registerTransient] service returns a new instance each time it gets called.
-/// [registerScoped] service is used when same data is passed within multiple pages.
+/// [registerScoped] service is used when same data is passed across multiple pages.
 ///
 /// Example:
 ///
@@ -75,6 +76,9 @@ class _TransientRegistration<T extends Object> extends _Registration<T> {
   @override
   void register(GetIt getIt) {
     // given(getIt, "getIt").ensureHasValue();
+
+    /// [registerFactory] should only be necessary if you need to register more
+    /// than one instance of one type. Its highly not recommended
     getIt.registerFactory<T>(this.factoryFunc);
   }
 }
@@ -87,6 +91,9 @@ class _ScopedRegistration<T extends Object> extends _Registration<T> {
   @override
   void register(GetIt getIt) {
     // given(getIt, "getIt").ensureHasValue();
+
+    /// Its highly not recommended [registerLazySingleton] does not influence [allReady] however you can wait
+    /// for and be dependent on a LazySingleton.
     getIt.registerLazySingleton<T>(this.factoryFunc);
   }
 }
@@ -231,6 +238,15 @@ class ServiceManager {
 
   ServiceManager._private();
 
+  /// [useInstaller] is used to install additional services user defined services in the app.
+  ///
+  /// Example
+  ///
+  /// ```dart
+  /// void install(ServiceRegistry registry) {
+  /// registry.registerSingleton<TodoService>(() => MockTodoService());
+  /// ```
+  ///
   void useInstaller(ServiceInstaller installer) {
     // given(installer, "installer").ensureHasValue();
 

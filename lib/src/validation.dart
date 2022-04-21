@@ -28,11 +28,12 @@ import 'extensions.dart';
 /// ```
 ///
 /// This example shows how to set-up multiple properties for validating "title",
-/// and passes error message if error occurs.
+/// and user defined error message if error occurs.
 
 class ValidationErrors {
   final _errors = <String, Object?>{};
 
+  /// [getError] takes String value as parameter and validates in each level.
   T? getError<T>(String propertyName) {
     if (propertyName.isEmptyOrWhiteSpace) return null;
     propertyName = propertyName.trim();
@@ -54,8 +55,8 @@ class ValidationErrors {
       }
       if (current is ValidationErrors) return current.getError(split.sublist(i).join("."));
 
-      // if the top level validation fails then error blow is thrown.
-      // validate the top level first before validating a second level error.
+      /// if the top level validation fails then error blow is thrown.
+      /// validate the top level first before validating a second level error.
 
       throw Exception(
           "In Map $this the value for key = ${split.getRange(0, i).join(".")} expected Map<String, dynamic> or ValidationErrors got ${current.runtimeType} [$current]");
@@ -64,6 +65,7 @@ class ValidationErrors {
     return current as T?;
   }
 
+  /// [_setError] assigns errors to the particular value.
   void _setError(String propertyName, Object? value) {
     this._errors.setValue(propertyName, value);
   }
@@ -82,6 +84,7 @@ class Validator<T extends Object?> {
   var _hasErrors = false;
   var _isEnabled = true;
 
+  /// Public getters are used to reveal private variables.
   bool get isValid => !this._hasErrors;
   bool get hasErrors => this._hasErrors;
   ValidationErrors get errors => this._errors;
@@ -92,6 +95,7 @@ class Validator<T extends Object?> {
     this._isEnabled = !disabled;
   }
 
+  /// [prop] assigns [propertyValidators] to the [propertyName] which is passed as parameter.
   PropertyValidator<T, TProperty> prop<TProperty extends Object?>(
       String propertyName, TProperty Function(T value) propertyFunc) {
     given(propertyName, "propertyName").ensure((t) => t.isNotEmptyOrWhiteSpace);
@@ -102,6 +106,7 @@ class Validator<T extends Object?> {
     return propertyValidator;
   }
 
+  /// [clearProp] removes all the [propertyValidators] assigned to the [propertyName] which is passed as parameter.
   void clearProp(String propertyName) {
     given(propertyName, "propertyName").ensure((t) => t.isNotEmptyOrWhiteSpace);
     final _InternalPropertyValidator<T, Object?>? propertyValidator =
@@ -130,10 +135,12 @@ class Validator<T extends Object?> {
     }
   }
 
+  /// Validators are disabled by default. You have to specifically enable the validator using [validator.enable].
   void enable() {
     this._isEnabled = true;
   }
 
+  /// Validators can specifically disable byy using [validator.disable].
   void disable() {
     this._isEnabled = false;
   }
@@ -251,6 +258,8 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   }
 
   @override
+
+  /// [isRequired] sets the input as required and it is not optional.
   PropertyValidator<T, TProperty> isRequired() {
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.ensure((propertyValue) {
@@ -269,6 +278,8 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   }
 
   @override
+
+  /// [isOptional] sets the input as optional.
   PropertyValidator<T, TProperty> isOptional() {
     this._lastValidationRule = new _InternalPropertyValidationRule<T, TProperty>();
     this._lastValidationRule!.ensure((propertyValue) {
@@ -316,6 +327,8 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   }
 
   @override
+
+  /// [when] can be used if the validator should work in a certain condition.
   PropertyValidator<T, TProperty> when(bool Function(T) conditionPredicate) {
     if (this._lastValidationRule == null)
       this._conditionPredicate = conditionPredicate;
@@ -326,6 +339,8 @@ class _InternalPropertyValidator<T, TProperty> implements PropertyValidator<T, T
   }
 
   @override
+
+  /// [withMessage] can assign user defined messages which displays when validation fails.
   PropertyValidator<T, TProperty> withMessage({String? message, String Function()? messageFunc}) {
     if (message == null && messageFunc == null)
       throw new ArgumentError("Either message or messagefunc has to be provided");
@@ -434,6 +449,7 @@ abstract class BaseValidationRule<T> implements ValidationRule<T> {
 // public
 abstract class BaseNumberValidationRule<T extends num?> extends BaseValidationRule<T> {}
 
+/// A minimum value is passed so the validator fails if the input is less than [minValue].
 class _NumberHasMinValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasMinValue(num minValue) {
     this.addValidationRule(
@@ -441,6 +457,7 @@ class _NumberHasMinValue<T extends num?> extends BaseNumberValidationRule<T> {
   }
 }
 
+/// A maximum value is passed so the validator fails if the input is greater than [maxValue].
 class _NumberHasMaxValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasMaxValue(num maxValue) {
     this.addValidationRule(
@@ -448,6 +465,7 @@ class _NumberHasMaxValue<T extends num?> extends BaseNumberValidationRule<T> {
   }
 }
 
+/// A specific value is passed so the validator fails if the input is not the [exactValue].
 class _NumberHasExactValue<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberHasExactValue(num exactValue) {
     this.addValidationRule(
@@ -455,12 +473,14 @@ class _NumberHasExactValue<T extends num?> extends BaseNumberValidationRule<T> {
   }
 }
 
+/// A list of numbers are passed so the validator fails if the input is not in the list.
 class _NumberIsIn<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberIsIn(List<num> values) {
     this.addValidationRule(new _ConcreteValidationRule((t) => t == null || values.contains(t), "Invalid value"));
   }
 }
 
+/// A list of numbers are passed so the validator fails if the input is in the list.
 class _NumberIsNotIn<T extends num?> extends BaseNumberValidationRule<T> {
   _NumberIsNotIn(List<num> values) {
     this.addValidationRule(
@@ -470,6 +490,8 @@ class _NumberIsNotIn<T extends num?> extends BaseNumberValidationRule<T> {
 
 // public
 abstract class BaseStringValidationRule<T extends String?> extends BaseValidationRule<T> {
+  /// [isNumber] is a boolean function which takes String value as parameter and parse it to num.
+  /// If the parsed value contains number, returns true.
   bool isNumber(String value) {
     value = value.trim();
     if (value.isEmpty) return false;
@@ -478,6 +500,7 @@ abstract class BaseStringValidationRule<T extends String?> extends BaseValidatio
   }
 }
 
+/// A minimum length for string is passed so the validator fails if the input fall short of [minLength].
 class _StringHasMinLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasMinLength(num minLength) {
     this.addValidationRule(new _ConcreteValidationRule(
@@ -485,6 +508,7 @@ class _StringHasMinLength<T extends String?> extends BaseStringValidationRule<T>
   }
 }
 
+/// A maximum length for string is passed so the validator fails if the input exceeds [maxLength].
 class _StringHasMaxLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasMaxLength(num maxLength) {
     this.addValidationRule(new _ConcreteValidationRule(
@@ -492,6 +516,7 @@ class _StringHasMaxLength<T extends String?> extends BaseStringValidationRule<T>
   }
 }
 
+/// A specific length for string is passed so the validator fails if the input exceeds or fall short of [exactLength].
 class _StringHasExactLength<T extends String?> extends BaseStringValidationRule<T> {
   _StringHasExactLength(num exactLength) {
     this.addValidationRule(new _ConcreteValidationRule(
@@ -499,6 +524,7 @@ class _StringHasExactLength<T extends String?> extends BaseStringValidationRule<
   }
 }
 
+/// A list of Strings are passed so the validator fails if the input is not in the list.
 class _StringIsIn<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsIn(List<String> values, [bool ignoreCase = false]) {
     this.addValidationRule(new _ConcreteValidationRule(
@@ -511,6 +537,7 @@ class _StringIsIn<T extends String?> extends BaseStringValidationRule<T> {
   }
 }
 
+/// A list of Strings are passed so the validator fails if the input is in the list.
 class _StringIsNotIn<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsNotIn(List<String> values, [bool ignoreCase = false]) {
     this.addValidationRule(new _ConcreteValidationRule(
@@ -529,6 +556,7 @@ class _StringContainsOnlyNumbers<T extends String?> extends BaseStringValidation
   }
 }
 
+/// Converts the string input to number and checks the length is exactly 10, otherwise validator fails.
 class _StringIsPhoneNumber<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsPhoneNumber() {
     this.addValidationRule(
@@ -539,6 +567,10 @@ class _StringIsPhoneNumber<T extends String?> extends BaseStringValidationRule<T
 class _StringIsEmail<T extends String?> extends BaseStringValidationRule<T> {
   _StringIsEmail() {
     this.addValidationRule(new _ConcreteValidationRule((t) {
+      /// Constructs a regular expression.
+      ///
+      /// Throws a [FormatException] if [source] is not valid regular
+      /// expression syntax.
       final re = RegExp(
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
       return t == null || re.hasMatch(t.trim());
@@ -546,6 +578,7 @@ class _StringIsEmail<T extends String?> extends BaseStringValidationRule<T> {
   }
 }
 
+/// Passes a regular expression and checks the input has the exact match. If it is not, validator fails.
 class _StringMatchesRegex<T extends String?> extends BaseStringValidationRule<T> {
   _StringMatchesRegex(RegExp regex) {
     this.addValidationRule(new _ConcreteValidationRule((t) => t == null || regex.hasMatch(t), "Invalid format"));

@@ -1,12 +1,12 @@
 /// Extensions
 ///
 /// [extension] enables some extra functionalities to already existing collections like [Map] and [List].
-/// Some of the [extensions] are [MapStringDynamicExt] for [Map], [ListExt] for [List] and [StringExt] for [String].
-///
-/// Examples of [ListExt] are [ListStringExt], [ListNumExt], [ListIntExt],[ListDoubleExt].
+/// Some of the [extensions] are [MapStringDynamicExt], [ListExt] and [StringExt].
 /// Each of these [extensions] can be used for specific tasks.
 
 extension MapStringDynamicExt on Map<String, dynamic> {
+  /// [getValue] is used in [Map] which takes [key] as the parameter returns the [value] of the [key], if the [key] is
+  /// not empty or whiteSpace, otherwise returns null.
   T? getValue<T>(String key) {
     if (key.isEmptyOrWhiteSpace) return null;
 
@@ -35,6 +35,8 @@ extension MapStringDynamicExt on Map<String, dynamic> {
     return current as T?;
   }
 
+  /// [setValue] is also used in [Map] which takes [key] and [value] as the parameter assigns the [value],
+  ///  which is passed in the parameter, to the [key], if the [key] is not empty or whiteSpace, otherwise returns.
   void setValue(String key, dynamic value) {
     if (key.isEmptyOrWhiteSpace) return;
 
@@ -67,6 +69,9 @@ typedef Predicate<T> = bool Function(T t);
 typedef ValueFunction<T, TKey> = TKey Function(T t);
 
 extension ListExt<T> on List<T> {
+  /// [find] is used for finding the element from a [List]. It goes through each element in the [List] using
+  /// for loop and checks the element matches. If the element found, returns the element. Else returns null.
+  /// Basically, [find] will return the first element that matches.
   T? find(Predicate<T> predicate) {
     for (var element in this) {
       if (predicate(element)) return element;
@@ -75,6 +80,8 @@ extension ListExt<T> on List<T> {
     return null;
   }
 
+  /// [orderBy] is used to sort the [List] in ascending order.
+  /// It is done by comparing the adjacent values in the [List].
   List<T> orderBy<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
     // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
@@ -87,6 +94,7 @@ extension ListExt<T> on List<T> {
     return internal;
   }
 
+  /// [orderByDesc] is used to sort the [List] in descending order.
   List<T> orderByDesc<TKey extends Comparable>(ValueFunction<T, TKey> valueFunc) {
     // given(valueFunc, "valueFunc").ensureHasValue();
     final internal = this.toList();
@@ -119,6 +127,8 @@ extension ListExt<T> on List<T> {
 // }
 
 extension ListStringExt on List<String> {
+  /// [orderBy] is used to sort the [ListStringExt] in ascending order.
+  /// It is done by comparing the adjacent values in the [ListStringExt].
   List<String> orderBy() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -127,6 +137,7 @@ extension ListStringExt on List<String> {
     return internal;
   }
 
+  /// [orderByDesc] is used to sort the [ListStringExt] in descending order.
   List<String> orderByDesc() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -137,6 +148,8 @@ extension ListStringExt on List<String> {
 }
 
 extension ListNumExt on List<num> {
+  /// [orderBy] is used to sort the [ListNumExt] in ascending order.
+  /// It is done by comparing the adjacent values in the [ListNumExt].
   List<num> orderBy() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -145,6 +158,7 @@ extension ListNumExt on List<num> {
     return internal;
   }
 
+  /// [orderByDesc] is used to sort the [ListNumExt] in descending order.
   List<num> orderByDesc() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -155,6 +169,8 @@ extension ListNumExt on List<num> {
 }
 
 extension ListIntExt on List<int> {
+  /// [orderBy] is used to sort the [ListIntExt] in ascending order.
+  /// It is done by comparing the adjacent values in the [ListIntExt].
   List<int> orderBy() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -163,6 +179,7 @@ extension ListIntExt on List<int> {
     return internal;
   }
 
+  /// [orderByDesc] is used to sort the [ListIntExt] in descending order.
   List<int> orderByDesc() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -173,6 +190,8 @@ extension ListIntExt on List<int> {
 }
 
 extension ListDoubleExt on List<double> {
+  /// [orderBy] is used to sort the [ListDoubleExt] in ascending order.
+  /// It is done by comparing the adjacent values in the [ListDoubleExt].
   List<double> orderBy() {
     final internal = this.toList();
     internal.sort((a, b) {
@@ -181,6 +200,7 @@ extension ListDoubleExt on List<double> {
     return internal;
   }
 
+  /// [orderByDesc] is used to sort the [ListDoubleExt] in descending order.
   List<double> orderByDesc() {
     final internal = this.toList();
     internal.sort((a, b) {

@@ -5,10 +5,7 @@ import 'extensions.dart';
 /// Secure Storage
 ///
 /// Used to [store] file, [retrieve] file, [delete] file and check a specific file belongs using [contains].
-/// All these are done by passing the [key].
-///
-/// [FlutterSecureStorage] is implemented in [SecureStorageService] for additional security,
-///  which encrypts and saves the [key] with the given [value].
+/// [FlutterSecureStorage] is implemented in [SecureStorageService] for additional security.
 
 abstract class SecureStorageService {
   Future<void> store(String key, String value);
@@ -21,6 +18,11 @@ class FloaterSecureStorageService implements SecureStorageService {
   final _secureStorage = const FlutterSecureStorage();
 
   @override
+
+  /// Encrypts and saves the [key] with the given [value].
+  ///
+  /// If the key was already in the storage, its associated value is changed.
+  /// If the value is null, deletes associated value for the given [key].
   Future<void> store(String key, String value) async {
     given(key, "key").ensure((t) => key.isNotEmptyOrWhiteSpace);
     // given(value, "value").ensureHasValue();
@@ -29,6 +31,8 @@ class FloaterSecureStorageService implements SecureStorageService {
   }
 
   @override
+
+  /// Decrypts and returns the [key] with associated [value].
   Future<String?> retrieve(String key) async {
     given(key, "key").ensure((t) => key.isNotEmptyOrWhiteSpace);
 
@@ -36,12 +40,15 @@ class FloaterSecureStorageService implements SecureStorageService {
   }
 
   @override
+
+  /// Deletes associated value for the given [key].
   Future<void> delete(String key) async {
     given(key, "key").ensure((t) => key.isNotEmptyOrWhiteSpace);
 
     await this._secureStorage.delete(key: key.trim());
   }
 
+  /// Returns true if the storage contains the given [key].
   Future<bool> contains(String key) async {
     given(key, "key").ensure((t) => key.isNotEmptyOrWhiteSpace);
 
