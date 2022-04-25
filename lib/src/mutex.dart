@@ -1,6 +1,7 @@
 import 'dart:async';
 
 /// Mutual Exclusion Lock
+///
 /// Used to protect critical section of the code in order to avoid race conditions.
 /// It ensures FIFO lock accusation.
 /// Every acquirer gets the lock in order of when they asked for it,

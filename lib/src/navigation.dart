@@ -10,6 +10,30 @@ import 'package:meta/meta.dart';
 import 'service_locator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Navigation
+///
+/// Used for navigating through pages setting page routes.
+///
+/// Example:
+///
+/// ```dart
+/// abstract class Routes {
+/// static const home = "/home";
+/// static void initializeNavigation() {
+/// NavigationManager.instance
+///      ..registerPage(Routes.home, (routeArgs) => HomePage());
+///
+///     // bootstrapping Navigation
+///     NavigationManager.instance.bootstrap();
+///   }
+/// }
+/// ```
+///
+/// This example shows how to set route for HomePage and the routeName
+/// can be called in any page to navigate to HomePage.
+///
+/// You can also pass routeArguments to do specific tasks.
+
 enum PageType { material, cupertino, custom }
 
 class _NavTracker {
@@ -33,6 +57,9 @@ class _NavigationManager {
   final _pageRegistrations = <_PageRegistration>[];
   final _navigatorKeys = <String, Queue<_NavTracker>>{};
 
+  /// [fullscreenDialog] Whether the page route is a full-screen dialog. In Material and Cupertino,
+  /// being fullscreen has the effects of making the app bars have a close button instead of a back button.
+  /// On iOS, dialogs transitions animate differently and are also not closeable with the back swipe gesture.
   void registerPage<T extends Widget>(
     String route,
     T Function(dynamic args) factoryFunc, [
@@ -118,6 +145,7 @@ class _NavigationManager {
     }
   }
 
+  /// [generateNavigatorKey] generates a key that is unique across the entire app.
   GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
     given(basePath, "basePath")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
@@ -189,6 +217,9 @@ class _NavigationManager {
     return result;
   }
 
+  /// [retrieveNavigator] accepts [path] as parameter and makes sure it isn't empty or whiteSpace and returns navigator
+  /// for that [path].
+  /// Used for push and pop of pages in an app.
   NavigatorState retrieveNavigator(String path) {
     given(path, "path")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
@@ -199,6 +230,8 @@ class _NavigationManager {
     return this._navigatorKeys[path.trim()]!.last.globalKey.currentState!;
   }
 
+  /// [retrieveScope] accepts [path] as parameter and makes sure it isn't empty or whiteSpace and returns scope
+  /// for that [path].
   ServiceLocator retrieveScope(String path) {
     given(path, "path")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
@@ -417,6 +450,7 @@ class NavigationManager {
     _isBootstrapped = true;
   }
 
+  /// Creates a route for the given route settings.
   RouteFactory generateRouteFactory(String route) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     final path = this._getJustPath(route);
@@ -443,6 +477,7 @@ class NavigationManager {
   //   return result;
   // }
 
+  /// Creates a series of one or more routes.
   RouteListFactory generateRouteListFactory([Map<String, dynamic>? initialRouteArgs]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
 
@@ -453,6 +488,7 @@ class NavigationManager {
     return result;
   }
 
+  /// [generateNavigatorKey] generates a key that is unique across the entire app.
   GlobalKey<NavigatorState> generateNavigatorKey(String basePath, [ServiceLocator? scope]) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     basePath = this._getJustPath(basePath);
@@ -460,6 +496,7 @@ class NavigationManager {
     return _manager.generateNavigatorKey(basePath, scope);
   }
 
+  /// [disposeNavigatorKey] disposes the key after use
   void disposeNavigatorKey(String basePath, GlobalKey<NavigatorState> key) {
     if (!_isBootstrapped) throw new StateError("Not bootstrapped");
     basePath = this._getJustPath(basePath);
@@ -479,6 +516,7 @@ class NavigationManager {
     return _manager.retrieveScope(this._getJustPath(path));
   }
 
+  /// [routeArgs] can be number, boolean, string or object. It is optional.
   String _generateRoute(String routeTemplate, [Map<String, dynamic>? routeArgs]) {
     given(routeTemplate, "routeTemplate")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
@@ -550,6 +588,7 @@ class NavigationManager {
     return route.split("?").skip(1).join("?");
   }
 
+  /// [persistRoute] saves the last path locally when the app get closed and continues from that path when the app reopens.
   void persistRoute(String path) {
     given(path, "path")
         .ensure((t) => t.isNotEmptyOrWhiteSpace)
@@ -563,6 +602,8 @@ class NavigationManager {
     }));
   }
 
+  /// [retrievePersistedRoute] retrieves the last saved path when the app get closed for continuing from the exact state when
+  /// the app gets reopened.
   Future<String?> retrievePersistedRoute() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -573,6 +614,7 @@ class NavigationManager {
     }
   }
 
+  /// [clearPersistedRoute] removes all the [persistRoute] saved.
   void clearPersistedRoute() {
     unawaited(SharedPreferences.getInstance().then((t) => t.remove(_persistKey)).catchError((e) {
       print(e);
@@ -602,6 +644,17 @@ class NavigationService {
   }
 }
 
+/// [CustomPageRouteBuilder] is used for specific page transitions rather than flutter's default page transition.
+/// You can be very specific about the transition by setting up multiple parameters available.
+/// [opaque] can be set to true for opaque background.
+/// [transitionsBuilder] takes [BuildContext] , [Animation] and [Widget] child as parameters.
+/// [transitionDuration] and [reverseTransitionDuration] decides the duration of transition forward and backward respectively .
+///
+/// [barrierDismissible] Whether you can dismiss this route by tapping the modal barrier.
+/// For example, when a dialog is on the screen, the page below the dialog is usually darkened by the modal barrier.
+/// If barrierDismissible is true, then tapping this barrier will cause the current route to be popped with null as the value.
+/// If barrierDismissible is false, then tapping the barrier has no effect.
+/// [barrierColor] is the color to use for the modal barrier. If this is null, the barrier will be transparent.
 class CustomPageRouteBuilder {
   final bool opaque;
   final RouteTransitionsBuilder transitionsBuilder;
