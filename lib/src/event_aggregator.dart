@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import 'package:pedantic/pedantic.dart';
 // import 'defensive.dart';
 import 'service_locator.dart';
 
