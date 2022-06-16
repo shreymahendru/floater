@@ -1,3 +1,7 @@
+## [0.1.5+1] - June 16, 2022
+* Macos example projects
+* Dependencies
+
 ## [0.1.5] - June 16, 2022
 * Package Updates
 * Support for desktop and web apps
