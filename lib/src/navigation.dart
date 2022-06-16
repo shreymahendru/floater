@@ -1,13 +1,10 @@
+import 'dart:async';
 import 'dart:collection';
 import 'package:floater/floater.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
-import 'package:pedantic/pedantic.dart';
-import "defensive.dart";
-import "extensions.dart";
 // import "secure_storage.dart";
 import 'package:meta/meta.dart';
-import 'service_locator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum PageType { material, cupertino, custom }
