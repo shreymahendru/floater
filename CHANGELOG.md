@@ -1,3 +1,7 @@
+## [0.1.5] - June 16, 2022
+* Package Updates
+* Support for desktop and web apps
+
 ## [0.1.4+1] - December 29, 2021
 * Remove stateful widget listeners when disposing correctly.  
 
